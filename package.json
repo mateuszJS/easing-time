@@ -1,0 +1,31 @@
+{
+  "name": "easing-creator",
+  "version": "0.0.1",
+  "description": "Online tools helping create complex easing functions",
+  "keywords": [
+    "easing",
+    "css",
+    "animations"
+  ],
+  "homepage": "https://github.com/mateuszJS/easing-creator#readme",
+  "bugs": {
+    "url": "https://github.com/mateuszJS/easing-creator/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mateuszJS/easing-creator.git"
+  },
+  "license": "ISC",
+  "author": "Mateusz Walendzik",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}
