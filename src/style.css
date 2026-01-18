@@ -1,96 +1,188 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
+html, body {
   margin: 0;
-  display: flex;
+  height: 100%;
+}
+
+main {
+  display: grid;
   place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  height: 100%;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
+.editor-container {
+  width: 500px;
+  height: 500px;
+  position: relative;
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #3178c6aa);
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+  svg {
+    width: 100%;
+    height: 100%;
   }
-  a:hover {
-    color: #747bff;
+
+  .ruler {
+    position: absolute;
+    left: 0;
+
+    container-type: size;
+
+    display: flex;
+    padding: 0;
+    margin: 0;
+    
+
+    --number-of-periods: 10; /* number of list items - 1 */
+
+    --line-width: 1px;
+    --line-length: 8px;
+    --line-color: #bbb;
+    --max-number-of-lines: 10;
+
+    --strong-line-length: 14px;
+    --strong-line-color: #888;
+
+
+    --number-of-lines: min(var(--max-number-of-lines), round(100cqmax / (5px * var(--number-of-periods))));
+    --single-line-gap: calc(100% / var(--number-of-lines));
+
+
+    li {
+      display: block flow;
+      counter-increment: d 1;
+      flex: 1;
+
+      &:first-child {
+        counter-reset: d -1;
+      }
+
+      &::after {
+        content: "0."counter(d);
+        display: inline flow-root;
+        font-size: 14px;
+      }
+
+      &:last-child {
+        flex: 0;
+        --line-color: transparent;
+        &::after {
+          content: "1.0";
+        }
+      }
+
+      @container 
+        ((aspect-ratio > 1) and (width < 300px))
+        or
+        ((aspect-ratio < 1) and (height < 300px))
+        {
+        &:nth-child(2n)::after {
+          display: none;
+        }
+      }
+
+      @container 
+        ((aspect-ratio > 1) and (width < 150px))
+        or
+        ((aspect-ratio < 1) and (height < 150px))
+         {
+        &:not(:first-child, :last-child)::after {
+          display: none;
+        }
+      }
+    }
   }
-  button {
-    background-color: #f9f9f9;
+
+  .ruler-y {
+    top: 0;
+    bottom: 0;
+    contain-intrinsic-width: var(--strong-line-length);
+    flex-direction: column-reverse;
+    translate: calc(-100% + 1px) 0;
+    /* there is like a strange 1px gap on the right side */
+
+    li {
+      --x-offset: calc(var(--strong-line-length) * -1 - 5px);
+      height: 0;
+      align-content: end;
+      background:
+        conic-gradient(
+          at 0% 100%,
+          var(--strong-line-color)
+        ) 100% 100% / var(--strong-line-length) var(--line-width)  no-repeat,
+        conic-gradient(
+          at 100% var(--line-width),
+          transparent 270deg,
+          var(--line-color) 0 270deg
+      ) 100% calc(-1 * var(--line-width)) / var(--line-length) var(--single-line-gap) repeat-y;
+
+      &:last-child {
+        height: calc(2 * var(--line-width));
+        &::after {
+          translate: var(--x-offset) -50%;
+        }
+      }
+
+       &::after {
+        translate: var(--x-offset) 50%;
+      }
+    }
   }
+
+  .ruler-x {
+    right: 0;
+    bottom: 0;
+    contain-intrinsic-height: var(--strong-line-length);
+    translate: 0 100%;
+
+    li {
+      width: 0;
+      background:
+        conic-gradient(
+          var(--strong-line-color)
+        ) var(--line-width) 0 / var(--line-width) var(--strong-line-length) no-repeat,
+        conic-gradient(
+          at var(--line-width) 100%,
+          transparent 270deg,
+          var(--line-color) 0
+        ) var(--line-width) 0 / var(--single-line-gap) var(--line-length) repeat-x;
+
+      &:last-child {
+        width: calc(2 * var(--line-width));
+      }
+
+      &::after {
+        translate: -50% var(--strong-line-length);
+      }
+    }
+  }
+}
+
+[data-type^="cp"] {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  border: 1px solid rgba(0,0,0,0.2);
+  padding: 0;
+}
+
+[data-type="cp"] {
+  background-color: blue;
+  z-index: 10;
+  anchor-name: --main;
+}
+
+[data-type="cp-before"],
+[data-type="cp-after"] {
+  background-color: red;
+  width: 15px;
+  height: 15px;
+}
+
+.spline-preview {
+  overflow: visible;
 }
