@@ -1,12 +1,12 @@
+import type { ControlPoint } from './types'
+
 export function getPos(btn: HTMLElement) {
   return { x: parseFloat(btn.dataset.x!), y: parseFloat(btn.dataset.y!) }
 }
 
-export function getMainCp(p: HTMLButtonElement) {
+export function getMainCp(p: ControlPoint) {
   const potentialMirrorCp =
-    p.dataset.type === 'cp-before'
-      ? (p.nextElementSibling as HTMLButtonElement | null)
-      : (p.previousElementSibling as HTMLButtonElement | null)
+    p.dataset.type === 'cp-before' ? p.nextElementSibling : p.previousElementSibling
 
   if (!potentialMirrorCp || potentialMirrorCp.dataset.type !== 'cp') {
     throw Error('Main control point not found')
@@ -14,12 +14,11 @@ export function getMainCp(p: HTMLButtonElement) {
   return potentialMirrorCp
 }
 
-export function getMirrorCp(p: HTMLButtonElement) {
+export function getMirrorCp(p: ControlPoint) {
   const potentialMirrorCp =
     p.dataset.type === 'cp-before'
-      ? (p.nextElementSibling?.nextElementSibling as HTMLButtonElement | null)
-      : (p.previousElementSibling?.previousElementSibling as HTMLButtonElement | null)
-
+      ? p.nextElementSibling?.nextElementSibling
+      : p.previousElementSibling?.previousElementSibling
   if (potentialMirrorCp && potentialMirrorCp.dataset.type !== 'cp') {
     return potentialMirrorCp
   }

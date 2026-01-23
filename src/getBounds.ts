@@ -1,14 +1,12 @@
+import type { ControlPoint } from './types'
 import { getPos } from './utils'
 
-function getConnectedCpHandle(cp: HTMLButtonElement, type: 'cp-before' | 'cp-after') {
+function getConnectedCpHandle(cp: ControlPoint, type: 'cp-before' | 'cp-after') {
   if (cp.dataset.type === type) return cp
 
   const direction = type === 'cp-before' ? 'previousElementSibling' : 'nextElementSibling'
 
-  const maybeCpHandle =
-    cp.dataset.type === 'cp'
-      ? (cp[direction] as HTMLButtonElement | null)
-      : (cp[direction]?.[direction] as HTMLButtonElement | null)
+  const maybeCpHandle = cp.dataset.type === 'cp' ? cp[direction] : cp[direction]?.[direction]
 
   if (maybeCpHandle?.dataset.type === type) {
     return maybeCpHandle
@@ -19,21 +17,21 @@ function getConnectedCpHandle(cp: HTMLButtonElement, type: 'cp-before' | 'cp-aft
 /**
  * calculates bounds for given point, doesn't care about other point restriction
  */
-function getSingleCpBounds(cp: HTMLButtonElement) {
+function getSingleCpBounds(cp: ControlPoint) {
   const getIsBlocker =
     cp.dataset.type === 'cp'
-      ? (p: HTMLButtonElement | null) => p?.dataset.type !== 'cp' // for cp all non-cp are blockers
-      : (p: HTMLButtonElement | null) => p?.dataset.type === 'cp' // for cp-before/after only main cp are blockers
+      ? (p: ControlPoint | null) => p?.dataset.type !== 'cp' // for cp all non-cp are blockers
+      : (p: ControlPoint | null) => p?.dataset.type === 'cp' // for cp-before/after only main cp are blockers
 
   const leftBlockingCps = [
-    cp.previousElementSibling as HTMLButtonElement | null,
-    (cp.previousElementSibling?.previousElementSibling ?? null) as HTMLButtonElement | null,
+    cp.previousElementSibling,
+    cp.previousElementSibling?.previousElementSibling ?? null,
   ]
   const leftBound = leftBlockingCps.find(getIsBlocker)
 
   const rightBlockingCps = [
-    cp.nextElementSibling as HTMLButtonElement | null,
-    (cp.nextElementSibling?.nextElementSibling ?? null) as HTMLButtonElement | null,
+    cp.nextElementSibling,
+    cp.nextElementSibling?.nextElementSibling ?? null,
   ]
   const rightBound = rightBlockingCps.find(getIsBlocker)
 
@@ -43,7 +41,7 @@ function getSingleCpBounds(cp: HTMLButtonElement) {
   }
 }
 
-export function getBounds(cp: HTMLButtonElement) {
+export function getBounds(cp: ControlPoint) {
   let leftBound = 0
   let rightBound = 1
 

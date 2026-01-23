@@ -1,4 +1,4 @@
-import type { Point } from './types'
+import type { ControlPoint, Point } from './types'
 import { getPos } from './utils'
 
 // Global click to create/split (Basic implementation for now)
@@ -19,7 +19,7 @@ export function cubicPointAt(p0: Point, p1: Point, p2: Point, p3: Point, t: numb
   return { A, B, C, D, E, R }
 }
 
-export function getCubicForSegment(mainCps: HTMLButtonElement[], index: number) {
+export function getCubicForSegment(mainCps: ControlPoint[], index: number) {
   if (index < 0 || index >= mainCps.length - 1) return null
   const p0Btn = mainCps[index]
   const p3Btn = mainCps[index + 1]
@@ -27,8 +27,8 @@ export function getCubicForSegment(mainCps: HTMLButtonElement[], index: number) 
   const p0 = getPos(p0Btn)
   const p3 = getPos(p3Btn)
 
-  const cpAfter = p0Btn.nextElementSibling as HTMLElement | null
-  const cpBefore = p3Btn.previousElementSibling as HTMLElement | null
+  const cpAfter = p0Btn.nextElementSibling
+  const cpBefore = p3Btn.previousElementSibling
   if (!cpAfter || cpAfter.dataset.type !== 'cp-after') return null
   if (!cpBefore || cpBefore.dataset.type !== 'cp-before') return null
 
@@ -38,7 +38,7 @@ export function getCubicForSegment(mainCps: HTMLButtonElement[], index: number) 
 }
 
 export function findClosestOnPathPx(
-  mainCps: HTMLButtonElement[],
+  mainCps: ControlPoint[],
   rect: DOMRect,
   nx: number,
   ny: number

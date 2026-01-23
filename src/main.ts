@@ -1,6 +1,7 @@
 import { cubicPointAt, findClosestOnPathPx, getCubicForSegment } from './cubicBezierCurve'
 import { getBounds } from './getBounds'
 import './style.css'
+import type { ControlPoint } from './types'
 import updateConnectionLines from './updateConnectionLines'
 import { getMainCp, getMirrorCp, getPos } from './utils'
 
@@ -21,7 +22,7 @@ setDefaultData()
 render()
 
 function createPoint(type: 'cp-before' | 'cp' | 'cp-after', x: number, y: number) {
-  const btn = document.createElement('button')
+  const btn = document.createElement('button') as ControlPoint
   btn.dataset.type = type
   updateBtnPos(btn, x, y)
   attachEvents(btn)
@@ -29,7 +30,7 @@ function createPoint(type: 'cp-before' | 'cp' | 'cp-after', x: number, y: number
 }
 
 function getCps() {
-  return Array.from($cps.children) as HTMLButtonElement[]
+  return Array.from($cps.children) as ControlPoint[]
 }
 
 function getMainCps() {
@@ -71,19 +72,7 @@ function render() {
   updateConnectionLines($splinePreview, cps)
 }
 
-// function getBlockingMainCp(cp: HTMLButtonElement) {
-//   const direction =
-//     cp.dataset.type === 'cp-before' ? 'previousElementSibling' : 'nextElementSibling'
-
-//   if (cp.dataset.type === 'cp-before') {
-//     const maybeBlocker = cp[direction] as HTMLButtonElement | null
-//     return maybeBlocker?.dataset.type === 'cp'
-//       ? maybeBlocker
-//       : (maybeBlocker?.[direction] as HTMLButtonElement | null)
-//   }
-// }
-
-function onButtonMove(this: HTMLButtonElement, ev: PointerEvent) {
+function onButtonMove(this: ControlPoint, ev: PointerEvent) {
   const prev = this.previousElementSibling as HTMLElement | null
   const next = this.nextElementSibling as HTMLElement | null
   const isEdge = prev === null || next === null
@@ -121,12 +110,12 @@ function onButtonMove(this: HTMLButtonElement, ev: PointerEvent) {
     const dy = y - oldPos.y
 
     updateBtnPos(this, x, y)
-    const prev = this.previousElementSibling as HTMLButtonElement | null
+    const prev = this.previousElementSibling
     if (prev && prev.dataset.type === 'cp-before') {
       const prevPos = getPos(prev)
       updateBtnPos(prev, prevPos.x + dx, prevPos.y + dy)
     }
-    const next = this.nextElementSibling as HTMLButtonElement | null
+    const next = this.nextElementSibling
     if (next && next.dataset.type === 'cp-after') {
       const nextPos = getPos(next)
       updateBtnPos(next, nextPos.x + dx, nextPos.y + dy)
@@ -136,7 +125,7 @@ function onButtonMove(this: HTMLButtonElement, ev: PointerEvent) {
   render()
 }
 
-function attachEvents(btn: HTMLButtonElement) {
+function attachEvents(btn: ControlPoint) {
   btn.addEventListener('pointerdown', (e) => {
     e.stopPropagation() // Prevent creating new point
     btn.setPointerCapture(e.pointerId)
@@ -147,8 +136,8 @@ function attachEvents(btn: HTMLButtonElement) {
       btn.removeEventListener('pointerup', onUp)
     }
 
-    btn.addEventListener('pointermove', onButtonMove as EventListener)
-    btn.addEventListener('pointerup', onUp as EventListener)
+    btn.addEventListener('pointermove', onButtonMove)
+    btn.addEventListener('pointerup', onUp)
   })
 }
 
