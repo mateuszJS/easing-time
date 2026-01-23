@@ -23,3 +23,11 @@ export function getMirrorCp(p: ControlPoint) {
     return potentialMirrorCp
   }
 }
+
+export function updateBtnPos(btn: HTMLButtonElement, x: number, y: number) {
+  btn.dataset.x = x.toString()
+  btn.dataset.y = y.toString()
+  // once firefox and safari supports attr(value, <type>) we can remove below assignments
+  btn.style.left = x * 100 + '%'
+  btn.style.top = y * 100 + '%'
+}

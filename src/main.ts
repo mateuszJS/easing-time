@@ -1,13 +1,12 @@
 import { cubicPointAt, findClosestOnPathPx, getCubicForSegment } from './cubicBezierCurve'
-import { getBounds } from './getBounds'
 import './style.css'
 import type { ControlPoint } from './types'
-import updateConnectionLines from './updateConnectionLines'
-import { getMainCp, getMirrorCp, getPos } from './utils'
+import { updateControlPointPos } from './updateControlPointPos'
+import { updateSvgSpline } from './updateSvgSpline'
+import { updateBtnPos } from './utils'
 
 const $sizeWrapper = document.querySelector('.editor-container')! as HTMLElement
 const $splinePreview = document.querySelector('.spline-preview')! as SVGSVGElement
-const $path = $splinePreview.querySelector('path')!
 const $cps = document.querySelector('.cps')! as HTMLElement
 
 // Initialize with some default points if empty
@@ -19,7 +18,7 @@ function setDefaultData() {
 }
 
 setDefaultData()
-render()
+updateSvgSpline(getCps())
 
 function createPoint(type: 'cp-before' | 'cp' | 'cp-after', x: number, y: number) {
   const btn = document.createElement('button') as ControlPoint
@@ -37,92 +36,13 @@ function getMainCps() {
   return getCps().filter((p) => p.dataset.type === 'cp')
 }
 
-function updateBtnPos(btn: HTMLElement, x: number, y: number) {
-  btn.dataset.x = x.toString()
-  btn.dataset.y = y.toString()
-  // once firefox and safari supports attr(value, <type>) we can remove below assignments
-  btn.style.left = x * 100 + '%'
-  btn.style.top = y * 100 + '%'
-}
-
-// --- Rendering ---
-// This relies purely on the DOM state of buttons
-function render() {
-  const cps = getCps()
-  const [startCp, ...restCps] = cps
-  const startCpPos = getPos(startCp)
-  let d = `M ${startCpPos.x} ${startCpPos.y}`
-
-  restCps.forEach((cp, i) => {
-    if (cp.dataset.type === 'cp') {
-      const idx = i + 1
-      const cp1Btn = cps[idx - 2]
-      const cp2Btn = cps[idx - 1]
-
-      if (cp1Btn && cp2Btn) {
-        const cp1 = getPos(cp1Btn)
-        const cp2 = getPos(cp2Btn)
-        const curr = getPos(cp)
-        d += ` C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${curr.x} ${curr.y}`
-      }
-    }
-  })
-  $path.setAttribute('d', d)
-
-  updateConnectionLines($splinePreview, cps)
-}
-
-function onButtonMove(this: ControlPoint, ev: PointerEvent) {
-  const prev = this.previousElementSibling as HTMLElement | null
-  const next = this.nextElementSibling as HTMLElement | null
-  const isEdge = prev === null || next === null
+function onMoveControlPoint(this: ControlPoint, ev: PointerEvent) {
   const rect = $sizeWrapper.getBoundingClientRect()
-  let y = (ev.clientY - rect.top) / rect.height
-  let x = (ev.clientX - rect.left) / rect.width
+  let nx = (ev.clientX - rect.left) / rect.width
+  let ny = (ev.clientY - rect.top) / rect.height
 
-  if (isEdge) {
-    x = getPos(this).x
-  }
-
-  const blockers = getBounds(this)
-  x = Math.max(x, blockers.left)
-  x = Math.min(x, blockers.right)
-
-  // Mirror/relative handle logic
-  const type = this.dataset.type
-  if (type === 'cp-before' || type === 'cp-after') {
-    // Find partner
-    updateBtnPos(this, x, y)
-
-    const mirrorCp = getMirrorCp(this)
-
-    if (mirrorCp) {
-      const mainCp = getMainCp(this)
-      const mainCpPos = getPos(mainCp)
-      // Mirror: Partner = 2*Center - Current
-      const px = 2 * mainCpPos.x - x
-      const py = 2 * mainCpPos.y - y
-      updateBtnPos(mirrorCp, px, py)
-    }
-  } else if (type === 'cp') {
-    const oldPos = getPos(this)
-    const dx = x - oldPos.x
-    const dy = y - oldPos.y
-
-    updateBtnPos(this, x, y)
-    const prev = this.previousElementSibling
-    if (prev && prev.dataset.type === 'cp-before') {
-      const prevPos = getPos(prev)
-      updateBtnPos(prev, prevPos.x + dx, prevPos.y + dy)
-    }
-    const next = this.nextElementSibling
-    if (next && next.dataset.type === 'cp-after') {
-      const nextPos = getPos(next)
-      updateBtnPos(next, nextPos.x + dx, nextPos.y + dy)
-    }
-  }
-
-  render()
+  updateControlPointPos(this, nx, ny)
+  updateSvgSpline(getCps())
 }
 
 function attachEvents(btn: ControlPoint) {
@@ -132,11 +52,11 @@ function attachEvents(btn: ControlPoint) {
     // Capture initial positions for relative move when dragging an anchor (cp)
 
     const onUp = () => {
-      btn.removeEventListener('pointermove', onButtonMove)
+      btn.removeEventListener('pointermove', onMoveControlPoint)
       btn.removeEventListener('pointerup', onUp)
     }
 
-    btn.addEventListener('pointermove', onButtonMove)
+    btn.addEventListener('pointermove', onMoveControlPoint)
     btn.addEventListener('pointerup', onUp)
   })
 }
@@ -155,7 +75,7 @@ function splitAndInsertAt(segIndex: number, t: number) {
   $cps.insertBefore(createPoint('cp', R.x, R.y), ref)
   $cps.insertBefore(createPoint('cp-after', E.x, E.y), ref)
 
-  render()
+  updateSvgSpline(getCps())
 }
 
 $splinePreview.addEventListener('pointerdown', (e) => {
