@@ -1,0 +1,11 @@
+{
+  "workbench.editorAssociations": {
+    "*.svg": "default"
+  },
+  // ESLint configuration
+  "eslint.format.enable": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}
