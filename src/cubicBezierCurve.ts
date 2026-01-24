@@ -37,12 +37,7 @@ export function getCubicForSegment(mainCps: ControlPoint[], index: number) {
   return { p0Btn, p1Btn: cpAfter, p2Btn: cpBefore, p3Btn, p0, p1, p2, p3 }
 }
 
-export function findClosestOnPathPx(
-  mainCps: ControlPoint[],
-  rect: DOMRect,
-  nx: number,
-  ny: number
-) {
+export function findClosestOnPathPx(mainCps: ControlPoint[], rect: DOMRect, normPos: Point) {
   if (mainCps.length < 2) return null
   let best = { distPx: Infinity, segIndex: -1, t: 0, R: { x: 0, y: 0 } }
   for (let i = 0; i < mainCps.length - 1; i++) {
@@ -53,8 +48,8 @@ export function findClosestOnPathPx(
     for (let s = 0; s <= samples; s++) {
       const t = s / samples
       const { R } = cubicPointAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, t)
-      const dxPx = (nx - R.x) * rect.width
-      const dyPx = (ny - R.y) * rect.height
+      const dxPx = (normPos.x - R.x) * rect.width
+      const dyPx = (normPos.y - R.y) * rect.height
       const d = Math.hypot(dxPx, dyPx)
       if (d < best.distPx) {
         best = { distPx: d, segIndex: i, t, R }

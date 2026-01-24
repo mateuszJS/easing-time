@@ -17,7 +17,7 @@ export default function updateConnectionLines($parent: SVGElement, points: Contr
   $parent.querySelectorAll('line.handle-line').forEach((l) => l.remove())
   // Draw handle connection lines: cp-before — cp — cp-after
   points.forEach((pt) => {
-    if (pt.dataset.type === 'cp') {
+    if (pt.dataset.type === 'cp-main') {
       const prev = pt.previousElementSibling
       const next = pt.nextElementSibling
 

@@ -1,22 +1,31 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+body {
+  --btn-hover-bg: rgba(0, 0, 0, 0.05);
+  --primary: #303030;
+  --bg: #fff;
 
-html, body {
-  margin: 0;
-  height: 100%;
+  color: var(--primary);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 main {
-  display: grid;
-  place-items: center;
   height: 100%;
+}
+
+#pan-zoom-area {
+  place-content: center;
+  overflow: auto;
+  height: 100%;
+  /* Allows custom drag-to-pan without browser gestures interfering */
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 .editor-container {
   width: 500px;
   height: 500px;
   position: relative;
+  align-self: center;
+  justify-self: center;
 
   svg {
     width: 100%;
@@ -24,6 +33,7 @@ main {
   }
 
   .ruler {
+    font-family: 'Times New Roman', Times, serif;
     position: absolute;
     left: 0;
 
@@ -44,10 +54,11 @@ main {
     --strong-line-length: 14px;
     --strong-line-color: #888;
 
-
-    --number-of-lines: min(var(--max-number-of-lines), round(100cqmax / (5px * var(--number-of-periods))));
+    --number-of-lines: min(
+      var(--max-number-of-lines),
+      round(100cqmax / (5px * var(--number-of-periods)))
+    );
     --single-line-gap: calc(100% / var(--number-of-lines));
-
 
     li {
       display: block flow;
@@ -59,7 +70,7 @@ main {
       }
 
       &::after {
-        content: "0."counter(d);
+        content: '0.' counter(d);
         display: inline flow-root;
         font-size: 14px;
       }
@@ -68,25 +79,21 @@ main {
         flex: 0;
         --line-color: transparent;
         &::after {
-          content: "1.0";
+          content: '1.0';
         }
       }
 
-      @container 
-        ((aspect-ratio > 1) and (width < 300px))
+      @container ((aspect-ratio > 1) and (width < 300px))
         or
-        ((aspect-ratio < 1) and (height < 300px))
-        {
+        ((aspect-ratio < 1) and (height < 300px)) {
         &:nth-child(2n)::after {
           display: none;
         }
       }
 
-      @container 
-        ((aspect-ratio > 1) and (width < 150px))
+      @container ((aspect-ratio > 1) and (width < 150px))
         or
-        ((aspect-ratio < 1) and (height < 150px))
-         {
+        ((aspect-ratio < 1) and (height < 150px)) {
         &:not(:first-child, :last-child)::after {
           display: none;
         }
@@ -107,15 +114,10 @@ main {
       height: 0;
       align-content: end;
       background:
-        conic-gradient(
-          at 0% 100%,
-          var(--strong-line-color)
-        ) 100% 100% / var(--strong-line-length) var(--line-width)  no-repeat,
-        conic-gradient(
-          at 100% var(--line-width),
-          transparent 270deg,
-          var(--line-color) 0 270deg
-      ) 100% calc(-1 * var(--line-width)) / var(--line-length) var(--single-line-gap) repeat-y;
+        conic-gradient(at 0% 100%, var(--strong-line-color)) 100% 100% / var(--strong-line-length)
+          var(--line-width) no-repeat,
+        conic-gradient(at 100% var(--line-width), transparent 270deg, var(--line-color) 0 270deg)
+          100% calc(-1 * var(--line-width)) / var(--line-length) var(--single-line-gap) repeat-y;
 
       &:last-child {
         height: calc(2 * var(--line-width));
@@ -124,7 +126,7 @@ main {
         }
       }
 
-       &::after {
+      &::after {
         translate: var(--x-offset) 50%;
       }
     }
@@ -139,14 +141,10 @@ main {
     li {
       width: 0;
       background:
-        conic-gradient(
-          var(--strong-line-color)
-        ) var(--line-width) 0 / var(--line-width) var(--strong-line-length) no-repeat,
-        conic-gradient(
-          at var(--line-width) 100%,
-          transparent 270deg,
-          var(--line-color) 0
-        ) var(--line-width) 0 / var(--single-line-gap) var(--line-length) repeat-x;
+        conic-gradient(var(--strong-line-color)) var(--line-width) 0 / var(--line-width)
+          var(--strong-line-length) no-repeat,
+        conic-gradient(at var(--line-width) 100%, transparent 270deg, var(--line-color) 0)
+          var(--line-width) 0 / var(--single-line-gap) var(--line-length) repeat-x;
 
       &:last-child {
         width: calc(2 * var(--line-width));
@@ -159,26 +157,26 @@ main {
   }
 }
 
-[data-type^="cp"] {
+[data-type^='cp'] {
   position: absolute;
   width: 20px;
   height: 20px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   cursor: grab;
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   padding: 0;
   &:active {
     cursor: grabbing;
   }
 }
 
-[data-type="cp"] {
+[data-type='cp-main'] {
   background-color: blue;
 }
 
-[data-type="cp-before"],
-[data-type="cp-after"] {
+[data-type='cp-before'],
+[data-type='cp-after'] {
   background-color: red;
   width: 15px;
   height: 15px;
@@ -186,4 +184,114 @@ main {
 
 .spline-preview {
   overflow: visible;
+}
+
+#undo,
+#redo {
+  padding: 8px 12px;
+  border-radius: 4px;
+
+  svg {
+    width: 24px;
+  }
+
+  &:not([disabled]):hover {
+    background: var(--btn-hover-bg);
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+#redo svg {
+  scale: -1 1;
+}
+
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  /* triangle dimension */
+  --b: 1em; /* base */
+  --h: 0.5em; /* height */
+
+  --p: 50%; /* triangle position (0%:left 100%:right) */
+  --r: 0.5em; /* the radius */
+  --c: var(--primary);
+
+  border-radius: var(--r) var(--r) min(var(--r), 100% - var(--p) - var(--b) / 2)
+    min(var(--r), var(--p) - var(--b) / 2) / var(--r);
+  clip-path: polygon(
+    0 100%,
+    0 0,
+    100% 0,
+    100% 100%,
+    min(100%, var(--p) + var(--b) / 2) 100%,
+    var(--p) calc(100% + var(--h)),
+    max(0%, var(--p) - var(--b) / 2) 100%
+  );
+  background: var(--c);
+  border-image: conic-gradient(var(--c) 0 0) fill 0 / var(--r) calc(100% - var(--p) - var(--b) / 2)
+    0 calc(var(--p) - var(--b) / 2) / 0 0 var(--h) 0;
+}
+
+@property --tooltip-y {
+  syntax: '<length>';
+  initial-value: 5px;
+  inherits: true;
+}
+
+[data-tooltip][aria-label]:not([disabled]) {
+  position: relative;
+
+  &::after {
+    position: absolute;
+    display: none;
+    content: attr(aria-label);
+    color: var(--bg);
+    font-size: 14px;
+    padding: 0.5em;
+    width: max-content;
+    max-width: 25ch;
+    top: calc(100% + var(--tooltip-y));
+    left: 50%;
+    translate: -50% 0;
+    transition:
+      --tooltip-y ease,
+      opacity,
+      display allow-discrete;
+    transition-duration: 0.2s;
+    opacity: 0;
+
+    @starting-style {
+      --tooltip-y: initial;
+      opacity: 0;
+    }
+  }
+
+  &:where(:hover, :focus-visible) {
+    --tooltip-y: 10px;
+    &::after {
+      display: block;
+      opacity: 1;
+    }
+  }
+}
+
+/* #pan-zoom-area.pan-grabbing,
+#pan-zoom-area.pan-grabbing * {
+  cursor: grabbing !important;
+} */
+
+#toolbar {
+  position: fixed;
+  inset: 0;
+  bottom: auto;
+  background: #ffffffaa;
+  backdrop-filter: blur(2px);
+  z-index: 1;
+  padding: 5px 20px;
 }

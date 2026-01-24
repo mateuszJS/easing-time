@@ -10,40 +10,56 @@
 
 <body>
   <main>
-    <div class="editor-container">
-      <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
-        <path d="" vector-effect="non-scaling-stroke" stroke="black" stroke-width="2px" fill="none" />
-      </svg>
-      <div class="cps"></div>
+    <div tabindex="0" id="toolbar">
+      <button id="undo" data-tooltip aria-label="Undo last operation" disabled>
+        <svg viewBox="0 0 417 417" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path
+            d="M73.526,142.654l67.808,67.808c8.13,8.13 8.13,21.332 -0,29.463c-8.13,8.13 -21.332,8.13 -29.463,-0l-100.886,-100.887c-8.136,-8.136 -8.136,-21.327 -0,-29.463l100.886,-100.886c8.131,-8.131 21.333,-8.131 29.463,-0c8.13,8.13 8.13,21.332 -0,29.462l-67.002,67.003l188.208,-0c83.055,-0 150.484,67.429 150.484,150.484c0,83.054 -67.429,150.484 -150.484,150.484l-88.995,-0c-10.348,-0 -18.75,-8.402 -18.75,-18.75c0,-10.349 8.402,-18.75 18.75,-18.75l88.995,-0c62.358,-0 112.984,-50.627 112.984,-112.984c0,-62.358 -50.626,-112.984 -112.984,-112.984l-189.014,-0Z" />
+        </svg>
+      </button>
+      <button id="redo" data-tooltip aria-label="Redo last operation" disabled>
+        <svg viewBox="0 0 417 417" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path
+            d="M73.526,142.654l67.808,67.808c8.13,8.13 8.13,21.332 -0,29.463c-8.13,8.13 -21.332,8.13 -29.463,-0l-100.886,-100.887c-8.136,-8.136 -8.136,-21.327 -0,-29.463l100.886,-100.886c8.131,-8.131 21.333,-8.131 29.463,-0c8.13,8.13 8.13,21.332 -0,29.462l-67.002,67.003l188.208,-0c83.055,-0 150.484,67.429 150.484,150.484c0,83.054 -67.429,150.484 -150.484,150.484l-88.995,-0c-10.348,-0 -18.75,-8.402 -18.75,-18.75c0,-10.349 8.402,-18.75 18.75,-18.75l88.995,-0c62.358,-0 112.984,-50.627 112.984,-112.984c0,-62.358 -50.626,-112.984 -112.984,-112.984l-189.014,-0Z" />
+        </svg>
+      </button>
+    </div>
+    <div id="pan-zoom-area">
+      <div class="editor-container">
+        <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
+          <path d="" vector-effect="non-scaling-stroke" stroke="black" stroke-width="2px" fill="none" />
+        </svg>
+        <div class="cps"></div>
 
-      <ul class="ruler ruler-y">
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-      </ul>
+        <ul class="ruler ruler-y">
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
 
-      <ul class="ruler ruler-x">
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-      </ul>
+        <ul class="ruler ruler-x">
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
 
+      </div>
     </div>
   </main>
 

@@ -6,7 +6,7 @@ function getConnectedCpHandle(cp: ControlPoint, type: 'cp-before' | 'cp-after') 
 
   const direction = type === 'cp-before' ? 'previousElementSibling' : 'nextElementSibling'
 
-  const maybeCpHandle = cp.dataset.type === 'cp' ? cp[direction] : cp[direction]?.[direction]
+  const maybeCpHandle = cp.dataset.type === 'cp-main' ? cp[direction] : cp[direction]?.[direction]
 
   if (maybeCpHandle?.dataset.type === type) {
     return maybeCpHandle
@@ -19,9 +19,9 @@ function getConnectedCpHandle(cp: ControlPoint, type: 'cp-before' | 'cp-after') 
  */
 function getSingleCpBounds(cp: ControlPoint) {
   const getIsBlocker =
-    cp.dataset.type === 'cp'
-      ? (p: ControlPoint | null) => p?.dataset.type !== 'cp' // for cp all non-cp are blockers
-      : (p: ControlPoint | null) => p?.dataset.type === 'cp' // for cp-before/after only main cp are blockers
+    cp.dataset.type === 'cp-main'
+      ? (p: ControlPoint | null) => p?.dataset.type !== 'cp-main' // for cp all non-cp are blockers
+      : (p: ControlPoint | null) => p?.dataset.type === 'cp-main' // for cp-before/after only main cp are blockers
 
   const leftBlockingCps = [
     cp.previousElementSibling,

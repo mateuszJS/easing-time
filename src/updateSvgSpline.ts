@@ -11,7 +11,7 @@ export function updateSvgSpline(cps: ControlPoint[]) {
   let d = `M ${startCpPos.x} ${startCpPos.y}`
 
   restCps.forEach((cp, i) => {
-    if (cp.dataset.type === 'cp') {
+    if (cp.dataset.type === 'cp-main') {
       const idx = i + 1
       const cp1Btn = cps[idx - 2]
       const cp2Btn = cps[idx - 1]

@@ -1,8 +1,9 @@
 import { getBounds } from './getBounds'
-import type { ControlPoint } from './types'
+import type { ControlPoint, Point } from './types'
 import { getMainCp, getMirrorCp, getPos, updateBtnPos } from './utils'
 
-export function updateControlPointPos(cp: ControlPoint, x: number, y: number) {
+export function updateControlPointPos(cp: ControlPoint, newPos: Point) {
+  let { x, y } = newPos
   const prev = cp.previousElementSibling as HTMLElement | null
   const next = cp.nextElementSibling as HTMLElement | null
   const isEdge = prev === null || next === null
@@ -31,7 +32,7 @@ export function updateControlPointPos(cp: ControlPoint, x: number, y: number) {
       const py = 2 * mainCpPos.y - y
       updateBtnPos(mirrorCp, px, py)
     }
-  } else if (type === 'cp') {
+  } else if (type === 'cp-main') {
     const oldPos = getPos(cp)
     const dx = x - oldPos.x
     const dy = y - oldPos.y
