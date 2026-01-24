@@ -166,8 +166,13 @@ main {
   cursor: grab;
   border: 1px solid rgba(0, 0, 0, 0.2);
   padding: 0;
+
   &:active {
     cursor: grabbing;
+  }
+
+  &.cp-selected {
+    border: 5px solid cyan;
   }
 }
 
@@ -186,34 +191,12 @@ main {
   overflow: visible;
 }
 
-#undo,
-#redo {
-  padding: 8px 12px;
-  border-radius: 4px;
-
-  svg {
-    width: 24px;
-  }
-
-  &:not([disabled]):hover {
-    background: var(--btn-hover-bg);
-  }
-
-  &[disabled] {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-}
-
-#redo svg {
-  scale: -1 1;
-}
-
-[data-tooltip] {
+button[aria-label] {
   position: relative;
 }
 
-[data-tooltip]::after {
+button[aria-label]::after {
+  /* SOURCE: https://css-generators.com/tooltip-speech-bubble/ */
   /* triangle dimension */
   --b: 1em; /* base */
   --h: 0.5em; /* height */
@@ -222,20 +205,21 @@ main {
   --r: 0.5em; /* the radius */
   --c: var(--primary);
 
-  border-radius: var(--r) var(--r) min(var(--r), 100% - var(--p) - var(--b) / 2)
-    min(var(--r), var(--p) - var(--b) / 2) / var(--r);
+  padding: 1em;
+  border-radius: min(var(--r), var(--p) - var(--b) / 2)
+    min(var(--r), 100% - var(--p) - var(--b) / 2) var(--r) var(--r) / var(--r);
   clip-path: polygon(
-    0 100%,
     0 0,
-    100% 0,
+    0 100%,
     100% 100%,
-    min(100%, var(--p) + var(--b) / 2) 100%,
-    var(--p) calc(100% + var(--h)),
-    max(0%, var(--p) - var(--b) / 2) 100%
+    100% 0,
+    min(100%, var(--p) + var(--b) / 2) 0,
+    var(--p) calc(-1 * var(--h)),
+    max(0%, var(--p) - var(--b) / 2) 0
   );
   background: var(--c);
-  border-image: conic-gradient(var(--c) 0 0) fill 0 / var(--r) calc(100% - var(--p) - var(--b) / 2)
-    0 calc(var(--p) - var(--b) / 2) / 0 0 var(--h) 0;
+  border-image: conic-gradient(var(--c) 0 0) fill 0/ 0 calc(100% - var(--p) - var(--b) / 2) var(--r)
+    calc(var(--p) - var(--b) / 2) / var(--h) 0 0 0;
 }
 
 @property --tooltip-y {
@@ -244,9 +228,7 @@ main {
   inherits: true;
 }
 
-[data-tooltip][aria-label]:not([disabled]) {
-  position: relative;
-
+button[aria-label]:not([disabled]) {
   &::after {
     position: absolute;
     display: none;
@@ -281,11 +263,6 @@ main {
   }
 }
 
-/* #pan-zoom-area.pan-grabbing,
-#pan-zoom-area.pan-grabbing * {
-  cursor: grabbing !important;
-} */
-
 #toolbar {
   position: fixed;
   inset: 0;
@@ -294,4 +271,23 @@ main {
   backdrop-filter: blur(2px);
   z-index: 1;
   padding: 5px 20px;
+
+  button {
+    padding: 8px 12px;
+    border-radius: 4px;
+
+    svg {
+      width: 24px;
+      max-height: 24px;
+    }
+
+    &:not([disabled]):hover {
+      background: var(--btn-hover-bg);
+    }
+
+    &[disabled] {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
 }

@@ -5,6 +5,10 @@ export function getPos(btn: HTMLElement) {
 }
 
 export function getMainCp(p: ControlPoint) {
+  if (p.dataset.type === 'cp-main') {
+    return p
+  }
+
   const potentialMirrorCp =
     p.dataset.type === 'cp-before' ? p.nextElementSibling : p.previousElementSibling
 
@@ -38,4 +42,8 @@ export function serialize(cps: ControlPoint[]): SerializedControlPoint[] {
     x: parseFloat(btn.dataset.x!),
     y: parseFloat(btn.dataset.y!),
   }))
+}
+
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
 }

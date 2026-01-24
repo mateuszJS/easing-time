@@ -1,4 +1,4 @@
-import { $redoBtn, $undoBtn } from './elements'
+import { $redo, $undo } from './elements'
 import type { SerializedControlPoint } from './types'
 
 export class HistoryManager<T = SerializedControlPoint[]> {
@@ -21,8 +21,8 @@ export class HistoryManager<T = SerializedControlPoint[]> {
   }
 
   updateButtons(): void {
-    $undoBtn.disabled = !this.canUndo()
-    $redoBtn.disabled = !this.canRedo()
+    $undo.disabled = !this.canUndo()
+    $redo.disabled = !this.canRedo()
   }
 
   canUndo(): boolean {

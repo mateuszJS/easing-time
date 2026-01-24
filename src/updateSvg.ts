@@ -1,11 +1,12 @@
-import type { ControlPoint } from './types'
+import { $splinePreview } from './elements'
+import type { ControlPoint, Point } from './types'
 import updateConnectionLines from './updateConnectionLines'
 import { getPos } from './utils'
 
-const $splinePreview = document.querySelector('.spline-preview')! as SVGSVGElement
-const $path = $splinePreview.querySelector('path')!
+const $pathExact = $splinePreview.querySelector('#path-exact')!
+const $pathApprox = $splinePreview.querySelector('#path-approx')!
 
-export function updateSvgSpline(cps: ControlPoint[]) {
+export function updateSvg(cps: ControlPoint[], approxPointsList: Point[]) {
   const [startCp, ...restCps] = cps
   const startCpPos = getPos(startCp)
   let d = `M ${startCpPos.x} ${startCpPos.y}`
@@ -24,7 +25,15 @@ export function updateSvgSpline(cps: ControlPoint[]) {
       }
     }
   })
-  $path.setAttribute('d', d)
+  $pathExact.setAttribute('d', d)
 
   updateConnectionLines($splinePreview, cps)
+
+  // Build approximate path as straight line segments (M + L commands)
+  const [first, ...rest] = approxPointsList
+  let approxD = `M ${first.x} ${first.y}`
+  rest.forEach((p) => {
+    approxD += ` L ${p.x} ${p.y}`
+  })
+  $pathApprox.setAttribute('d', approxD)
 }

@@ -18,26 +18,38 @@ function getConnectedCpHandle(cp: ControlPoint, type: 'cp-before' | 'cp-after') 
  * calculates bounds for given point, doesn't care about other point restriction
  */
 function getSingleCpBounds(cp: ControlPoint) {
-  const getIsBlocker =
-    cp.dataset.type === 'cp-main'
-      ? (p: ControlPoint | null) => p?.dataset.type !== 'cp-main' // for cp all non-cp are blockers
-      : (p: ControlPoint | null) => p?.dataset.type === 'cp-main' // for cp-before/after only main cp are blockers
+  const prev = cp.previousElementSibling
+  const next = cp.nextElementSibling
 
-  const leftBlockingCps = [
-    cp.previousElementSibling,
-    cp.previousElementSibling?.previousElementSibling ?? null,
-  ]
-  const leftBound = leftBlockingCps.find(getIsBlocker)
+  if (!prev || !next) {
+    // edges
+    return { left: 0, right: 1 }
+  }
 
-  const rightBlockingCps = [
-    cp.nextElementSibling,
-    cp.nextElementSibling?.nextElementSibling ?? null,
-  ]
-  const rightBound = rightBlockingCps.find(getIsBlocker)
+  switch (cp.dataset.type) {
+    case 'cp-before':
+      return {
+        left:
+          prev.dataset.type === 'cp-main' ? getPos(prev).x : getPos(prev.previousElementSibling!).x,
+        right: getPos(next).x,
+      }
 
-  return {
-    left: leftBound ? getPos(leftBound).x : 0,
-    right: rightBound ? getPos(rightBound).x : 1,
+    case 'cp-main':
+      return {
+        left:
+          prev.dataset.type === 'cp-before' ?
+            getPos(prev.previousElementSibling!).x
+          : getPos(prev).x,
+        right:
+          next.dataset.type === 'cp-after' ? getPos(next.nextElementSibling!).x : getPos(next).x,
+      }
+
+    case 'cp-after':
+      return {
+        left: getPos(prev).x,
+        right:
+          next.dataset.type === 'cp-main' ? getPos(next).x : getPos(next.nextElementSibling!).x,
+      }
   }
 }
 
@@ -80,6 +92,12 @@ export function getBounds(cp: ControlPoint) {
     } else {
       rightBound = Math.min(rightBound, cpPos.x + availableRightSpace)
     }
+  }
+
+  if (cp.dataset.type === 'cp-main') {
+    const bounds = getSingleCpBounds(cp)
+    leftBound = Math.max(leftBound, bounds.left)
+    rightBound = Math.min(rightBound, bounds.right)
   }
 
   return {

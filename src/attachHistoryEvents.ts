@@ -1,4 +1,4 @@
-import { $redoBtn, $undoBtn } from './elements'
+import { $redo, $undo } from './elements'
 import type { HistoryManager } from './historyManager'
 
 export function attachHistoryEvents(history: HistoryManager) {
@@ -20,6 +20,6 @@ export function attachHistoryEvents(history: HistoryManager) {
     }
   })
 
-  $undoBtn.addEventListener('click', () => history.undo())
-  $redoBtn.addEventListener('click', () => history.redo())
+  $undo.addEventListener('click', () => history.undo())
+  $redo.addEventListener('click', () => history.redo())
 }
