@@ -18,20 +18,19 @@ main {
 }
 
 #pan-zoom-area {
-  place-content: center;
   overflow: auto;
   height: 100%;
   /* Allows custom drag-to-pan without browser gestures interfering */
   touch-action: none;
   overscroll-behavior: contain;
+  align-content: center;
 }
 
 .editor-container {
   width: 500px;
   height: 500px;
   position: relative;
-  align-self: center;
-  justify-self: center;
+  margin-inline: auto;
 
   .ruler {
     font-family: 'Times New Roman', Times, serif;
@@ -364,14 +363,15 @@ aside {
 #spline-anim-progress {
   --arrow-tail-width: 5px;
   position: absolute;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
   width: var(--arrow-tail-width);
   margin-left: calc(var(--arrow-tail-width) * -0.5);
   background: linear-gradient(
     transparent var(--anim-preview-arrow-tip-height),
     lime var(--anim-preview-arrow-tip-height)
   );
-  bottom: 0;
-  justify-items: center;
 
   &.reverse {
     top: 100%; /* for negative values */
@@ -388,10 +388,16 @@ aside {
 
   &::before {
     content: ' ';
+    --width: 20px;
     display: block;
-    clip-path: polygon(0 100%, 50% 0, 100% 100%);
-    background: lime;
-    width: 20px;
+    flex-shrink: 0;
+    width: var(--width);
     height: var(--anim-preview-arrow-tip-height);
+
+    width: 0;
+    height: 0;
+    border-left: calc(var(--width) / 2) solid transparent;
+    border-right: calc(var(--width) / 2) solid transparent;
+    border-bottom: var(--anim-preview-arrow-tip-height) solid lime;
   }
 }
