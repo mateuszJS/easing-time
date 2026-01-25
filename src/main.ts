@@ -80,12 +80,6 @@ function getNormPos(ev: PointerEvent): Point {
   return { x: nx, y: ny }
 }
 
-function onMoveControlPoint(this: ControlPoint, ev: PointerEvent) {
-  const normPos = getNormPos(ev)
-  updateControlPointPos(this, normPos)
-  updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
-}
-
 function selectControlPoint(cp: ControlPoint) {
   document.querySelectorAll('button').forEach((b) => b.classList.remove('cp-selected'))
   cp.classList.add('cp-selected')
@@ -103,23 +97,35 @@ function attachEvents(btn: ControlPoint) {
     btn.setPointerCapture(e.pointerId)
 
     selectControlPoint(btn)
-    const initialPos = getPos(btn)
-
-    const onUp = () => {
-      btn.removeEventListener('pointermove', onMoveControlPoint)
-      btn.removeEventListener('pointerup', onUp)
-      // Record state at end of drag as a single undo step
-      const finalPos = getPos(btn)
-      const offset = Math.hypot(finalPos.x - initialPos.x, finalPos.y - initialPos.y)
-      if (offset > 0.001) {
-        history.record()
-      }
-    }
-
-    btn.addEventListener('pointermove', onMoveControlPoint)
-    btn.addEventListener('pointerup', onUp)
+    initialPos = getPos(btn)
+    draggedCp = btn
   })
 }
+
+let initialPos: Point = { x: 0, y: 0 }
+let draggedCp: ControlPoint | null = null
+
+function onMovePointer(ev: PointerEvent) {
+  if (!draggedCp) return
+  const normPos = getNormPos(ev)
+  updateControlPointPos(draggedCp, normPos)
+  updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
+}
+
+document.body.addEventListener('pointermove', onMovePointer)
+
+function onPointerUp() {
+  if (!draggedCp) return
+  // Record state at end of drag as a single undo step
+  const finalPos = getPos(draggedCp)
+  const offset = Math.hypot(finalPos.x - initialPos.x, finalPos.y - initialPos.y)
+  if (offset > 0.001) {
+    history.record()
+  }
+  draggedCp = null
+}
+
+document.body.addEventListener('pointerup', onPointerUp)
 
 function splitAndInsertAt(segIndex: number, t: number) {
   const cubic = getCubicForSegment(getMainCps(), segIndex)
@@ -139,7 +145,10 @@ function splitAndInsertAt(segIndex: number, t: number) {
   updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
   // Record insertion as an undoable step
   history.record()
+
   selectControlPoint(mainCp)
+  initialPos = getPos(mainCp)
+  draggedCp = mainCp
 }
 
 $splinePreview.addEventListener('pointerdown', (e) => {
