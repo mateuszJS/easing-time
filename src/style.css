@@ -196,6 +196,7 @@ main {
 
 .spline-preview {
   overflow: visible;
+  will-change: transform; /* safari fix, empty rectangles were drawn on svg after arrow tip */
 }
 
 button[aria-label] {
@@ -388,16 +389,12 @@ aside {
 
   &::before {
     content: ' ';
-    --width: 20px;
     display: block;
     flex-shrink: 0;
-    width: var(--width);
+    margin-inline: auto;
+    clip-path: polygon(0 100%, 50% 0, 100% 100%);
+    background: lime;
+    width: 20px;
     height: var(--anim-preview-arrow-tip-height);
-
-    width: 0;
-    height: 0;
-    border-left: calc(var(--width) / 2) solid transparent;
-    border-right: calc(var(--width) / 2) solid transparent;
-    border-bottom: var(--anim-preview-arrow-tip-height) solid lime;
   }
 }
