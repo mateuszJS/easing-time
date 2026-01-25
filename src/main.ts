@@ -1,10 +1,10 @@
-import './reset.css'
-import './style.css'
 import { attachHistoryEvents } from './attachHistoryEvents'
 import { cubicPointAt, findClosestOnPathPx, getCubicForSegment } from './cubicBezierCurve'
 import {
   $animationLoop,
   $animationTime,
+  $animStatePause,
+  $animStatePlay,
   $breakHandles,
   $cps,
   $deletePoint,
@@ -20,10 +20,21 @@ import { HistoryManager } from './historyManager'
 import type { ControlPoint, CpType, Point, SerializedControlPoint } from './types'
 import { updateControlPointPos } from './updateControlPointPos'
 import { updateSvg } from './updateSvg'
-import { getMainCp, getPos, serialize, updateBtnPos } from './utils'
+import {
+  getCssVarNumber,
+  getCssVarStr,
+  getMainCp,
+  getPos,
+  serialize,
+  setCssVar,
+  updateHtmlPos,
+} from './utils'
 import { getApproxPoints } from './getApproxPoints'
 
 let funcPrecision = 0.01
+const ANIM_PREVIEW_ARROW_TIP_HEIGHT = 20
+
+setCssVar('--anim-preview-arrow-tip-height', ANIM_PREVIEW_ARROW_TIP_HEIGHT + 'px')
 
 function applySerialized(state: SerializedControlPoint[]) {
   // Rebuild the controls DOM to exactly match the snapshot
@@ -59,7 +70,7 @@ function createControlPoint(type: CpType, x: number, y: number) {
   const btn = document.createElement('button') as ControlPoint
   btn.dataset.type = type
   // Tooltip label for clarity on hover/focus
-  updateBtnPos(btn, x, y)
+  updateHtmlPos(btn, x, y)
   attachEvents(btn)
   return btn
 }
@@ -94,8 +105,6 @@ function selectControlPoint(cp: ControlPoint) {
 function attachEvents(btn: ControlPoint) {
   btn.addEventListener('pointerdown', (e) => {
     e.stopPropagation() // Prevent creating new point
-    btn.setPointerCapture(e.pointerId)
-
     selectControlPoint(btn)
     initialPos = getPos(btn)
     draggedCp = btn
@@ -125,6 +134,8 @@ function onPointerUp() {
   draggedCp = null
 }
 
+document.body.addEventListener('pointerleave', onPointerUp)
+document.body.addEventListener('pointercancel', onPointerUp)
 document.body.addEventListener('pointerup', onPointerUp)
 
 function splitAndInsertAt(segIndex: number, t: number) {
@@ -133,8 +144,8 @@ function splitAndInsertAt(segIndex: number, t: number) {
   const { A, C, D, E, R } = cubicPointAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, t)
 
   // Update existing controls to preserve exact curve
-  updateBtnPos(cubic.p1Btn, A.x, A.y) // cp-after of start
-  updateBtnPos(cubic.p2Btn, C.x, C.y) // cp-before of end
+  updateHtmlPos(cubic.p1Btn, A.x, A.y) // cp-after of start
+  updateHtmlPos(cubic.p2Btn, C.x, C.y) // cp-before of end
 
   const ref = cubic.p2Btn
   $cps.insertBefore(createControlPoint('cp-before', D.x, D.y), ref)
@@ -195,23 +206,22 @@ $breakHandles.addEventListener('click', () => {
       }
       $cps.insertBefore(cpAfter, ref)
     }
-    updateBtnPos(cpAfter, newPos.x, newPos.y)
+    updateHtmlPos(cpAfter, newPos.x, newPos.y)
     updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
     history.record()
   }
 })
 
-document.body.attributeStyleMap.set('--anim-dir', 'normal')
-document.body.attributeStyleMap.set('--anim-time', '3000')
-document.body.attributeStyleMap.set('--anim-state', 'running')
+setCssVar('--anim-dir', 'normal')
+setCssVar('--anim-time', '3000')
 
 $animationLoop.addEventListener('change', () => {
-  document.body.attributeStyleMap.set('--anim-dir', $animationLoop.checked ? 'alternate' : 'normal')
+  setCssVar('--anim-dir', $animationLoop.checked ? 'alternate' : 'normal')
 })
 
 $animationTime.addEventListener('input', () => {
   const time = Number($animationTime.value) || 1
-  document.body.attributeStyleMap.set('--anim-time', time)
+  setCssVar('--anim-time', time)
 })
 
 $funcPrecision.addEventListener('input', () => {
@@ -220,16 +230,28 @@ $funcPrecision.addEventListener('input', () => {
   updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
 })
 
-let animation: Animation | null = null
+const [animation] = $previewTargetBox.getAnimations()
 
-$previewTargetBox.getAnimations().map((a) => {
-  animation = a
-})
+function getprogress() {
+  const duration = getCssVarNumber('--anim-time')
+  const direction = getCssVarStr('--anim-dir')
+
+  const progress = (Number(animation.currentTime ?? 0) % duration) / duration
+
+  if (direction === 'alternate') {
+    const totalDuration = 2 * duration
+    const totalProgress = (Number(animation.currentTime ?? 0) % totalDuration) / totalDuration
+    if (totalProgress > 0.5) {
+      return 1 - progress
+    }
+  }
+
+  return progress
+}
 
 function updateProgress() {
-  if (!animation) throw Error('Animation not found for progress update')
-  const duration = Number(document.body.attributeStyleMap.get('--anim-time'))
-  const progress = (Number(animation.currentTime ?? 0) % duration) / duration
+  const progress = getprogress()
+  $timeline.value = progress.toString()
 
   const main = getMainCps()
   if (main.length < 2)
@@ -264,8 +286,18 @@ function updateProgress() {
   }
 
   // Position the progress marker on the spline (normalized coords)
-  $splineAnimProgress.style.left = R.x * 100 + '%'
-  $splineAnimProgress.style.top = R.y * 100 + '%'
+  updateHtmlPos($splineAnimProgress, R.x, R.y)
+  const y = Number($splineAnimProgress.dataset.y)
+
+  const reflectArrow = (y - 1) * $sizeWrapper.clientHeight > ANIM_PREVIEW_ARROW_TIP_HEIGHT
+  if (reflectArrow) {
+    $splineAnimProgress.style.bottom = (1 - y) * 100 + '%'
+    $splineAnimProgress.style.top = '' // Clear opposite side to avoid conflicts
+    $splineAnimProgress.classList.add('reverse')
+  } else {
+    $splineAnimProgress.style.bottom = '' // Clear opposite side to avoid conflicts
+    $splineAnimProgress.classList.remove('reverse')
+  }
 
   requestAnimationFrame(updateProgress)
 }
@@ -273,10 +305,26 @@ function updateProgress() {
 requestAnimationFrame(updateProgress)
 
 $timeline.addEventListener('input', () => {
-  if (!animation) return
+  console.log('timeline input')
   const val = Number($timeline.value)
-  const [durationStr] = document.body.attributeStyleMap.get('--anim-time') as [string]
-  const duration = Number(durationStr)
+  const duration = getCssVarNumber('--anim-time')
   animation.currentTime = Math.min(val * duration, duration - 0.0001) // if currentTime = duration then it comes back to frame 0
-  document.body.attributeStyleMap.set('--anim-state', 'paused')
+  setAnimState('paused')
+})
+
+$animStatePlay.style.display = 'none'
+setCssVar('--anim-state', 'running')
+
+function setAnimState(state: 'running' | 'paused') {
+  setCssVar('--anim-state', state)
+  $animStatePlay.style.display = state === 'running' ? 'none' : ''
+  $animStatePause.style.display = state === 'paused' ? 'none' : ''
+}
+
+$animStatePlay.addEventListener('click', () => {
+  setAnimState('running')
+})
+
+$animStatePause.addEventListener('click', () => {
+  setAnimState('paused')
 })

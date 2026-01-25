@@ -6,32 +6,35 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vite + TS</title>
+  <link rel="stylesheet" href="/src/reset.css" />
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/slider.css" />
 </head>
 
 <body>
   <main>
     <div tabindex="0" id="toolbar">
-      <button id="undo" aria-label="Undo last operation" disabled>
+      <button id="undo" class="btn" aria-label="Undo last operation" disabled>
         <svg>
           <use href="#icon-return"></use>
         </svg>
       </button>
-      <button id="redo" aria-label="Redo last operation" disabled>
+      <button id="redo" class="btn" aria-label="Redo last operation" disabled>
         <svg>
           <use href="#icon-return" transform="scale(-1, 1)" transform-origin="50% 50%"></use>
         </svg>
       </button>
-      <button id="break-handles" aria-label="Stop mirroring control points handles" disabled>
+      <button id="break-handles" class="btn" aria-label="Stop mirroring control points handles" disabled>
         <svg>
           <use href="#icon-break-handles"></use>
         </svg>
       </button>
-      <button id="mirror-handles" aria-label="Mirror control points handles" disabled>
+      <button id="mirror-handles" class="btn" aria-label="Mirror control points handles" disabled>
         <svg>
           <use href="#icon-mirror-handles"></use>
         </svg>
       </button>
-      <button id="delete-point" aria-label="Delete selected point" disabled>
+      <button id="delete-point" class="btn" aria-label="Delete selected point" disabled>
         <svg>
           <use href="#icon-trash-bin"></use>
         </svg>
@@ -40,8 +43,25 @@
     <div id="pan-zoom-area">
       <div class="editor-container">
         <div class="bottom-toolbar">
-          <input id="timeline" type="range" min="0" max="1" step="0.00001" />
-          <button id="reset-state">Stop</button>
+
+          <button id="anim-state-play" class="btn">
+            <svg>
+              <use href="#icon-play"></use>
+            </svg>
+          </button>
+          <button id="anim-state-pause" class="btn">
+            <svg>
+              <use href="#icon-pause"></use>
+            </svg>
+          </button>
+
+          <div class="inputsWrapper" role="group" aria-label="Timeline slider and track">
+            <div class="timeline-track"></div>
+            <label class="srOnly" htmlFor="timeline">
+              Timeline slider
+            </label>
+            <input id="timeline" type="range" min="0" max="1" step="0.00001" class="slider" />
+          </div>
         </div>
         <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
           <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="black" stroke-width="2px" fill="none" />
@@ -51,6 +71,7 @@
         <div id="spline-anim-progress"></div>
         <div class="cps"></div>
 
+        <p class="label-ruler-y">Progress</p>
         <ul class="ruler ruler-y">
           <li></li>
           <li></li>
@@ -121,10 +142,23 @@
       <circle cx="86.977" cy="12.815" r="12" fill="currentColor" />
       <circle cx="14.98" cy="86.137" r="12" fill="currentColor" />
     </symbol>
-    <symbol id="icon-trash-bin" viewBox="0 0 24 24">
+    <symbol id="icon-trash-bin" viewBox="3 2 19 20">
       <path fill="none"
         d="M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6M18 6V16.2C18 17.8802 18 18.7202 17.673 19.362C17.3854 19.9265 16.9265 20.3854 16.362 20.673C15.7202 21 14.8802 21 13.2 21H10.8C9.11984 21 8.27976 21 7.63803 20.673C7.07354 20.3854 6.6146 19.9265 6.32698 19.362C6 18.7202 6 17.8802 6 16.2V6M14 10V17M10 10V17"
         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-play" viewBox="4 1 15 21">
+      <path fill="none"
+        d="M16.6582 9.28638C18.098 10.1862 18.8178 10.6361 19.0647 11.2122C19.2803 11.7152 19.2803 12.2847 19.0647 12.7878C18.8178 13.3638 18.098 13.8137 16.6582 14.7136L9.896 18.94C8.29805 19.9387 7.49907 20.4381 6.83973 20.385C6.26501 20.3388 5.73818 20.0469 5.3944 19.584C5 19.053 5 18.1108 5 16.2264V7.77357C5 5.88919 5 4.94701 5.3944 4.41598C5.73818 3.9531 6.26501 3.66111 6.83973 3.6149C7.49907 3.5619 8.29805 4.06126 9.896 5.05998L16.6582 9.28638Z"
+        stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-pause" viewBox="0 1 23 22">
+      <path
+        d="M2 6C2 4.11438 2 3.17157 2.58579 2.58579C3.17157 2 4.11438 2 6 2C7.88562 2 8.82843 2 9.41421 2.58579C10 3.17157 10 4.11438 10 6V18C10 19.8856 10 20.8284 9.41421 21.4142C8.82843 22 7.88562 22 6 22C4.11438 22 3.17157 22 2.58579 21.4142C2 20.8284 2 19.8856 2 18V6Z"
+        stroke="#1C274C" stroke-width="2" fill="none" />
+      <path
+        d="M14 6C14 4.11438 14 3.17157 14.5858 2.58579C15.1716 2 16.1144 2 18 2C19.8856 2 20.8284 2 21.4142 2.58579C22 3.17157 22 4.11438 22 6V18C22 19.8856 22 20.8284 21.4142 21.4142C20.8284 22 19.8856 22 18 22C16.1144 22 15.1716 22 14.5858 21.4142C14 20.8284 14 19.8856 14 18V6Z"
+        stroke="#1C274C" stroke-width="2" fill="none" />
     </symbol>
   </svg>
 

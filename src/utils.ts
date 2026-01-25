@@ -28,7 +28,7 @@ export function getMirrorCp(p: ControlPoint) {
   }
 }
 
-export function updateBtnPos(btn: HTMLElement, x: number, y: number) {
+export function updateHtmlPos(btn: HTMLElement, x: number, y: number) {
   btn.dataset.x = x.toString()
   btn.dataset.y = y.toString()
   // once firefox and safari supports attr(value, <type>) we can remove below assignments
@@ -46,4 +46,17 @@ export function serialize(cps: ControlPoint[]): SerializedControlPoint[] {
 
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
+}
+
+export function setCssVar(name: string, value: string | number, $el = document.documentElement) {
+  $el.style.setProperty(name, value.toString())
+}
+
+export function getCssVarNumber(name: string, $el = document.documentElement): number {
+  const value = getComputedStyle($el).getPropertyValue(name)
+  return Number(value)
+}
+
+export function getCssVarStr(name: string, $el = document.documentElement): string {
+  return getComputedStyle($el).getPropertyValue(name).trim()
 }

@@ -1,6 +1,6 @@
 import { getBounds } from './getBounds'
 import type { ControlPoint, Point } from './types'
-import { getMainCp, getMirrorCp, getPos, updateBtnPos } from './utils'
+import { getMainCp, getMirrorCp, getPos, updateHtmlPos } from './utils'
 
 export function updateControlPointPos(cp: ControlPoint, newPos: Point) {
   let { x, y } = newPos
@@ -20,7 +20,7 @@ export function updateControlPointPos(cp: ControlPoint, newPos: Point) {
   const type = cp.dataset.type
   if (type === 'cp-before' || type === 'cp-after') {
     // Find partner
-    updateBtnPos(cp, x, y)
+    updateHtmlPos(cp, x, y)
 
     const mirrorCp = getMirrorCp(cp)
 
@@ -30,23 +30,23 @@ export function updateControlPointPos(cp: ControlPoint, newPos: Point) {
       // Mirror: Partner = 2*Center - Current
       const px = 2 * mainCpPos.x - x
       const py = 2 * mainCpPos.y - y
-      updateBtnPos(mirrorCp, px, py)
+      updateHtmlPos(mirrorCp, px, py)
     }
   } else if (type === 'cp-main') {
     const oldPos = getPos(cp)
     const dx = x - oldPos.x
     const dy = y - oldPos.y
 
-    updateBtnPos(cp, x, y)
+    updateHtmlPos(cp, x, y)
     const prev = cp.previousElementSibling
     if (prev && prev.dataset.type === 'cp-before') {
       const prevPos = getPos(prev)
-      updateBtnPos(prev, prevPos.x + dx, prevPos.y + dy)
+      updateHtmlPos(prev, prevPos.x + dx, prevPos.y + dy)
     }
     const next = cp.nextElementSibling
     if (next && next.dataset.type === 'cp-after') {
       const nextPos = getPos(next)
-      updateBtnPos(next, nextPos.x + dx, nextPos.y + dy)
+      updateHtmlPos(next, nextPos.x + dx, nextPos.y + dy)
     }
   }
 }

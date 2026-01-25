@@ -17,3 +17,5 @@ export const $funcPrecision = document.querySelector<HTMLInputElement>('#func-pr
 export const $previewTargetBox = document.querySelector<HTMLElement>('#preview-target-box')!
 export const $timeline = document.querySelector<HTMLInputElement>('#timeline')!
 export const $splineAnimProgress = document.querySelector<HTMLDivElement>('#spline-anim-progress')!
+export const $animStatePlay = document.querySelector<HTMLButtonElement>('#anim-state-play')!
+export const $animStatePause = document.querySelector<HTMLButtonElement>('#anim-state-pause')!

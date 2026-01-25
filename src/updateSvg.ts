@@ -1,7 +1,7 @@
 import { $splinePreview, $codeSnippet } from './elements'
 import type { ControlPoint, Point } from './types'
 import updateConnectionLines from './updateConnectionLines'
-import { getPos } from './utils'
+import { getPos, setCssVar } from './utils'
 
 const $pathExact = $splinePreview.querySelector('#path-exact')!
 const $pathApprox = $splinePreview.querySelector('#path-approx')!
@@ -63,7 +63,7 @@ export function updateSvg(cps: ControlPoint[], approxPointsList: Point[]) {
     parts.push(String(endY))
 
     $codeSnippet.textContent = `linear(${parts.join(', ')})`
-    document.body.attributeStyleMap.set('--easing-func', $codeSnippet.textContent)
+    setCssVar('--easing-func', $codeSnippet.textContent)
   } else {
     $pathApprox.setAttribute('d', '')
     $codeSnippet.textContent = 'linear(0, 1)'

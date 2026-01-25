@@ -1,0 +1,90 @@
+.inputsWrapper {
+  --thumb-width: 5px;
+  --thumb-radius: calc(0.5 * var(--thumb-width));
+  --useful-width: calc(100% - var(--thumb-width));
+  --thumb-color: red;
+
+  display: grid;
+  position: relative;
+  align-items: center;
+  justify-items: stretch;
+  width: 100%;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.timeline-track {
+  display: grid;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  border-radius: 5px;
+
+  /* margin: 0 calc(-1 * var(--thumb-radius)); */
+  --slider-bg: #ddd;
+  --slider-accent: #eee;
+
+  background:
+    linear-gradient(45deg, var(--slider-bg) 30%, var(--slider-accent) 0 70%, var(--slider-bg) 0) 0
+      0 / 50px 50% repeat-x,
+    linear-gradient(-45deg, var(--slider-bg) 30%, var(--slider-accent) 0 70%, var(--slider-bg) 0) 0
+      100% / 50px 50% repeat-x;
+
+  /* background:
+    linear-gradient(90deg, var(--slider-bg), transparent 70%) 0 0 / 50px 100%,
+    conic-gradient(
+        at 50% 50%,
+        var(--slider-bg) 220deg,
+        var(--slider-accent) 0 320deg,
+        var(--slider-bg) 0
+      )
+      0 0 / 50px 100%; */
+
+  &:before {
+    content: 'Timeline';
+    font-weight: bold;
+    transform: skewX(-10deg);
+    pointer-events: none;
+  }
+}
+
+.slider {
+  background: none; /* get rid of white Chrome background */
+  color: color-mix(in srgb, var(--secondary) 40%, var(--background) 60%);
+  font: inherit; /* fix too small font-size in both Chrome & Firefox */
+  margin: 0;
+  display: block;
+  margin-left: calc(-1 * var(--thumb-radius));
+  width: calc(100% + var(--thumb-width));
+  height: 100%;
+  appearance: none;
+  cursor: pointer;
+
+  &::-webkit-slider-runnable-track {
+    background: none; /* get rid of Firefox track background */
+    height: 100%;
+    width: 100%;
+    -webkit-appearance: none;
+  }
+  &::-moz-range-track {
+    background: none; /* get rid of Firefox track background */
+    height: 100%;
+    width: 100%;
+  }
+
+  &::-webkit-slider-thumb {
+    background: var(--thumb-color);
+    border: none;
+    width: var(--thumb-width);
+    height: 100%;
+    -webkit-appearance: none;
+  }
+  &::-moz-range-thumb {
+    background: var(--thumb-color);
+    border: none;
+    width: var(--thumb-width);
+    height: 100%;
+  }
+}

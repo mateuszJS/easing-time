@@ -9,7 +9,7 @@ function drawLine($parent: SVGElement, p1: { x: number; y: number }, p2: { x: nu
   line.setAttribute('x2', p2.x.toString())
   line.setAttribute('y2', p2.y.toString())
   line.setAttribute('stroke', 'grey')
-  line.setAttribute('stroke-width', '0.002') // Scaled to viewBox 0-1
+  line.setAttribute('stroke-width', '0.0035') // Scaled to viewBox 0-1
   $parent.appendChild(line)
 }
 
