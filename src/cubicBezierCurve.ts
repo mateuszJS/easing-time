@@ -20,7 +20,7 @@ export function cubicPointAt(p0: Point, p1: Point, p2: Point, p3: Point, t: numb
 }
 
 export function getCubicForSegment(mainCps: ControlPoint[], index: number) {
-  if (index < 0 || index >= mainCps.length - 1) return null
+  if (index < 0 || index >= mainCps.length - 1) throw Error('Segment index out of bounds')
   const p0Btn = mainCps[index]
   const p3Btn = mainCps[index + 1]
 
@@ -29,8 +29,10 @@ export function getCubicForSegment(mainCps: ControlPoint[], index: number) {
 
   const cpAfter = p0Btn.nextElementSibling
   const cpBefore = p3Btn.previousElementSibling
-  if (!cpAfter || cpAfter.dataset.type !== 'cp-after') return null
-  if (!cpBefore || cpBefore.dataset.type !== 'cp-before') return null
+  if (!cpAfter || cpAfter.dataset.type !== 'cp-after')
+    throw Error('Expected cp-after control point not found')
+  if (!cpBefore || cpBefore.dataset.type !== 'cp-before')
+    throw Error('Expected cp-before control point not found')
 
   const p1 = getPos(cpAfter)
   const p2 = getPos(cpBefore)
@@ -38,11 +40,11 @@ export function getCubicForSegment(mainCps: ControlPoint[], index: number) {
 }
 
 export function findClosestOnPathPx(mainCps: ControlPoint[], rect: DOMRect, normPos: Point) {
-  if (mainCps.length < 2) return null
+  if (mainCps.length < 2) throw Error('At least two main control points are required')
   let best = { distPx: Infinity, segIndex: -1, t: 0, R: { x: 0, y: 0 } }
   for (let i = 0; i < mainCps.length - 1; i++) {
     const cubic = getCubicForSegment(mainCps, i)
-    if (!cubic) continue
+
     // Dense sampling to approximate closest point
     const samples = 200
     for (let s = 0; s <= samples; s++) {
@@ -56,6 +58,6 @@ export function findClosestOnPathPx(mainCps: ControlPoint[], rect: DOMRect, norm
       }
     }
   }
-  if (best.segIndex === -1) return null
+  if (best.segIndex === -1) throw Error('Could not find closest point on path')
   return best
 }

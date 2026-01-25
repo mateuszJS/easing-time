@@ -1,7 +1,7 @@
 import { cubicPointAt, getCubicForSegment } from './cubicBezierCurve'
 import type { ControlPoint, Point } from './types'
 
-export function getApproxPoints(mainCps: ControlPoint[], tolerance: number = 0.02): Point[] {
+export function getApproxPoints(mainCps: ControlPoint[], tolerance: number): Point[] {
   if (mainCps.length === 0) return []
 
   const points: Point[] = []
@@ -32,7 +32,7 @@ export function getApproxPoints(mainCps: ControlPoint[], tolerance: number = 0.0
 
   for (let i = 0; i < mainCps.length - 1; i++) {
     const cubic = getCubicForSegment(mainCps, i)
-    if (!cubic) continue
+
     const segPoints = approximateCubic(cubic.p0, cubic.p1, cubic.p2, cubic.p3)
     if (i === 0) {
       points.push(...segPoints)

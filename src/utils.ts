@@ -20,15 +20,15 @@ export function getMainCp(p: ControlPoint) {
 
 export function getMirrorCp(p: ControlPoint) {
   const potentialMirrorCp =
-    p.dataset.type === 'cp-before'
-      ? p.nextElementSibling?.nextElementSibling
-      : p.previousElementSibling?.previousElementSibling
+    p.dataset.type === 'cp-before' ?
+      p.nextElementSibling?.nextElementSibling
+    : p.previousElementSibling?.previousElementSibling
   if (potentialMirrorCp && potentialMirrorCp.dataset.type !== 'cp-main') {
     return potentialMirrorCp
   }
 }
 
-export function updateBtnPos(btn: HTMLButtonElement, x: number, y: number) {
+export function updateBtnPos(btn: HTMLElement, x: number, y: number) {
   btn.dataset.x = x.toString()
   btn.dataset.y = y.toString()
   // once firefox and safari supports attr(value, <type>) we can remove below assignments

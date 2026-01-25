@@ -39,10 +39,16 @@
     </div>
     <div id="pan-zoom-area">
       <div class="editor-container">
+        <div class="bottom-toolbar">
+          <input id="timeline" type="range" min="0" max="1" step="0.00001" />
+          <button id="reset-state">Stop</button>
+        </div>
         <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
           <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="black" stroke-width="2px" fill="none" />
           <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="red" stroke-width="2px" fill="none" />
+
         </svg>
+        <div id="spline-anim-progress"></div>
         <div class="cps"></div>
 
         <ul class="ruler ruler-y">
@@ -75,6 +81,22 @@
 
       </div>
     </div>
+    <aside>
+      <h2>Easing CSS Output</h2>
+      <div class="output-preview">
+        <div id="preview-target-box"></div>
+      </div>
+
+      <label for="animation-loop">Loop animation:</label>
+      <input type="checkbox" id="animation-loop" />
+
+      <label for="animation-time">Animation time(ms):</label>
+      <input type="number" id="animation-time" min="0" step="100" value="3000" />
+
+      <code id="code-snippet"></code>
+      <label for="func-precision">Precision:</label>
+      <input type="number" id="func-precision" step="0.001" value="0.02" min="0.001" max="0.2" />
+    </aside>
   </main>
 
   <svg>
@@ -91,16 +113,18 @@
       <circle cx="15" cy="12" r="12" fill="currentColor" />
     </symbol>
     <symbol viewBox="0 0 100 100" id="icon-mirror-handles">
-      <circle cx="52.207" cy="50.428" r="18" style="fill:none;stroke:black;stroke-width:10px;" />
-      <path d="M17.142,85.998L39.997,61.928" style="fill:none;stroke:black;stroke-width:8px;stroke-linecap:butt;" />
-      <path d="M64.117,37.564L86.824,11.777" style="fill:none;stroke:black;stroke-width:8px;stroke-linecap:butt;" />
-      <circle cx="86.977" cy="12.815" r="12" />
-      <circle cx="14.98" cy="86.137" r="12" />
+      <circle cx="52.207" cy="50.428" r="18" style="fill:none;stroke:currentColor;stroke-width:10px;" />
+      <path d="M17.142,85.998L39.997,61.928"
+        style="fill:none;stroke:currentColor;stroke-width:8px;stroke-linecap:butt;" />
+      <path d="M64.117,37.564L86.824,11.777"
+        style="fill:none;stroke:currentColor;stroke-width:8px;stroke-linecap:butt;" />
+      <circle cx="86.977" cy="12.815" r="12" fill="currentColor" />
+      <circle cx="14.98" cy="86.137" r="12" fill="currentColor" />
     </symbol>
     <symbol id="icon-trash-bin" viewBox="0 0 24 24">
       <path fill="none"
         d="M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6M18 6V16.2C18 17.8802 18 18.7202 17.673 19.362C17.3854 19.9265 16.9265 20.3854 16.362 20.673C15.7202 21 14.8802 21 13.2 21H10.8C9.11984 21 8.27976 21 7.63803 20.673C7.07354 20.3854 6.6146 19.9265 6.32698 19.362C6 18.7202 6 17.8802 6 16.2V6M14 10V17M10 10V17"
-        stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
     </symbol>
   </svg>
 

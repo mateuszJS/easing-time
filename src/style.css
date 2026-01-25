@@ -291,3 +291,69 @@ button[aria-label]:not([disabled]) {
     }
   }
 }
+
+code {
+  display: block;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  white-space: break-spaces;
+  max-height: 200px;
+  overflow: auto;
+  font-size: 12px;
+}
+
+aside {
+  position: fixed;
+  right: 0;
+  top: 50px;
+  min-height: 200px;
+  width: 200px;
+
+  h2 {
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0;
+  }
+}
+
+.output-preview {
+  height: 200px;
+  background: #00000011;
+}
+
+#preview-target-box {
+  width: 100px;
+  height: 100px;
+  background: tomato;
+  animation: --sample calc(1ms * var(--anim-time)) infinite;
+  animation-direction: var(--anim-dir);
+  animation-timing-function: var(--easing-func);
+  animation-play-state: var(--anim-state);
+  animation-fill-mode: forwards;
+}
+
+@keyframes --sample {
+  0% {
+    transform: translateY(100px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+#timeline {
+  width: 100%;
+}
+
+.bottom-toolbar {
+  position: absolute;
+  bottom: -80px;
+  left: 0;
+  right: 0;
+}
+
+#spline-anim-progress {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: lime;
+}

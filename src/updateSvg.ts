@@ -1,4 +1,4 @@
-import { $splinePreview } from './elements'
+import { $splinePreview, $codeSnippet } from './elements'
 import type { ControlPoint, Point } from './types'
 import updateConnectionLines from './updateConnectionLines'
 import { getPos } from './utils'
@@ -30,10 +30,42 @@ export function updateSvg(cps: ControlPoint[], approxPointsList: Point[]) {
   updateConnectionLines($splinePreview, cps)
 
   // Build approximate path as straight line segments (M + L commands)
-  const [first, ...rest] = approxPointsList
-  let approxD = `M ${first.x} ${first.y}`
-  rest.forEach((p) => {
-    approxD += ` L ${p.x} ${p.y}`
-  })
-  $pathApprox.setAttribute('d', approxD)
+  if (approxPointsList.length > 0) {
+    const pts = [...approxPointsList].sort((a, b) => a.x - b.x)
+    const [first, ...rest] = pts
+    let approxD = `M ${first.x} ${first.y}`
+    rest.forEach((p) => {
+      approxD += ` L ${p.x} ${p.y}`
+    })
+    $pathApprox.setAttribute('d', approxD)
+
+    // Build CSS linear() easing string: y values with x% breakpoints (invert y)
+    const round = (n: number, decimals = 6) => {
+      const f = Math.pow(10, decimals)
+      return Math.round(n * f) / f
+    }
+    const roundPct = (n: number, decimals = 3) => {
+      const f = Math.pow(10, decimals)
+      return Math.round(n * f) / f
+    }
+
+    const startY = round(1 - first.y)
+    const endY = round(1 - pts[pts.length - 1].y)
+    const intermediates = pts.slice(1, -1)
+
+    const parts: string[] = []
+    parts.push(String(startY))
+    intermediates.forEach((p) => {
+      const y = round(1 - p.y)
+      const xPct = roundPct(p.x * 100)
+      parts.push(`${y} ${xPct}%`)
+    })
+    parts.push(String(endY))
+
+    $codeSnippet.textContent = `linear(${parts.join(', ')})`
+    document.body.attributeStyleMap.set('--easing-func', $codeSnippet.textContent)
+  } else {
+    $pathApprox.setAttribute('d', '')
+    $codeSnippet.textContent = 'linear(0, 1)'
+  }
 }
