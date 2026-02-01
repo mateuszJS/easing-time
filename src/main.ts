@@ -21,6 +21,8 @@ import type { ControlPoint, CpType, Point, SerializedControlPoint } from './type
 import { updateControlPointPos } from './updateControlPointPos'
 import { updateSvg } from './updateSvg'
 import {
+  clamp,
+  getConnectedCpHandle,
   getCssVarNumber,
   getCssVarStr,
   getMainCp,
@@ -30,6 +32,8 @@ import {
   updateHtmlPos,
 } from './utils'
 import { getApproxPoints } from './getApproxPoints'
+import { DRAG_INITIAL } from './drag'
+import { getBounds } from './getBounds'
 
 let funcPrecision = 0.01
 const ANIM_PREVIEW_ARROW_TIP_HEIGHT = 20
@@ -62,9 +66,12 @@ function setDefaultData() {
 }
 
 setDefaultData()
-updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
-// Capture initial state for undo/redo
-history.record()
+onActionComplete()
+
+function onActionComplete() {
+  updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
+  history.record()
+}
 
 function createControlPoint(type: CpType, x: number, y: number) {
   const btn = document.createElement('button') as ControlPoint
@@ -102,36 +109,59 @@ function selectControlPoint(cp: ControlPoint) {
   $deletePoint.disabled = isFirstOrLast
 }
 
-function attachEvents(btn: ControlPoint) {
-  btn.addEventListener('pointerdown', (e) => {
+let dragProps = DRAG_INITIAL
+
+function attachEvents(cp: ControlPoint) {
+  cp.addEventListener('pointerdown', (e) => {
     e.stopPropagation() // Prevent creating new point
-    selectControlPoint(btn)
-    initialPos = getPos(btn)
-    draggedCp = btn
+    selectControlPoint(cp)
+
+    dragProps = {
+      initialPos: getPos(cp),
+      cp: cp,
+      isMirroringHandles: false,
+    }
+
+    const cpBefore = getConnectedCpHandle(cp, 'cp-before')
+    const cpMainPos = getPos(getMainCp(cp))
+    const cpAfter = getConnectedCpHandle(cp, 'cp-after')
+
+    if (cpBefore && cpAfter) {
+      const cpBeforePos = getPos(cpBefore)
+      const cpAfterPos = getPos(cpAfter)
+      const expectedMirroredCpAfter = {
+        x: cpMainPos.x + (cpMainPos.x - cpBeforePos.x),
+        y: cpMainPos.y + (cpMainPos.y - cpBeforePos.y),
+      }
+      const mirrorValue = Math.hypot(
+        expectedMirroredCpAfter.x - cpAfterPos.x,
+        expectedMirroredCpAfter.y - cpAfterPos.y
+      )
+      dragProps.isMirroringHandles = mirrorValue < 0.001
+    }
   })
 }
 
-let initialPos: Point = { x: 0, y: 0 }
-let draggedCp: ControlPoint | null = null
-
-function onMovePointer(ev: PointerEvent) {
-  if (!draggedCp) return
-  const normPos = getNormPos(ev)
-  updateControlPointPos(draggedCp, normPos)
+document.body.addEventListener('pointermove', (e) => {
+  if (!dragProps.cp) return
+  console.log('pointermove', dragProps.cp)
+  const normPos = getNormPos(e)
+  updateControlPointPos(dragProps.cp, normPos, dragProps.isMirroringHandles)
   updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
-}
-
-document.body.addEventListener('pointermove', onMovePointer)
+})
 
 function onPointerUp() {
-  if (!draggedCp) return
+  if (!dragProps.cp) return
   // Record state at end of drag as a single undo step
-  const finalPos = getPos(draggedCp)
-  const offset = Math.hypot(finalPos.x - initialPos.x, finalPos.y - initialPos.y)
+  const finalPos = getPos(dragProps.cp)
+  const offset = Math.hypot(
+    finalPos.x - dragProps.initialPos.x,
+    finalPos.y - dragProps.initialPos.y
+  )
   if (offset > 0.001) {
-    history.record()
+    onActionComplete()
   }
-  draggedCp = null
+  dragProps = DRAG_INITIAL
 }
 
 document.body.addEventListener('pointerleave', onPointerUp)
@@ -153,13 +183,15 @@ function splitAndInsertAt(segIndex: number, t: number) {
   $cps.insertBefore(mainCp, ref)
   $cps.insertBefore(createControlPoint('cp-after', E.x, E.y), ref)
 
-  updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
-  // Record insertion as an undoable step
-  history.record()
+  onActionComplete()
 
   selectControlPoint(mainCp)
-  initialPos = getPos(mainCp)
-  draggedCp = mainCp
+
+  dragProps = {
+    initialPos: getPos(mainCp),
+    cp: mainCp,
+    isMirroringHandles: false,
+  }
 }
 
 $splinePreview.addEventListener('pointerdown', (e) => {
@@ -173,6 +205,68 @@ $splinePreview.addEventListener('pointerdown', (e) => {
 
 attachHistoryEvents(history)
 
+$deletePoint.addEventListener('click', () => {
+  const selectedCp = document.querySelector<ControlPoint>('.cp-selected')
+  if (!selectedCp) {
+    console.error("Button wasn't disabled but there is no selected cp-main")
+    return
+  }
+
+  if (selectedCp.dataset.type === 'cp-main') {
+    const cpBefore = getConnectedCpHandle(selectedCp, 'cp-before')
+    const cpAfter = getConnectedCpHandle(selectedCp, 'cp-after')
+    if (cpBefore) $cps.removeChild(cpBefore)
+    if (cpAfter) $cps.removeChild(cpAfter)
+  }
+
+  $cps.removeChild(selectedCp)
+  onActionComplete()
+})
+
+$mirrorHandles.addEventListener('click', () => {
+  const selectedCp = document.querySelector<ControlPoint>('.cp-selected')
+
+  if (!selectedCp) {
+    console.error("Button wasn't disabled but there is no selected cp-main")
+    return
+  }
+
+  const mainCp = getMainCp(selectedCp)
+  const maybeCpBefore = getConnectedCpHandle(mainCp, 'cp-before')
+  const maybeCpAfter = getConnectedCpHandle(mainCp, 'cp-after')
+  const cpMainPos = getPos(mainCp)
+
+  const existingHandle =
+    maybeCpBefore ||
+    maybeCpAfter ||
+    (() => {
+      const cp = createControlPoint('cp-before', cpMainPos.x - 50, cpMainPos.y)
+      $cps.insertBefore(cp, mainCp)
+      const bounds = getBounds(cp, false)
+      const safeX = clamp(cpMainPos.x, bounds.left, bounds.right)
+      updateHtmlPos(cp, safeX, cpMainPos.y)
+      return cp
+    })()
+
+  const cpOppositeHandle =
+    (existingHandle.dataset.type === 'cp-before' ? maybeCpAfter : maybeCpBefore) ||
+    (() => {
+      const type = existingHandle.dataset.type === 'cp-before' ? 'cp-after' : 'cp-before'
+      const cp = createControlPoint(type, 0, 0)
+      $cps.insertBefore(cp, cp.dataset.type === 'cp-before' ? mainCp : mainCp.nextElementSibling)
+      return cp
+    })()
+
+  const cpHandlePos = getPos(existingHandle)
+  const x = cpMainPos.x + (cpMainPos.x - cpHandlePos.x)
+  const y = cpMainPos.y + (cpMainPos.y - cpHandlePos.y)
+
+  const bounds = getBounds(cpOppositeHandle, true)
+  updateHtmlPos(cpOppositeHandle, clamp(x, bounds.left, bounds.right), y)
+
+  onActionComplete()
+})
+
 $breakHandles.addEventListener('click', () => {
   const selectedCp = document.querySelector<ControlPoint>('.cp-selected')
 
@@ -182,13 +276,12 @@ $breakHandles.addEventListener('click', () => {
   }
 
   const mainCp = getMainCp(selectedCp)
+  const cpBefore = getConnectedCpHandle(mainCp, 'cp-before')
+  const cpAfter = getConnectedCpHandle(mainCp, 'cp-after')
 
-  const maybeCpBefore = mainCp.previousElementSibling
-  const maybeCpAfter = mainCp.nextElementSibling
-
-  if (maybeCpBefore) {
+  if (cpBefore && cpAfter) {
     const cpMainPos = getPos(mainCp)
-    const cpBeforePos = getPos(maybeCpBefore)
+    const cpBeforePos = getPos(cpBefore)
     const angle = Math.atan2((cpMainPos.y - cpBeforePos.y) * -1, cpMainPos.x - cpBeforePos.x)
     const dist = Math.hypot(cpMainPos.x - cpBeforePos.x, cpMainPos.y - cpBeforePos.y)
     const newAngle = angle + Math.PI / 4
@@ -197,18 +290,8 @@ $breakHandles.addEventListener('click', () => {
       y: cpMainPos.y - Math.sin(newAngle) * dist,
     }
 
-    const cpAfter = maybeCpAfter ?? createControlPoint('cp-before', cpMainPos.x, cpMainPos.y)
-    if (!cpAfter.isConnected) {
-      const ref = mainCp.nextElementSibling
-      if (!ref) {
-        console.error("Button to break handles wasn't diable for first or last cp")
-        return
-      }
-      $cps.insertBefore(cpAfter, ref)
-    }
     updateHtmlPos(cpAfter, newPos.x, newPos.y)
-    updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
-    history.record()
+    onActionComplete()
   }
 })
 

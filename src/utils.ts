@@ -60,3 +60,16 @@ export function getCssVarNumber(name: string, $el = document.documentElement): n
 export function getCssVarStr(name: string, $el = document.documentElement): string {
   return getComputedStyle($el).getPropertyValue(name).trim()
 }
+
+export function getConnectedCpHandle(cp: ControlPoint, type: 'cp-before' | 'cp-after') {
+  if (cp.dataset.type === type) return cp
+
+  const direction = type === 'cp-before' ? 'previousElementSibling' : 'nextElementSibling'
+
+  const maybeCpHandle = cp.dataset.type === 'cp-main' ? cp[direction] : cp[direction]?.[direction]
+
+  if (maybeCpHandle?.dataset.type === type) {
+    return maybeCpHandle
+  }
+  return null
+}

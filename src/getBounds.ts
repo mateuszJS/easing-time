@@ -1,18 +1,5 @@
 import type { ControlPoint } from './types'
-import { getPos } from './utils'
-
-function getConnectedCpHandle(cp: ControlPoint, type: 'cp-before' | 'cp-after') {
-  if (cp.dataset.type === type) return cp
-
-  const direction = type === 'cp-before' ? 'previousElementSibling' : 'nextElementSibling'
-
-  const maybeCpHandle = cp.dataset.type === 'cp-main' ? cp[direction] : cp[direction]?.[direction]
-
-  if (maybeCpHandle?.dataset.type === type) {
-    return maybeCpHandle
-  }
-  return null
-}
+import { getConnectedCpHandle, getPos } from './utils'
 
 /**
  * calculates bounds for given point, doesn't care about other point restriction
@@ -53,12 +40,16 @@ function getSingleCpBounds(cp: ControlPoint) {
   }
 }
 
-export function getBounds(cp: ControlPoint) {
+export function getBounds(cp: ControlPoint, isMirrorHandle: boolean) {
   let leftBound = 0
   let rightBound = 1
 
-  const cpBefore = getConnectedCpHandle(cp, 'cp-before')
-  const cpAfter = getConnectedCpHandle(cp, 'cp-after')
+  const cpBefore =
+    (cp.dataset.type !== 'cp-after' || isMirrorHandle) && getConnectedCpHandle(cp, 'cp-before')
+
+  const cpAfter =
+    (cp.dataset.type !== 'cp-before' || isMirrorHandle) && getConnectedCpHandle(cp, 'cp-after')
+
   const cpPos = getPos(cp)
 
   if (cpBefore) {
