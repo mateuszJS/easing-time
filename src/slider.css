@@ -1,8 +1,10 @@
-.inputsWrapper {
+.timeline-slider {
   --thumb-width: 5px;
   --thumb-radius: calc(0.5 * var(--thumb-width));
   --useful-width: calc(100% - var(--thumb-width));
   --thumb-color: red;
+
+  grid-area: timeline;
 
   display: grid;
   position: relative;
@@ -10,15 +12,6 @@
   justify-items: stretch;
   width: 100%;
 
-  > * {
-    grid-area: 1 / 1;
-  }
-}
-
-.timeline-track {
-  display: grid;
-  align-items: center;
-  height: 100%;
   text-align: center;
   border-radius: 5px;
 
@@ -47,6 +40,11 @@
     font-weight: bold;
     transform: skewX(-10deg);
     pointer-events: none;
+    grid-area: 1/1;
+  }
+
+  > * {
+    grid-area: 1/1;
   }
 }
 

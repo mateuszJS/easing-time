@@ -41,36 +41,10 @@
     </div>
     <div id="pan-zoom-area">
       <div class="editor-container">
-        <div class="bottom-toolbar">
 
-          <button id="anim-state-play" class="btn">
-            <svg>
-              <use href="#icon-play"></use>
-            </svg>
-          </button>
-          <button id="anim-state-pause" class="btn">
-            <svg>
-              <use href="#icon-pause"></use>
-            </svg>
-          </button>
-
-          <div class="inputsWrapper" role="group" aria-label="Timeline slider and track">
-            <div class="timeline-track"></div>
-            <label class="srOnly" htmlFor="timeline">
-              Timeline slider
-            </label>
-            <input id="timeline" type="range" min="0" max="1" step="0.00001" class="slider" />
-          </div>
-        </div>
-        <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
-          <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="black" stroke-width="2px" fill="none" />
-          <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="red" stroke-width="2px" fill="none" />
-
-        </svg>
-        <div id="spline-anim-progress"></div>
-        <div class="cps"></div>
 
         <p class="label-ruler-y">Progress</p>
+
         <ul class="ruler ruler-y">
           <li></li>
           <li></li>
@@ -85,6 +59,18 @@
           <li></li>
         </ul>
 
+        <div class="graph">
+          <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
+            <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="black" stroke-width="2px"
+              fill="none" />
+            <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="red" stroke-width="2px"
+              fill="none" />
+
+          </svg>
+          <div id="spline-anim-progress"></div>
+          <div class="cps"></div>
+        </div>
+
         <ul class="ruler ruler-x">
           <li></li>
           <li></li>
@@ -98,6 +84,25 @@
           <li></li>
           <li></li>
         </ul>
+
+
+        <button id="anim-state-play" class="btn timeline-action">
+          <svg>
+            <use href="#icon-play"></use>
+          </svg>
+        </button>
+        <button id="anim-state-pause" class="btn timeline-action">
+          <svg>
+            <use href="#icon-pause"></use>
+          </svg>
+        </button>
+
+        <div class="timeline-slider">
+          <label class="srOnly" for="timeline">
+            Timeline slider
+          </label>
+          <input id="timeline" type="range" min="0" max="1" step="0.00001" class="slider" />
+        </div>
 
       </div>
     </div>

@@ -10,6 +10,11 @@ body {
 
 main {
   height: 100%;
+  display: grid;
+  grid-template:
+    'toolbar-left toolbar-right' auto
+    'editor aside' 1fr
+    / 1fr auto;
 }
 
 .srOnly {
@@ -19,7 +24,10 @@ main {
 
 #pan-zoom-area {
   overflow: auto;
-  height: 100%;
+  grid-row-start: toolbar-left;
+  grid-row-end: editor;
+  grid-column: toolbar-left;
+
   /* Allows custom drag-to-pan without browser gestures interfering */
   touch-action: none;
   overscroll-behavior: contain;
@@ -27,139 +35,149 @@ main {
 }
 
 .editor-container {
-  width: 500px;
-  height: 500px;
+  width: 100%;
+  height: 100%;
+  padding: 80px 20px 20px;
+  display: grid;
+  grid-template:
+    'ruler-y-label  ruler-y   graph' 1fr
+    '.              .         ruler-x' 50px
+    '.              timeline-action   timeline' auto
+    / auto 50px 1fr;
+}
+
+.graph {
   position: relative;
-  margin-inline: auto;
+  grid-area: graph;
+  min-height: 0;
+}
 
-  .ruler {
-    font-family: 'Times New Roman', Times, serif;
-    position: absolute;
-    left: 0;
+.ruler {
+  font-family: 'Times New Roman', Times, serif;
+  /* position: absolute; */
+  /* left: 0; */
 
-    container-type: size;
+  /* container-type: size; */
 
-    display: flex;
-    padding: 0;
-    margin: 0;
-    pointer-events: none;
+  display: flex;
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
 
-    --number-of-periods: 10; /* number of list items - 1 */
+  --number-of-periods: 10; /* number of list items - 1 */
 
-    --line-width: 1px;
-    --line-length: 8px;
-    --line-color: #bbb;
-    --max-number-of-lines: 10;
+  --line-width: 1px;
+  --line-length: 8px;
+  --line-color: #bbb;
+  --max-number-of-lines: 10;
 
-    --strong-line-length: 14px;
-    --strong-line-color: #888;
+  --strong-line-length: 14px;
+  --strong-line-color: #888;
 
-    --number-of-lines: min(
-      var(--max-number-of-lines),
-      round(100cqmax / (5px * var(--number-of-periods)))
-    );
-    --single-line-gap: calc(100% / var(--number-of-lines));
+  --number-of-lines: min(
+    var(--max-number-of-lines),
+    round(100cqmax / (5px * var(--number-of-periods)))
+  );
+  --single-line-gap: calc(100% / var(--number-of-lines));
 
-    li {
-      display: block flow;
-      counter-increment: d 1;
-      flex: 1;
+  li {
+    display: block flow;
+    counter-increment: d 1;
+    flex: 1;
 
-      &:first-child {
-        counter-reset: d -1;
-      }
+    &:first-child {
+      counter-reset: d -1;
+    }
 
+    &::after {
+      content: '0.' counter(d);
+      display: inline flow-root;
+      font-size: 14px;
+    }
+
+    &:last-child {
+      flex: 0;
+      --line-color: transparent;
       &::after {
-        content: '0.' counter(d);
-        display: inline flow-root;
-        font-size: 14px;
+        content: '1.0';
       }
+    }
 
-      &:last-child {
-        flex: 0;
-        --line-color: transparent;
-        &::after {
-          content: '1.0';
-        }
-      }
-
-      @container ((aspect-ratio > 1) and (width < 300px))
+    @container ((aspect-ratio > 1) and (width < 300px))
         or
         ((aspect-ratio < 1) and (height < 300px)) {
-        &:nth-child(2n)::after {
-          display: none;
-        }
+      &:nth-child(2n)::after {
+        display: none;
       }
+    }
 
-      @container ((aspect-ratio > 1) and (width < 150px))
+    @container ((aspect-ratio > 1) and (width < 150px))
         or
         ((aspect-ratio < 1) and (height < 150px)) {
-        &:not(:first-child, :last-child)::after {
-          display: none;
-        }
+      &:not(:first-child, :last-child)::after {
+        display: none;
       }
     }
   }
+}
 
-  .ruler-y {
-    top: 0;
-    bottom: 0;
-    contain-intrinsic-width: var(--strong-line-length);
-    flex-direction: column-reverse;
-    translate: calc(-100% + 1px) 0;
-    /* there is like a strange 1px gap on the right side */
+.ruler-y {
+  grid-area: ruler-y;
+  /* top: 0;
+  bottom: 0; */
+  /* contain-intrinsic-width: var(--strong-line-length); */
+  flex-direction: column-reverse;
+  /* translate: calc(-100% + 1px) 0; */
+  /* there is like a strange 1px gap on the right side */
 
-    li {
-      --x-offset: calc(var(--strong-line-length) * -1 - 5px);
-      height: 0;
-      align-content: end;
-      background:
-        conic-gradient(at 0% 100%, var(--strong-line-color)) 100% 100% / var(--strong-line-length)
-          var(--line-width) no-repeat,
-        conic-gradient(at 100% var(--line-width), transparent 270deg, var(--line-color) 0 270deg)
-          100% calc(-1 * var(--line-width)) / var(--line-length) var(--single-line-gap) repeat-y;
+  li {
+    --x-offset: 10px;
+    /* --x-offset: calc(var(--strong-line-length) * -1 - 5px); */
+    height: 0;
+    align-content: end;
+    background:
+      conic-gradient(at 0% 100%, var(--strong-line-color)) 100% 100% / var(--strong-line-length)
+        var(--line-width) no-repeat,
+      conic-gradient(at 100% var(--line-width), transparent 270deg, var(--line-color) 0 270deg) 100%
+        calc(-1 * var(--line-width)) / var(--line-length) var(--single-line-gap) repeat-y;
 
-      &:last-child {
-        height: calc(2 * var(--line-width));
-        &::after {
-          translate: var(--x-offset) -50%;
-        }
-      }
-
+    &:last-child {
+      height: calc(2 * var(--line-width));
       &::after {
-        translate: var(--x-offset) 50%;
+        translate: var(--x-offset) -50%;
       }
     }
+
+    &::after {
+      translate: var(--x-offset) 50%;
+    }
   }
+}
 
-  .label-ruler-y {
-    position: absolute;
-    inset-inline-start: 50%;
-    writing-mode: sideways-lr;
-    inset-block-start: -80px;
-  }
+.label-ruler-y {
+  grid-area: ruler-y-label;
+  text-align: center;
+  writing-mode: sideways-lr;
+}
 
-  .ruler-x {
-    right: 0;
-    bottom: 0;
-    contain-intrinsic-height: var(--strong-line-length);
-    translate: 0 100%;
+.ruler-x {
+  grid-area: ruler-x;
+  /* contain-intrinsic-height: var(--strong-line-length); */
 
-    li {
-      width: 0;
-      background:
-        conic-gradient(var(--strong-line-color)) var(--line-width) 0 / var(--line-width)
-          var(--strong-line-length) no-repeat,
-        conic-gradient(at var(--line-width) 100%, transparent 270deg, var(--line-color) 0)
-          var(--line-width) 0 / var(--single-line-gap) var(--line-length) repeat-x;
+  li {
+    width: 0;
+    background:
+      conic-gradient(var(--strong-line-color)) var(--line-width) 0 / var(--line-width)
+        var(--strong-line-length) no-repeat,
+      conic-gradient(at var(--line-width) 100%, transparent 270deg, var(--line-color) 0)
+        var(--line-width) 0 / var(--single-line-gap) var(--line-length) repeat-x;
 
-      &:last-child {
-        width: calc(2 * var(--line-width));
-      }
+    &:last-child {
+      width: calc(2 * var(--line-width));
+    }
 
-      &::after {
-        translate: -50% var(--strong-line-length);
-      }
+    &::after {
+      translate: -50% var(--strong-line-length);
     }
   }
 }
@@ -197,6 +215,8 @@ main {
 .spline-preview {
   overflow: visible;
   will-change: transform; /* safari fix, empty rectangles were drawn on svg after arrow tip */
+  width: 100%;
+  height: 100%;
 }
 
 button[aria-label] {
@@ -272,9 +292,9 @@ button[aria-label]:not([disabled]) {
 }
 
 #toolbar {
-  position: fixed;
-  inset: 0;
-  bottom: auto;
+  grid-column-start: toolbar-left;
+  grid-column-end: toolbar-right;
+  grid-row: toolbar-left;
   background: #ffffffaa;
   backdrop-filter: blur(2px);
   z-index: 1;
@@ -313,10 +333,6 @@ code {
 }
 
 aside {
-  position: fixed;
-  right: 0;
-  top: 50px;
-  min-height: 200px;
   width: 200px;
 
   h2 {
@@ -349,16 +365,6 @@ aside {
   100% {
     transform: translateY(0px);
   }
-}
-
-.bottom-toolbar {
-  position: absolute;
-  bottom: -80px;
-  --left-col-width: 50px;
-  left: calc(var(--left-col-width) * -1);
-  right: 0;
-  display: grid;
-  grid-template-columns: var(--left-col-width) 1fr;
 }
 
 #spline-anim-progress {
@@ -397,4 +403,8 @@ aside {
     width: 20px;
     height: var(--anim-preview-arrow-tip-height);
   }
+}
+
+.timeline-action {
+  grid-area: timeline-action;
 }

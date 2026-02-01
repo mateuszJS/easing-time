@@ -27,15 +27,14 @@ export function getCubicForSegment(mainCps: ControlPoint[], index: number) {
   const p0 = getPos(p0Btn)
   const p3 = getPos(p3Btn)
 
-  const cpAfter = p0Btn.nextElementSibling
-  const cpBefore = p3Btn.previousElementSibling
-  if (!cpAfter || cpAfter.dataset.type !== 'cp-after')
-    throw Error('Expected cp-after control point not found')
-  if (!cpBefore || cpBefore.dataset.type !== 'cp-before')
-    throw Error('Expected cp-before control point not found')
+  const maybeAfter = p0Btn.nextElementSibling
+  const cpAfter = maybeAfter && maybeAfter.dataset.type === 'cp-after' ? maybeAfter : null
+  const maybeBefore = p3Btn.previousElementSibling
+  const cpBefore = maybeBefore && maybeBefore.dataset.type === 'cp-before' ? maybeBefore : null
 
-  const p1 = getPos(cpAfter)
-  const p2 = getPos(cpBefore)
+  const p1 = cpAfter ? getPos(cpAfter) : p0
+  const p2 = cpBefore ? getPos(cpBefore) : p3
+
   return { p0Btn, p1Btn: cpAfter, p2Btn: cpBefore, p3Btn, p0, p1, p2, p3 }
 }
 

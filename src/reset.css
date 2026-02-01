@@ -16,3 +16,11 @@ button {
   cursor: pointer;
   user-select: none;
 }
+
+p {
+  margin: 0;
+}
+
+svg:has(symbol) {
+  display: none;
+}

@@ -11,7 +11,6 @@ import {
   $funcPrecision,
   $mirrorHandles,
   $previewTargetBox,
-  $sizeWrapper,
   $splineAnimProgress,
   $splinePreview,
   $timeline,
@@ -91,7 +90,7 @@ function getMainCps() {
 }
 
 function getNormPos(ev: PointerEvent): Point {
-  const rect = $sizeWrapper.getBoundingClientRect()
+  const rect = $splinePreview.getBoundingClientRect()
   const nx = (ev.clientX - rect.left) / rect.width
   const ny = (ev.clientY - rect.top) / rect.height
 
@@ -144,7 +143,6 @@ function attachEvents(cp: ControlPoint) {
 
 document.body.addEventListener('pointermove', (e) => {
   if (!dragProps.cp) return
-  console.log('pointermove', dragProps.cp)
   const normPos = getNormPos(e)
   updateControlPointPos(dragProps.cp, normPos, dragProps.isMirroringHandles)
   updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
@@ -173,11 +171,11 @@ function splitAndInsertAt(segIndex: number, t: number) {
 
   const { A, C, D, E, R } = cubicPointAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, t)
 
-  // Update existing controls to preserve exact curve
-  updateHtmlPos(cubic.p1Btn, A.x, A.y) // cp-after of start
-  updateHtmlPos(cubic.p2Btn, C.x, C.y) // cp-before of end
+  // Update existing handles if they exist to preserve exact curve
+  if (cubic.p1Btn) updateHtmlPos(cubic.p1Btn, A.x, A.y) // cp-after of start
+  if (cubic.p2Btn) updateHtmlPos(cubic.p2Btn, C.x, C.y) // cp-before of end
 
-  const ref = cubic.p2Btn
+  const ref = cubic.p2Btn ?? cubic.p3Btn
   $cps.insertBefore(createControlPoint('cp-before', D.x, D.y), ref)
   const mainCp = createControlPoint('cp-main', R.x, R.y)
   $cps.insertBefore(mainCp, ref)
@@ -195,7 +193,7 @@ function splitAndInsertAt(segIndex: number, t: number) {
 }
 
 $splinePreview.addEventListener('pointerdown', (e) => {
-  const rect = $sizeWrapper.getBoundingClientRect()
+  const rect = $splinePreview.getBoundingClientRect()
 
   const closest = findClosestOnPathPx(getMainCps(), rect, getNormPos(e))
   if (closest.distPx >= 50) return
@@ -290,7 +288,10 @@ $breakHandles.addEventListener('click', () => {
       y: cpMainPos.y - Math.sin(newAngle) * dist,
     }
 
-    updateHtmlPos(cpAfter, newPos.x, newPos.y)
+    const bounds = getBounds(cpAfter, false)
+    const safeX = clamp(newPos.x, bounds.left, bounds.right)
+
+    updateHtmlPos(cpAfter, safeX, newPos.y)
     onActionComplete()
   }
 })
@@ -372,7 +373,7 @@ function updateProgress() {
   updateHtmlPos($splineAnimProgress, R.x, R.y)
   const y = Number($splineAnimProgress.dataset.y)
 
-  const reflectArrow = (y - 1) * $sizeWrapper.clientHeight > ANIM_PREVIEW_ARROW_TIP_HEIGHT
+  const reflectArrow = (y - 1) * $splinePreview.clientHeight > ANIM_PREVIEW_ARROW_TIP_HEIGHT
   if (reflectArrow) {
     $splineAnimProgress.style.bottom = (1 - y) * 100 + '%'
     $splineAnimProgress.style.top = '' // Clear opposite side to avoid conflicts
@@ -388,7 +389,6 @@ function updateProgress() {
 requestAnimationFrame(updateProgress)
 
 $timeline.addEventListener('input', () => {
-  console.log('timeline input')
   const val = Number($timeline.value)
   const duration = getCssVarNumber('--anim-time')
   animation.currentTime = Math.min(val * duration, duration - 0.0001) // if currentTime = duration then it comes back to frame 0
@@ -410,4 +410,15 @@ $animStatePlay.addEventListener('click', () => {
 
 $animStatePause.addEventListener('click', () => {
   setAnimState('paused')
+})
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === ' ') {
+    e.preventDefault()
+    if (getCssVarStr('--anim-state') === 'running') {
+      setAnimState('paused')
+    } else {
+      setAnimState('running')
+    }
+  }
 })
