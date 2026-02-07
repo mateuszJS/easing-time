@@ -1,0 +1,9 @@
+.stack {
+  display: grid;
+
+  & > *,
+  &::before,
+  &::after {
+    grid-area: 1/1;
+  }
+}

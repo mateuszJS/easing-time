@@ -50,7 +50,6 @@ export function updateControlPointPos(
 
       if (mirrorCp.dataset.type === 'cp-before' && px < mirrorCpBounds.left) {
         const differenceScale = (mirrorCpBounds.left - mainCpPos.x) / pxDesiredOffset
-        console.log({ px, differenceScale, 'mirrorCpBounds.left': mirrorCpBounds.left })
         px = mirrorCpBounds.left
         py = mainCpPos.y - Math.sin(angle + Math.PI) * mirroredHandleDistance * differenceScale
       }

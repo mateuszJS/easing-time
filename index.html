@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vite + TS</title>
   <link rel="stylesheet" href="/src/reset.css" />
+  <link rel="stylesheet" href="/src/common.css" />
   <link rel="stylesheet" href="/src/style.css" />
   <link rel="stylesheet" href="/src/slider.css" />
 </head>
@@ -46,17 +47,17 @@
         <p class="label-ruler-y">Progress</p>
 
         <ul class="ruler ruler-y">
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
+          <li data-stop="0"></li>
+          <li data-stop="0.1"></li>
+          <li data-stop="0.2"></li>
+          <li data-stop="0.3"></li>
+          <li data-stop="0.4"></li>
+          <li data-stop="0.5"></li>
+          <li data-stop="0.6"></li>
+          <li data-stop="0.7"></li>
+          <li data-stop="0.8"></li>
+          <li data-stop="0.9"></li>
+          <li data-stop="1"></li>
         </ul>
 
         <div class="graph">
@@ -69,20 +70,23 @@
           </svg>
           <div id="spline-anim-progress"></div>
           <div class="cps"></div>
+          <div class="active-line-x"></div>
+          <div class="active-line-y"></div>
+          <div id="cp-preview" data-type="cp-main"></div>
         </div>
 
         <ul class="ruler ruler-x">
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
+          <li data-stop="0"></li>
+          <li data-stop="0.1"></li>
+          <li data-stop="0.2"></li>
+          <li data-stop="0.3"></li>
+          <li data-stop="0.4"></li>
+          <li data-stop="0.5"></li>
+          <li data-stop="0.6"></li>
+          <li data-stop="0.7"></li>
+          <li data-stop="0.8"></li>
+          <li data-stop="0.9"></li>
+          <li data-stop="1"></li>
         </ul>
 
 
@@ -112,18 +116,28 @@
         <div id="preview-target-box"></div>
       </div>
 
-      <label for="animation-loop">Loop animation:</label>
-      <input type="checkbox" id="animation-loop" />
+      <label>Loop animation:<input type="checkbox" id="animation-loop" /></label>
 
-      <label for="animation-time">Animation time(ms):</label>
-      <input type="number" id="animation-time" min="0" step="100" value="3000" />
+
+      <label>Animation time(ms):<input type="number" id="animation-time" min="0" step="100" value="3000" /></label>
+
+      <label>Precision:
+        <input type="number" id="func-precision" step="0.001" value="0.02" min="0.001" max="0.2" />
+      </label>
+
       <section class="css-code-section">
-        <h3>CSS Code:</h3>
-        <button id="copy-code">COPY</button>
-        <code id="code-snippet"></code>
+        <header>
+          <h3>CSS Code</h3>
+
+        </header>
+        <div class="code-wrapper">
+          <button id="copy-code">
+            <span>COPY</span>
+          </button>
+          <code id="code-snippet"></code>
+        </div>
       </section>
-      <label for="func-precision">Precision:</label>
-      <input type="number" id="func-precision" step="0.001" value="0.02" min="0.001" max="0.2" />
+
     </aside>
   </main>
 
@@ -174,6 +188,3 @@
 </body>
 
 </html>
-
-<!-- Amazing ruler
-https://codepen.io/cfenzo/pen/jEGQGm -->

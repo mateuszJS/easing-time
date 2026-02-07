@@ -43,7 +43,6 @@ export function findClosestOnPathPx(mainCps: ControlPoint[], rect: DOMRect, norm
   let best = { distPx: Infinity, segIndex: -1, t: 0, R: { x: 0, y: 0 } }
   for (let i = 0; i < mainCps.length - 1; i++) {
     const cubic = getCubicForSegment(mainCps, i)
-
     // Dense sampling to approximate closest point
     const samples = 200
     for (let s = 0; s <= samples; s++) {

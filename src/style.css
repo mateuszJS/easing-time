@@ -3,6 +3,7 @@ body {
   --primary: #303030;
   --bg: #fff;
   --disabled: #999;
+  --neutral-200: #ddd;
 
   color: var(--primary);
   font-family: Arial, Helvetica, sans-serif;
@@ -57,40 +58,30 @@ main {
   /* position: absolute; */
   /* left: 0; */
 
-  /* container-type: size; */
+  container-type: size;
 
   display: flex;
   padding: 0;
   margin: 0;
   pointer-events: none;
 
-  --number-of-periods: 10; /* number of list items - 1 */
-
   --line-width: 1px;
   --line-length: 8px;
   --line-color: #bbb;
-  --max-number-of-lines: 10;
+  --max-number-of-lines: 20;
 
   --strong-line-length: 14px;
   --strong-line-color: #888;
 
-  --number-of-lines: min(
-    var(--max-number-of-lines),
-    round(100cqmax / (5px * var(--number-of-periods)))
-  );
+  --number-of-lines: round(100cqmax / (5px * var(--max-number-of-lines)));
   --single-line-gap: calc(100% / var(--number-of-lines));
 
   li {
     display: block flow;
-    counter-increment: d 1;
     flex: 1;
 
-    &:first-child {
-      counter-reset: d -1;
-    }
-
     &::after {
-      content: '0.' counter(d);
+      content: attr(data-stop);
       display: inline flow-root;
       font-size: 14px;
     }
@@ -198,7 +189,34 @@ main {
 
   &.cp-selected {
     border: 5px solid cyan;
+    anchor-name: --cp-selected;
   }
+}
+
+[class^='active-line-'] {
+  --size: 1px;
+  position: absolute;
+  position-anchor: --cp-selected;
+  inset: 0;
+  background: #0005;
+  margin: auto;
+  pointer-events: none;
+}
+
+.active-line-x {
+  top: anchor(center);
+  bottom: anchor(center);
+  height: var(--size);
+}
+
+.active-line-y {
+  left: anchor(center);
+  right: anchor(center);
+  width: var(--size);
+}
+
+.graph:not(:has(.cp-selected)) [class^='active-line-'] {
+  display: none;
 }
 
 [data-type='cp-main'] {
@@ -210,6 +228,7 @@ main {
   background-color: red;
   width: 15px;
   height: 15px;
+  z-index: 1;
 }
 
 .spline-preview {
@@ -299,6 +318,7 @@ button[aria-label]:not([disabled]) {
   backdrop-filter: blur(2px);
   z-index: 1;
   padding: 5px 20px;
+  border-bottom: 1px solid var(--neutral-200);
 }
 
 .btn {
@@ -334,6 +354,11 @@ code {
 
 aside {
   width: 200px;
+  padding: 50px 10px;
+  border-left: 1px solid var(--neutral-200);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 
   h2 {
     font-size: 16px;
@@ -345,6 +370,7 @@ aside {
 .output-preview {
   height: 200px;
   background: #00000011;
+  border-radius: 5px;
 }
 
 #preview-target-box {
@@ -356,6 +382,7 @@ aside {
   animation-timing-function: var(--easing-func);
   animation-play-state: var(--anim-state);
   animation-fill-mode: forwards;
+  border-radius: inherit;
 }
 
 @keyframes --sample {
@@ -379,6 +406,7 @@ aside {
     transparent var(--anim-preview-arrow-tip-height),
     lime var(--anim-preview-arrow-tip-height)
   );
+  pointer-events: none;
 
   &.reverse {
     top: 100%; /* for negative values */
@@ -413,15 +441,83 @@ aside {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  max-height: 200px;
 }
 
 #copy-code {
   font-size: 14px;
   padding: 5px 8px;
   border: 1px solid #ccc;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--bg);
+
+  &:active {
+    &::before {
+      @starting-style {
+        display: block;
+        translate: 0 0;
+        opacity: 1;
+      }
+    }
+  }
+
+  &:before {
+    position: absolute;
+    right: 0;
+    content: 'Copied!';
+    opacity: 0;
+    translate: 0 -50px;
+    display: none;
+    background: #0009;
+    border-radius: 4px;
+    padding: 5px 10px;
+    color: white;
+    transition:
+      display 1.5s allow-discrete,
+      translate 1.5s ease-out,
+      opacity 0.75s ease-out 0.75s;
+  }
 }
 
 .css-code-section {
-  display: grid;
-  grid-template: 1fr auto;
+  header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px;
+
+    h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    label {
+      margin-left: auto;
+      font-size: 14px;
+    }
+
+    input {
+      width: 50px;
+    }
+  }
+}
+
+.code-wrapper {
+  position: relative;
+}
+
+#cp-preview {
+  display: none;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.graph:has(.show-cp-preview:hover) #cp-preview {
+  display: block;
+}
+
+.show-cp-preview {
+  cursor: copy;
 }

@@ -6,6 +6,9 @@ import {
   $animStatePause,
   $animStatePlay,
   $breakHandles,
+  $codeSnippet,
+  $copyCode,
+  $cpPreview,
   $cps,
   $deletePoint,
   $funcPrecision,
@@ -195,11 +198,45 @@ function splitAndInsertAt(segIndex: number, t: number) {
   }
 }
 
-$splinePreview.addEventListener('pointerdown', (e) => {
-  const rect = $splinePreview.getBoundingClientRect()
+const ADD_CP_THRESHOLD = 30
 
-  const closest = findClosestOnPathPx(getMainCps(), rect, getNormPos(e))
-  if (closest.distPx >= 50) return
+function getClosest(e: PointerEvent) {
+  const rect = $splinePreview.getBoundingClientRect()
+  const normPos = getNormPos(e)
+
+  const mainCps = getMainCps()
+
+  for (const cp of mainCps) {
+    const cpPos = getPos(cp)
+    const dxPx = (normPos.x - cpPos.x) * rect.width
+    const dyPx = (normPos.y - cpPos.y) * rect.height
+    const distPx = Math.hypot(dxPx, dyPx)
+    if (distPx < ADD_CP_THRESHOLD) {
+      return null
+    }
+  }
+
+  const closest = findClosestOnPathPx(mainCps, rect, normPos)
+
+  if (closest.distPx >= ADD_CP_THRESHOLD) return null
+
+  return closest
+}
+
+$splinePreview.addEventListener('pointermove', (e) => {
+  const closest = getClosest(e)
+
+  if (closest) {
+    updateHtmlPos($cpPreview, closest.R.x, closest.R.y)
+    $splinePreview.classList.add('show-cp-preview')
+  } else {
+    $splinePreview.classList.remove('show-cp-preview')
+  }
+})
+
+$splinePreview.addEventListener('pointerdown', (e) => {
+  const closest = getClosest(e)
+  if (!closest) return
 
   splitAndInsertAt(closest.segIndex, closest.t)
 })
@@ -308,7 +345,8 @@ $animationLoop.addEventListener('change', () => {
 })
 
 $animationTime.addEventListener('input', () => {
-  const time = Number($animationTime.value) || 1
+  const time = Number($animationTime.value) || 1000
+  if (time < 1 || time > 1000000) return
   setCssVar('--anim-time', time)
 })
 
@@ -425,4 +463,10 @@ document.addEventListener('keydown', (e) => {
       setAnimState('running')
     }
   }
+})
+
+$copyCode.addEventListener('click', () => {
+  const code = $codeSnippet.textContent
+  if (!code) return
+  navigator.clipboard.writeText(code)
 })
