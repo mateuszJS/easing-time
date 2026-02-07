@@ -2,7 +2,11 @@ import { getBounds } from './getBounds'
 import type { ControlPoint, Point } from './types'
 import { getMainCp, getMirrorCp, getPos, updateHtmlPos } from './utils'
 
-export function updateControlPointPos(cp: ControlPoint, newPos: Point, isMirrorHandle: boolean) {
+export function updateControlPointPos(
+  cp: ControlPoint,
+  newPos: Point,
+  mirroredHandleDistance: number | null
+) {
   let { x } = newPos
   const { y } = newPos
   const prev = cp.previousElementSibling as HTMLElement | null
@@ -13,7 +17,7 @@ export function updateControlPointPos(cp: ControlPoint, newPos: Point, isMirrorH
     x = getPos(cp).x
   }
 
-  const blockers = getBounds(cp, isMirrorHandle)
+  const blockers = getBounds(cp)
   x = Math.max(x, blockers.left)
   x = Math.min(x, blockers.right)
 
@@ -23,14 +27,34 @@ export function updateControlPointPos(cp: ControlPoint, newPos: Point, isMirrorH
     // Find partner
     updateHtmlPos(cp, x, y)
 
-    const mirrorCp = isMirrorHandle && getMirrorCp(cp)
+    if (mirroredHandleDistance !== null) {
+      const mirrorCp = getMirrorCp(cp)
+      if (!mirrorCp) throw Error('Mirror control point not found')
+      const mirrorCpBounds = getBounds(mirrorCp)
 
-    if (mirrorCp) {
       const mainCp = getMainCp(cp)
       const mainCpPos = getPos(mainCp)
-      // Mirror: Partner = 2*Center - Current
-      const px = 2 * mainCpPos.x - x
-      const py = 2 * mainCpPos.y - y
+      const angle = Math.atan2((y - mainCpPos.y) * -1, x - mainCpPos.x)
+
+      const pxDesiredOffset = Math.cos(angle + Math.PI) * mirroredHandleDistance
+      let px = pxDesiredOffset + mainCpPos.x
+      let py = -Math.sin(angle + Math.PI) * mirroredHandleDistance + mainCpPos.y
+
+      // if we block px, then we have to scale py also to keep aspect ratio
+      // we check type of cp, because of the edge case when cp-after in on same x ad cpMain, so diff in X is 0, so py = 0
+      if (mirrorCp.dataset.type === 'cp-after' && px > mirrorCpBounds.right) {
+        const differenceScale = (mirrorCpBounds.right - mainCpPos.x) / pxDesiredOffset
+        px = mirrorCpBounds.right
+        py = mainCpPos.y - Math.sin(angle + Math.PI) * mirroredHandleDistance * differenceScale
+      }
+
+      if (mirrorCp.dataset.type === 'cp-before' && px < mirrorCpBounds.left) {
+        const differenceScale = (mirrorCpBounds.left - mainCpPos.x) / pxDesiredOffset
+        console.log({ px, differenceScale, 'mirrorCpBounds.left': mirrorCpBounds.left })
+        px = mirrorCpBounds.left
+        py = mainCpPos.y - Math.sin(angle + Math.PI) * mirroredHandleDistance * differenceScale
+      }
+
       updateHtmlPos(mirrorCp, px, py)
     }
   } else if (type === 'cp-main') {

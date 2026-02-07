@@ -73,3 +73,21 @@ export function getConnectedCpHandle(cp: ControlPoint, type: 'cp-before' | 'cp-a
   }
   return null
 }
+
+export function normalizeAngle(angle: number): number {
+  return Math.atan2(Math.sin(angle), Math.cos(angle))
+}
+
+export function getIsMirrored(cpBefore: ControlPoint, cpMain: ControlPoint, cpAfter: ControlPoint) {
+  const cpBeforePos = getPos(cpBefore)
+  const cpMainPos = getPos(cpMain)
+  const cpAfterPos = getPos(cpAfter)
+
+  const angleBefore = Math.atan2((cpBeforePos.y - cpMainPos.y) * -1, cpBeforePos.x - cpMainPos.x)
+  const angleAfter = Math.atan2((cpAfterPos.y - cpMainPos.y) * -1, cpAfterPos.x - cpMainPos.x)
+  const angleDiff = normalizeAngle(angleBefore - angleAfter)
+
+  const isMirrored = Math.abs(angleDiff) > Math.PI - 0.01
+
+  return isMirrored
+}

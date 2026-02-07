@@ -24,6 +24,7 @@ import {
   getConnectedCpHandle,
   getCssVarNumber,
   getCssVarStr,
+  getIsMirrored,
   getMainCp,
   getPos,
   serialize,
@@ -118,25 +119,25 @@ function attachEvents(cp: ControlPoint) {
     dragProps = {
       initialPos: getPos(cp),
       cp: cp,
-      isMirroringHandles: false,
+      mirroredHandleDistance: null,
     }
 
     const cpBefore = getConnectedCpHandle(cp, 'cp-before')
-    const cpMainPos = getPos(getMainCp(cp))
+    const cpMain = getMainCp(cp)
     const cpAfter = getConnectedCpHandle(cp, 'cp-after')
 
-    if (cpBefore && cpAfter) {
-      const cpBeforePos = getPos(cpBefore)
-      const cpAfterPos = getPos(cpAfter)
-      const expectedMirroredCpAfter = {
-        x: cpMainPos.x + (cpMainPos.x - cpBeforePos.x),
-        y: cpMainPos.y + (cpMainPos.y - cpBeforePos.y),
+    if (cpBefore && cpAfter && cp !== cpMain) {
+      const isMirrored = getIsMirrored(cpBefore, cpMain, cpAfter)
+      if (isMirrored) {
+        const cpBeforePos = getPos(cpBefore)
+        const cpAfterPos = getPos(cpAfter)
+        const cpMainPos = getPos(cpMain)
+
+        dragProps.mirroredHandleDistance =
+          cp === cpBefore ?
+            Math.hypot(cpMainPos.x - cpAfterPos.x, cpMainPos.y - cpAfterPos.y)
+          : Math.hypot(cpMainPos.x - cpBeforePos.x, cpMainPos.y - cpBeforePos.y)
       }
-      const mirrorValue = Math.hypot(
-        expectedMirroredCpAfter.x - cpAfterPos.x,
-        expectedMirroredCpAfter.y - cpAfterPos.y
-      )
-      dragProps.isMirroringHandles = mirrorValue < 0.001
     }
   })
 }
@@ -144,7 +145,9 @@ function attachEvents(cp: ControlPoint) {
 document.body.addEventListener('pointermove', (e) => {
   if (!dragProps.cp) return
   const normPos = getNormPos(e)
-  updateControlPointPos(dragProps.cp, normPos, dragProps.isMirroringHandles)
+
+  updateControlPointPos(dragProps.cp, normPos, dragProps.mirroredHandleDistance)
+
   updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
 })
 
@@ -188,7 +191,7 @@ function splitAndInsertAt(segIndex: number, t: number) {
   dragProps = {
     initialPos: getPos(mainCp),
     cp: mainCp,
-    isMirroringHandles: false,
+    mirroredHandleDistance: null,
   }
 }
 
@@ -240,7 +243,7 @@ $mirrorHandles.addEventListener('click', () => {
     (() => {
       const cp = createControlPoint('cp-before', cpMainPos.x - 50, cpMainPos.y)
       $cps.insertBefore(cp, mainCp)
-      const bounds = getBounds(cp, false)
+      const bounds = getBounds(cp)
       const safeX = clamp(cpMainPos.x, bounds.left, bounds.right)
       updateHtmlPos(cp, safeX, cpMainPos.y)
       return cp
@@ -259,7 +262,7 @@ $mirrorHandles.addEventListener('click', () => {
   const x = cpMainPos.x + (cpMainPos.x - cpHandlePos.x)
   const y = cpMainPos.y + (cpMainPos.y - cpHandlePos.y)
 
-  const bounds = getBounds(cpOppositeHandle, true)
+  const bounds = getBounds(cpOppositeHandle)
   updateHtmlPos(cpOppositeHandle, clamp(x, bounds.left, bounds.right), y)
 
   onActionComplete()
@@ -282,13 +285,14 @@ $breakHandles.addEventListener('click', () => {
     const cpBeforePos = getPos(cpBefore)
     const angle = Math.atan2((cpMainPos.y - cpBeforePos.y) * -1, cpMainPos.x - cpBeforePos.x)
     const dist = Math.hypot(cpMainPos.x - cpBeforePos.x, cpMainPos.y - cpBeforePos.y)
-    const newAngle = angle + Math.PI / 4
+
+    const angleDiff = cpBeforePos.y > cpMainPos.y ? -Math.PI / 4 : Math.PI / 4 // to ensure angle won't be blocked by cp bounds!
     const newPos = {
-      x: cpMainPos.x + Math.cos(newAngle) * dist,
-      y: cpMainPos.y - Math.sin(newAngle) * dist,
+      x: cpMainPos.x + Math.cos(angle + angleDiff) * dist,
+      y: cpMainPos.y - Math.sin(angle + angleDiff) * dist,
     }
 
-    const bounds = getBounds(cpAfter, false)
+    const bounds = getBounds(cpAfter)
     const safeX = clamp(newPos.x, bounds.left, bounds.right)
 
     updateHtmlPos(cpAfter, safeX, newPos.y)

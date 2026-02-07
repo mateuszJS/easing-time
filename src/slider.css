@@ -58,7 +58,7 @@
   width: calc(100% + var(--thumb-width));
   height: 100%;
   appearance: none;
-  cursor: pointer;
+  cursor: ew-resize;
 
   &::-webkit-slider-runnable-track {
     background: none; /* get rid of Firefox track background */

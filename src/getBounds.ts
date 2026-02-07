@@ -40,15 +40,12 @@ function getSingleCpBounds(cp: ControlPoint) {
   }
 }
 
-export function getBounds(cp: ControlPoint, isMirrorHandle: boolean) {
+export function getBounds(cp: ControlPoint) {
   let leftBound = 0
   let rightBound = 1
 
-  const cpBefore =
-    (cp.dataset.type !== 'cp-after' || isMirrorHandle) && getConnectedCpHandle(cp, 'cp-before')
-
-  const cpAfter =
-    (cp.dataset.type !== 'cp-before' || isMirrorHandle) && getConnectedCpHandle(cp, 'cp-after')
+  const cpBefore = cp.dataset.type !== 'cp-after' && getConnectedCpHandle(cp, 'cp-before')
+  const cpAfter = cp.dataset.type !== 'cp-before' && getConnectedCpHandle(cp, 'cp-after')
 
   const cpPos = getPos(cp)
 
@@ -60,13 +57,7 @@ export function getBounds(cp: ControlPoint, isMirrorHandle: boolean) {
       // right boudns made by cp-main
       rightBound = Math.min(rightBound, bounds.right)
     }
-
-    if (cp.dataset.type === 'cp-after') {
-      // handle case when it's the mirrored point
-      rightBound = Math.min(rightBound, cpPos.x + availableRightSpace)
-    } else {
-      leftBound = Math.max(leftBound, cpPos.x - availableRightSpace)
-    }
+    leftBound = Math.max(leftBound, cpPos.x - availableRightSpace)
   }
 
   if (cpAfter) {
@@ -76,13 +67,7 @@ export function getBounds(cp: ControlPoint, isMirrorHandle: boolean) {
     if (cp.dataset.type === 'cp-after') {
       leftBound = Math.max(leftBound, bounds.left)
     }
-
-    if (cp.dataset.type === 'cp-before') {
-      // mirrored poitn case
-      leftBound = Math.max(leftBound, cpPos.x - availableRightSpace)
-    } else {
-      rightBound = Math.min(rightBound, cpPos.x + availableRightSpace)
-    }
+    rightBound = Math.min(rightBound, cpPos.x + availableRightSpace)
   }
 
   if (cp.dataset.type === 'cp-main') {

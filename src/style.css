@@ -408,3 +408,20 @@ aside {
 .timeline-action {
   grid-area: timeline-action;
 }
+
+#code-snippet {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#copy-code {
+  font-size: 14px;
+  padding: 5px 8px;
+  border: 1px solid #ccc;
+}
+
+.css-code-section {
+  display: grid;
+  grid-template: 1fr auto;
+}
