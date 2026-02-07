@@ -3,6 +3,7 @@ import type { Point, ControlPoint } from './types'
 export interface Drag {
   initialPos: Point
   cp: ControlPoint | null
+  cursorOffset?: Point
   mirroredHandleDistance: number | null
 }
 

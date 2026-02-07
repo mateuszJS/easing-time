@@ -4,6 +4,7 @@ body {
   --bg: #fff;
   --disabled: #999;
   --neutral-200: #ddd;
+  --neutral-300: #ccc;
 
   color: var(--primary);
   font-family: Arial, Helvetica, sans-serif;
@@ -51,6 +52,7 @@ main {
   position: relative;
   grid-area: graph;
   min-height: 0;
+  isolation: isolate;
 }
 
 .ruler {
@@ -368,14 +370,25 @@ aside {
 }
 
 .output-preview {
-  height: 200px;
+  flex: 1 0 200px;
+  container-type: size;
   background: #00000011;
   border-radius: 5px;
+  padding: 10px;
+  align-content: end;
+}
+
+.preview-target-wrapper {
+  width: 100px;
+  height: 100px;
+  outline: 3px dashed var(--neutral-300);
+  border-radius: inherit;
+  margin-inline: auto;
 }
 
 #preview-target-box {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
   background: tomato;
   animation: --sample calc(1ms * var(--anim-time)) infinite;
   animation-direction: var(--anim-dir);
@@ -386,11 +399,8 @@ aside {
 }
 
 @keyframes --sample {
-  0% {
-    transform: translateY(100px);
-  }
-  100% {
-    transform: translateY(0px);
+  to {
+    transform: translateY(calc(100% - 100cqh));
   }
 }
 
@@ -514,7 +524,7 @@ aside {
   pointer-events: none;
 }
 
-.graph:has(.show-cp-preview:hover) #cp-preview {
+.graph:has(.show-cp-preview) #cp-preview {
   display: block;
 }
 

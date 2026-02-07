@@ -93,10 +93,11 @@ function getMainCps() {
   return getCps().filter((p) => p.dataset.type === 'cp-main')
 }
 
-function getNormPos(ev: PointerEvent): Point {
+const NO_OFFSET = { x: 0, y: 0 }
+function getNormPos(ev: PointerEvent, nOffset = NO_OFFSET): Point {
   const rect = $splinePreview.getBoundingClientRect()
-  const nx = (ev.clientX - rect.left) / rect.width
-  const ny = (ev.clientY - rect.top) / rect.height
+  const nx = (ev.clientX - rect.left) / rect.width + nOffset.x
+  const ny = (ev.clientY - rect.top) / rect.height + nOffset.y
 
   return { x: nx, y: ny }
 }
@@ -147,7 +148,8 @@ function attachEvents(cp: ControlPoint) {
 
 document.body.addEventListener('pointermove', (e) => {
   if (!dragProps.cp) return
-  const normPos = getNormPos(e)
+
+  const normPos = getNormPos(e, dragProps.cursorOffset)
 
   updateControlPointPos(dragProps.cp, normPos, dragProps.mirroredHandleDistance)
 
@@ -194,6 +196,7 @@ function splitAndInsertAt(segIndex: number, t: number) {
   dragProps = {
     initialPos: getPos(mainCp),
     cp: mainCp,
+    cursorOffset: { x: 0, y: 0 },
     mirroredHandleDistance: null,
   }
 }
@@ -224,6 +227,10 @@ function getClosest(e: PointerEvent) {
 }
 
 $splinePreview.addEventListener('pointermove', (e) => {
+  if (dragProps.cp) {
+    return // Don't show preview while dragging a point
+  }
+
   const closest = getClosest(e)
 
   if (closest) {
@@ -234,11 +241,23 @@ $splinePreview.addEventListener('pointermove', (e) => {
   }
 })
 
+$splinePreview.addEventListener('pointerleave', () => {
+  $splinePreview.classList.remove('show-cp-preview')
+})
+
 $splinePreview.addEventListener('pointerdown', (e) => {
   const closest = getClosest(e)
   if (!closest) return
 
+  $splinePreview.classList.remove('show-cp-preview')
+
   splitAndInsertAt(closest.segIndex, closest.t)
+
+  const normPointerPos = getNormPos(e)
+  dragProps.cursorOffset = {
+    x: closest.R.x - normPointerPos.x,
+    y: closest.R.y - normPointerPos.y,
+  }
 })
 
 attachHistoryEvents(history)
@@ -274,6 +293,8 @@ $mirrorHandles.addEventListener('click', () => {
   const maybeCpAfter = getConnectedCpHandle(mainCp, 'cp-after')
   const cpMainPos = getPos(mainCp)
 
+  console.log(mainCp, maybeCpBefore, maybeCpAfter)
+
   const existingHandle =
     maybeCpBefore ||
     maybeCpAfter ||
@@ -286,21 +307,19 @@ $mirrorHandles.addEventListener('click', () => {
       return cp
     })()
 
-  const cpOppositeHandle =
-    (existingHandle.dataset.type === 'cp-before' ? maybeCpAfter : maybeCpBefore) ||
-    (() => {
-      const type = existingHandle.dataset.type === 'cp-before' ? 'cp-after' : 'cp-before'
-      const cp = createControlPoint(type, 0, 0)
-      $cps.insertBefore(cp, cp.dataset.type === 'cp-before' ? mainCp : mainCp.nextElementSibling)
-      return cp
-    })()
+  if (existingHandle.dataset.type === 'cp-before' ? maybeCpAfter : maybeCpBefore) {
+    const type = existingHandle.dataset.type === 'cp-before' ? 'cp-after' : 'cp-before'
+    const cp = createControlPoint(type, 0, 0)
+    $cps.insertBefore(cp, cp.dataset.type === 'cp-before' ? mainCp : mainCp.nextElementSibling)
+    return cp
+  }
 
   const cpHandlePos = getPos(existingHandle)
-  const x = cpMainPos.x + (cpMainPos.x - cpHandlePos.x)
-  const y = cpMainPos.y + (cpMainPos.y - cpHandlePos.y)
-
-  const bounds = getBounds(cpOppositeHandle)
-  updateHtmlPos(cpOppositeHandle, clamp(x, bounds.left, bounds.right), y)
+  const mirroredHandleDistance = Math.hypot(
+    cpMainPos.x - cpHandlePos.x,
+    cpMainPos.y - cpHandlePos.y
+  )
+  updateControlPointPos(existingHandle, cpHandlePos, mirroredHandleDistance)
 
   onActionComplete()
 })
