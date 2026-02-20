@@ -1,4 +1,4 @@
-import { $splinePreview, $codeSnippet } from './elements'
+import { $splinePreview, $codeSnippet, $codeSize } from './elements'
 import type { ControlPoint, Point } from './types'
 import updateConnectionLines from './updateConnectionLines'
 import { getPos, setCssVar } from './utils'
@@ -55,10 +55,13 @@ export function updateSvg(cps: ControlPoint[], approxPointsList: Point[]) {
     })
     parts.push(String(endY))
 
-    $codeSnippet.textContent = `linear(${parts.join(', ')})`
-    setCssVar('--easing-func', $codeSnippet.textContent)
+    const animCode = `linear(${parts.join(', ')})`
+    $codeSnippet.value = `${animCode}\n/* ${window.location.href} */`
+    $codeSize.textContent = animCode.length.toString()
+    setCssVar('--easing-func', animCode)
   } else {
     $pathApprox.setAttribute('d', '')
-    $codeSnippet.textContent = 'linear(0, 1)'
+    $codeSnippet.value = 'linear(0, 1)'
+    $codeSize.textContent = $codeSnippet.value.length.toString()
   }
 }

@@ -9,11 +9,12 @@ export const $cps = document.querySelector<HTMLElement>('.cps')!
 export const $panZoomArea = document.querySelector<HTMLElement>('#pan-zoom-area')!
 export const $cpPreview = document.querySelector<HTMLElement>('#cp-preview')!
 
-export const $codeSnippet = document.querySelector<HTMLElement>('#code-snippet')!
+export const $codeSnippet = document.querySelector<HTMLTextAreaElement>('#code-snippet')!
 export const $animationLoop = document.querySelector<HTMLInputElement>('#animation-loop')!
 export const $animationTime = document.querySelector<HTMLInputElement>('#animation-time')!
 export const $funcPrecision = document.querySelector<HTMLInputElement>('#func-precision')!
 export const $copyCode = document.querySelector<HTMLButtonElement>('#copy-code')!
+export const $codeSize = document.querySelector<HTMLSpanElement>('#code-size')!
 
 export const $previewTargetBox = document.querySelector<HTMLElement>('#preview-target-box')!
 export const $timeline = document.querySelector<HTMLInputElement>('#timeline')!

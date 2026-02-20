@@ -24,3 +24,8 @@ p {
 svg:has(symbol) {
   display: none;
 }
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}

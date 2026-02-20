@@ -14,9 +14,11 @@ import {
   $funcPrecision,
   $mirrorHandles,
   $previewTargetBox,
+  $redo,
   $splineAnimProgress,
   $splinePreview,
   $timeline,
+  $undo,
 } from './elements'
 import { HistoryManager } from './historyManager'
 import type { ControlPoint, CpType, Point, SerializedControlPoint } from './types'
@@ -37,6 +39,7 @@ import {
 import { getApproxPoints } from './getApproxPoints'
 import { DRAG_INITIAL } from './drag'
 import { getBounds } from './getBounds'
+import { getInitialCps, setInitialCps } from './initialCps'
 
 let funcPrecision = 0.01
 const ANIM_PREVIEW_ARROW_TIP_HEIGHT = 20
@@ -55,20 +58,16 @@ function applySerialized(state: SerializedControlPoint[]) {
 const history = new HistoryManager({
   getState: () => serialize(getCps()),
   applyState: applySerialized,
+  onUpdate: (state) => {
+    setInitialCps(state)
+
+    // update buttons
+    $undo.disabled = !history.canUndo()
+    $redo.disabled = !history.canRedo()
+  },
 })
 
-// Initialize with some default points if empty
-function setDefaultData() {
-  const defaultCps: SerializedControlPoint[] = [
-    { type: 'cp-main', x: 0, y: 1 },
-    { type: 'cp-after', x: 0.5, y: 1 },
-    { type: 'cp-before', x: 0.5, y: 0 },
-    { type: 'cp-main', x: 1, y: 0 },
-  ]
-  applySerialized(defaultCps)
-}
-
-setDefaultData()
+applySerialized(getInitialCps())
 onActionComplete()
 
 function onActionComplete() {
@@ -293,13 +292,11 @@ $mirrorHandles.addEventListener('click', () => {
   const maybeCpAfter = getConnectedCpHandle(mainCp, 'cp-after')
   const cpMainPos = getPos(mainCp)
 
-  console.log(mainCp, maybeCpBefore, maybeCpAfter)
-
   const existingHandle =
     maybeCpBefore ||
     maybeCpAfter ||
     (() => {
-      const cp = createControlPoint('cp-before', cpMainPos.x - 50, cpMainPos.y)
+      const cp = createControlPoint('cp-before', cpMainPos.x - 0.1, cpMainPos.y)
       $cps.insertBefore(cp, mainCp)
       const bounds = getBounds(cp)
       const safeX = clamp(cpMainPos.x, bounds.left, bounds.right)
@@ -307,9 +304,11 @@ $mirrorHandles.addEventListener('click', () => {
       return cp
     })()
 
-  if (existingHandle.dataset.type === 'cp-before' ? maybeCpAfter : maybeCpBefore) {
+  const oppositeHandle = existingHandle.dataset.type === 'cp-before' ? maybeCpAfter : maybeCpBefore
+  if (!oppositeHandle) {
     const type = existingHandle.dataset.type === 'cp-before' ? 'cp-after' : 'cp-before'
-    const cp = createControlPoint(type, 0, 0)
+    const x = existingHandle.dataset.type === 'cp-before' ? cpMainPos.x + 0.1 : cpMainPos.x - 0.1
+    const cp = createControlPoint(type, x, cpMainPos.y)
     $cps.insertBefore(cp, cp.dataset.type === 'cp-before' ? mainCp : mainCp.nextElementSibling)
     return cp
   }
@@ -364,7 +363,7 @@ $animationLoop.addEventListener('change', () => {
 })
 
 $animationTime.addEventListener('input', () => {
-  const time = Number($animationTime.value) || 1000
+  const time = Number.isNaN($animationTime.valueAsNumber) ? 1000 : $animationTime.valueAsNumber
   if (time < 1 || time > 1000000) return
   setCssVar('--anim-time', time)
 })
@@ -485,7 +484,7 @@ document.addEventListener('keydown', (e) => {
 })
 
 $copyCode.addEventListener('click', () => {
-  const code = $codeSnippet.textContent
+  const code = $codeSnippet.value
   if (!code) return
   navigator.clipboard.writeText(code)
 })

@@ -1,6 +1,7 @@
 body {
   --btn-hover-bg: rgba(0, 0, 0, 0.05);
   --primary: #303030;
+  --secondary: #555;
   --bg: #fff;
   --disabled: #999;
   --neutral-200: #ddd;
@@ -345,18 +346,9 @@ button[aria-label]:not([disabled]) {
   }
 }
 
-code {
-  display: block;
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-  white-space: break-spaces;
-  max-height: 200px;
-  overflow: auto;
-  font-size: 12px;
-}
-
 aside {
   width: 200px;
-  padding: 50px 10px;
+  padding: 20px 10px;
   border-left: 1px solid var(--neutral-200);
   display: flex;
   flex-direction: column;
@@ -370,7 +362,8 @@ aside {
 }
 
 .output-preview {
-  flex: 1 0 200px;
+  flex: 2 0 200px;
+  max-height: 600px;
   container-type: size;
   background: #00000011;
   border-radius: 5px;
@@ -445,22 +438,29 @@ aside {
 
 .timeline-action {
   grid-area: timeline-action;
+  margin-right: 5px;
 }
 
 #code-snippet {
-  padding: 10px;
+  anchor-name: --code-snippet;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  padding: 8px 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   max-height: 200px;
+  width: 100%;
+  height: 100%;
 }
 
 #copy-code {
+  position-anchor: --code-snippet;
   font-size: 14px;
   padding: 5px 8px;
   border: 1px solid #ccc;
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: calc(anchor(top) + 10px);
+  right: calc(anchor(right) + 10px);
   background: var(--bg);
 
   &:active {
@@ -492,6 +492,10 @@ aside {
 }
 
 .css-code-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+
   header {
     display: flex;
     align-items: center;
@@ -503,19 +507,52 @@ aside {
       font-weight: 400;
     }
 
-    label {
-      margin-left: auto;
-      font-size: 14px;
-    }
-
     input {
       width: 50px;
     }
   }
 }
 
-.code-wrapper {
+.input {
+  --label-font-size: 12px;
+  --label-x: 14px;
+
   position: relative;
+  margin-top: var(--label-font-size);
+
+  label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(var(--label-x), -9px);
+  }
+
+  label,
+  legend {
+    font-size: var(--label-font-size);
+  }
+
+  input {
+    border: none;
+    padding: 6px 8px;
+    width: 100%;
+    height: 100%;
+    outline: none;
+  }
+
+  fieldset {
+    position: absolute;
+    inset: 0;
+    top: -8px;
+    pointer-events: none;
+    padding-left: calc(var(--label-x) - 5px);
+    border-radius: 4px;
+  }
+
+  legend {
+    visibility: hidden;
+    padding-right: 4px;
+  }
 }
 
 #cp-preview {
@@ -530,4 +567,10 @@ aside {
 
 .show-cp-preview {
   cursor: copy;
+}
+
+.css-code-label {
+  color: var(--secondary);
+  font-size: 0.8rem;
+  margin-left: auto;
 }

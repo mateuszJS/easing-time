@@ -14,12 +14,12 @@
 <body>
   <main>
     <div tabindex="0" id="toolbar">
-      <button id="undo" class="btn" aria-label="Undo last operation" disabled>
+      <button id="undo" class="btn" aria-label="Undo" disabled>
         <svg>
           <use href="#icon-return"></use>
         </svg>
       </button>
-      <button id="redo" class="btn" aria-label="Redo last operation" disabled>
+      <button id="redo" class="btn" aria-label="Redo" disabled>
         <svg>
           <use href="#icon-return" transform="scale(-1, 1)" transform-origin="50% 50%"></use>
         </svg>
@@ -118,26 +118,36 @@
         </div>
       </div>
 
-      <label>Loop animation:<input type="checkbox" id="animation-loop" /></label>
+      <label>Loop animation:<input type="checkbox" id="animation-loop" />
 
-
-      <label>Animation time(ms):<input type="number" id="animation-time" min="0" step="100" value="3000" /></label>
-
-      <label>Precision:
-        <input type="number" id="func-precision" step="0.001" value="0.02" min="0.001" max="0.2" />
       </label>
+
+      <div class="input">
+        <label for="animation-time">Animation time(ms)</label>
+        <input type="number" id="animation-time" min="0" step="100" value="3000" />
+        <fieldset aria-hidden="true">
+          <legend>Animation time(ms)</legend>
+        </fieldset>
+      </div>
+
+
+      <div class="input">
+        <label for="func-precision">Error Threshold</label>
+        <input type="number" id="func-precision" step="0.001" value="0.02" min="0.001" max="0.2" />
+        <fieldset aria-hidden="true">
+          <legend>Error Threshold</legend>
+        </fieldset>
+      </div>
 
       <section class="css-code-section">
         <header>
           <h3>CSS Code</h3>
-
+          <span class="css-code-label">~<span id="code-size">0</span> bytes</span>
         </header>
-        <div class="code-wrapper">
-          <button id="copy-code">
-            <span>COPY</span>
-          </button>
-          <code id="code-snippet"></code>
-        </div>
+        <button id="copy-code">
+          <span>COPY</span>
+        </button>
+        <textarea id="code-snippet" readonly></textarea>
       </section>
 
     </aside>

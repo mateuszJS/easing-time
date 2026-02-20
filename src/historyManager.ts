@@ -1,4 +1,3 @@
-import { $redo, $undo } from './elements'
 import type { SerializedControlPoint } from './types'
 
 export class HistoryManager<T = SerializedControlPoint[]> {
@@ -6,10 +5,16 @@ export class HistoryManager<T = SerializedControlPoint[]> {
   private future: T[] = []
   private getState: () => T
   private applyState: (state: T) => void
+  private onUpdate: (snapshot: T) => void
 
-  constructor(opts: { getState: () => T; applyState: (state: T) => void }) {
+  constructor(opts: {
+    getState: () => T
+    applyState: (state: T) => void
+    onUpdate: (state: T) => void
+  }) {
     this.getState = opts.getState
     this.applyState = opts.applyState
+    this.onUpdate = opts.onUpdate
   }
 
   // Record a new snapshot (clears redo stack)
@@ -17,12 +22,7 @@ export class HistoryManager<T = SerializedControlPoint[]> {
     const snapshot = this.getState()
     this.past.push(snapshot)
     this.future.length = 0
-    this.updateButtons()
-  }
-
-  updateButtons(): void {
-    $undo.disabled = !this.canUndo()
-    $redo.disabled = !this.canRedo()
+    this.onUpdate(snapshot)
   }
 
   canUndo(): boolean {
@@ -39,7 +39,7 @@ export class HistoryManager<T = SerializedControlPoint[]> {
     this.future.push(current)
     const prev = this.past[this.past.length - 1]
     this.applyState(prev)
-    this.updateButtons()
+    this.onUpdate(prev)
   }
 
   redo(): void {
@@ -47,6 +47,6 @@ export class HistoryManager<T = SerializedControlPoint[]> {
     const next = this.future.pop()!
     this.past.push(next)
     this.applyState(next)
-    this.updateButtons()
+    this.onUpdate(next)
   }
 }
