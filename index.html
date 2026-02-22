@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/src/common.css" />
   <link rel="stylesheet" href="/src/style.css" />
   <link rel="stylesheet" href="/src/slider.css" />
+  <link rel="stylesheet" href="/src/error-msg.css" />
 </head>
 
 <body>
@@ -122,22 +123,15 @@
 
       </label>
 
-      <div class="input">
-        <label for="animation-time">Animation time(ms)</label>
-        <input type="number" id="animation-time" min="0" step="100" value="3000" />
-        <fieldset aria-hidden="true">
-          <legend>Animation time(ms)</legend>
-        </fieldset>
-      </div>
+      <number-input data-name="animation-time" data-label="Animation time(ms)" data-min="100" data-max="100000"
+        data-step="100" data-default-value="3000" data-cssvar="--anim-time"></number-input>
 
 
-      <div class="input">
-        <label for="func-precision">Error Threshold</label>
-        <input type="number" id="func-precision" step="0.001" value="0.02" min="0.001" max="0.2" />
-        <fieldset aria-hidden="true">
-          <legend>Error Threshold</legend>
-        </fieldset>
-      </div>
+      <number-input data-name="func-precision" data-label="Error Threshold" data-min="0.001" data-max="0.2"
+        data-step="0.001" data-default-value="0.02"></number-input>
+
+      <number-input data-name="decimal-point" data-label="Decimal Point" data-min="0" data-max="8" data-step="1"
+        data-default-value="4"></number-input>
 
       <section class="css-code-section">
         <header>

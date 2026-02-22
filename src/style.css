@@ -255,7 +255,6 @@ button[aria-label]::after {
   --r: 0.5em; /* the radius */
   --c: var(--primary);
 
-  padding: 1em;
   border-radius: min(var(--r), var(--p) - var(--b) / 2)
     min(var(--r), 100% - var(--p) - var(--b) / 2) var(--r) var(--r) / var(--r);
   clip-path: polygon(
@@ -513,7 +512,7 @@ aside {
   }
 }
 
-.input {
+number-input {
   --label-font-size: 12px;
   --label-x: 14px;
 

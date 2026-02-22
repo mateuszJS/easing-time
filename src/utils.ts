@@ -91,3 +91,14 @@ export function getIsMirrored(cpBefore: ControlPoint, cpMain: ControlPoint, cpAf
 
   return isMirrored
 }
+
+export function updateQueryParam(key: string, value: string) {
+  const queryPrams = new URLSearchParams(window.location.search)
+  queryPrams.set(key, value)
+  window.history.replaceState(null, '', `/?${queryPrams.toString()}`)
+}
+
+export function getQueryParam(key: string): string | null {
+  const queryPrams = new URLSearchParams(window.location.search)
+  return queryPrams.get(key)
+}

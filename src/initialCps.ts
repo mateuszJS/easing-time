@@ -20,7 +20,7 @@ function trimFixed(value: number, maxDecimals = 5): string {
   return fixed.replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1')
 }
 
-function urlCpsStringify(cps: SerializedControlPoint[]): string {
+export function urlCpsStringify(cps: SerializedControlPoint[]): string {
   return cps.map((cp) => `${cp.type[3]}-${trimFixed(cp.x)}-${trimFixed(cp.y)}`).join('_')
 }
 
@@ -32,14 +32,6 @@ function urlCpsParse(str: string): SerializedControlPoint[] {
     if (!type) throw Error(`Invalid control point type: ${typeChar}`)
     return { type, x: parseFloat(xStr), y: parseFloat(yStr) }
   })
-}
-
-export function setInitialCps(cps: SerializedControlPoint[]) {
-  const search = new URLSearchParams({
-    cps: urlCpsStringify(cps),
-  }).toString()
-
-  window.history.replaceState(null, '', `/?${search}`)
 }
 
 export function getInitialCps(): SerializedControlPoint[] {

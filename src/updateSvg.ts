@@ -3,11 +3,14 @@ import type { ControlPoint, Point } from './types'
 import updateConnectionLines from './updateConnectionLines'
 import { getPos, setCssVar } from './utils'
 import { getCubicForSegment } from './cubicBezierCurve'
+import { NORM_MIN_DECIMAL_POINT } from './consts'
 
 const $pathExact = $splinePreview.querySelector('#path-exact')!
 const $pathApprox = $splinePreview.querySelector('#path-approx')!
 
-export function updateSvg(cps: ControlPoint[], approxPointsList: Point[]) {
+export function updateSvg(cps: ControlPoint[], approxPointsList: Point[], decimal: number) {
+  const toDecimalFloat = (num: number) => +num.toFixed(decimal + NORM_MIN_DECIMAL_POINT)
+
   const mainCps = cps.filter((cp) => cp.dataset.type === 'cp-main')
   const [startMain] = mainCps
   const startPos = getPos(startMain)
@@ -32,28 +35,19 @@ export function updateSvg(cps: ControlPoint[], approxPointsList: Point[]) {
     })
     $pathApprox.setAttribute('d', approxD)
 
-    // Build CSS linear() easing string: y values with x% breakpoints (invert y)
-    const round = (n: number, decimals = 6) => {
-      const f = Math.pow(10, decimals)
-      return Math.round(n * f) / f
-    }
-    const roundPct = (n: number, decimals = 3) => {
-      const f = Math.pow(10, decimals)
-      return Math.round(n * f) / f
-    }
-
-    const startY = round(1 - first.y)
-    const endY = round(1 - pts[pts.length - 1].y)
+    const toDecimalPerc = (num: number) => +num.toFixed(decimal)
+    const startY = toDecimalFloat(1 - first.y)
+    const endY = toDecimalFloat(1 - pts[pts.length - 1].y)
     const intermediates = pts.slice(1, -1)
 
     const parts: string[] = []
-    parts.push(String(startY))
+    parts.push(String(toDecimalFloat(startY)))
     intermediates.forEach((p) => {
-      const y = round(1 - p.y)
-      const xPct = roundPct(p.x * 100)
-      parts.push(`${y} ${xPct}%`)
+      const y = toDecimalFloat(1 - p.y)
+      const xPct = toDecimalPerc(p.x * 100)
+      parts.push(`${toDecimalFloat(y)} ${toDecimalPerc(xPct)}%`)
     })
-    parts.push(String(endY))
+    parts.push(String(toDecimalFloat(endY)))
 
     const animCode = `linear(${parts.join(', ')})`
     $codeSnippet.value = `${animCode}\n/* ${window.location.href} */`

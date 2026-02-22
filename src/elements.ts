@@ -1,3 +1,5 @@
+import type { NumberInput } from './number-input'
+
 export const $undo = document.querySelector<HTMLButtonElement>('#undo')!
 export const $redo = document.querySelector<HTMLButtonElement>('#redo')!
 export const $breakHandles = document.querySelector<HTMLButtonElement>('#break-handles')!
@@ -11,8 +13,9 @@ export const $cpPreview = document.querySelector<HTMLElement>('#cp-preview')!
 
 export const $codeSnippet = document.querySelector<HTMLTextAreaElement>('#code-snippet')!
 export const $animationLoop = document.querySelector<HTMLInputElement>('#animation-loop')!
-export const $animationTime = document.querySelector<HTMLInputElement>('#animation-time')!
-export const $funcPrecision = document.querySelector<HTMLInputElement>('#func-precision')!
+export const $animationTime = document.querySelector<NumberInput>('[data-name="animation-time"]')!
+export const $funcPrecision = document.querySelector<NumberInput>('[data-name="func-precision"]')!
+export const $decimalPoint = document.querySelector<NumberInput>('[data-name="decimal-point"]')!
 export const $copyCode = document.querySelector<HTMLButtonElement>('#copy-code')!
 export const $codeSize = document.querySelector<HTMLSpanElement>('#code-size')!
 

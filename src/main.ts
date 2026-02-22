@@ -1,8 +1,8 @@
+import './number-input'
 import { attachHistoryEvents } from './attachHistoryEvents'
 import { cubicPointAt, findClosestOnPathPx, getCubicForSegment } from './cubicBezierCurve'
 import {
   $animationLoop,
-  $animationTime,
   $animStatePause,
   $animStatePlay,
   $breakHandles,
@@ -10,6 +10,7 @@ import {
   $copyCode,
   $cpPreview,
   $cps,
+  $decimalPoint,
   $deletePoint,
   $funcPrecision,
   $mirrorHandles,
@@ -35,13 +36,14 @@ import {
   serialize,
   setCssVar,
   updateHtmlPos,
+  updateQueryParam,
 } from './utils'
 import { getApproxPoints } from './getApproxPoints'
 import { DRAG_INITIAL } from './drag'
 import { getBounds } from './getBounds'
-import { getInitialCps, setInitialCps } from './initialCps'
+import { getInitialCps, urlCpsStringify } from './initialCps'
 
-let funcPrecision = 0.01
+const queryParams = new URLSearchParams(window.location.search)
 const ANIM_PREVIEW_ARROW_TIP_HEIGHT = 20
 
 setCssVar('--anim-preview-arrow-tip-height', ANIM_PREVIEW_ARROW_TIP_HEIGHT + 'px')
@@ -52,14 +54,34 @@ function applySerialized(state: SerializedControlPoint[]) {
   for (const p of state) {
     $cps.appendChild(createControlPoint(p.type, p.x, p.y))
   }
-  updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
+  updateSvg(
+    getCps(),
+    getApproxPoints(getMainCps(), $funcPrecision.value, $decimalPoint.value),
+    $decimalPoint.value
+  )
+}
+
+$funcPrecision.onChange = () => {
+  updateSvg(
+    getCps(),
+    getApproxPoints(getMainCps(), $funcPrecision.value, $decimalPoint.value),
+    $decimalPoint.value
+  )
+}
+
+$decimalPoint.onChange = () => {
+  updateSvg(
+    getCps(),
+    getApproxPoints(getMainCps(), $funcPrecision.value, $decimalPoint.value),
+    $decimalPoint.value
+  )
 }
 
 const history = new HistoryManager({
   getState: () => serialize(getCps()),
   applyState: applySerialized,
   onUpdate: (state) => {
-    setInitialCps(state)
+    updateQueryParam('cps', urlCpsStringify(state))
 
     // update buttons
     $undo.disabled = !history.canUndo()
@@ -71,7 +93,11 @@ applySerialized(getInitialCps())
 onActionComplete()
 
 function onActionComplete() {
-  updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
+  updateSvg(
+    getCps(),
+    getApproxPoints(getMainCps(), $funcPrecision.value, $decimalPoint.value),
+    $decimalPoint.value
+  )
   history.record()
 }
 
@@ -152,7 +178,11 @@ document.body.addEventListener('pointermove', (e) => {
 
   updateControlPointPos(dragProps.cp, normPos, dragProps.mirroredHandleDistance)
 
-  updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
+  updateSvg(
+    getCps(),
+    getApproxPoints(getMainCps(), $funcPrecision.value, $decimalPoint.value),
+    $decimalPoint.value
+  )
 })
 
 function onPointerUp() {
@@ -355,23 +385,15 @@ $breakHandles.addEventListener('click', () => {
   }
 })
 
-setCssVar('--anim-dir', 'normal')
-setCssVar('--anim-time', '3000')
+const initialDir = queryParams.get('direction') === 'alternate' ? 'alternate' : 'normal'
+
+$animationLoop.checked = initialDir === 'alternate'
+
+setCssVar('--anim-dir', initialDir)
 
 $animationLoop.addEventListener('change', () => {
   setCssVar('--anim-dir', $animationLoop.checked ? 'alternate' : 'normal')
-})
-
-$animationTime.addEventListener('input', () => {
-  const time = Number.isNaN($animationTime.valueAsNumber) ? 1000 : $animationTime.valueAsNumber
-  if (time < 1 || time > 1000000) return
-  setCssVar('--anim-time', time)
-})
-
-$funcPrecision.addEventListener('input', () => {
-  const val = Number($funcPrecision.value)
-  funcPrecision = isNaN(val) ? 0.01 : val
-  updateSvg(getCps(), getApproxPoints(getMainCps(), funcPrecision))
+  updateQueryParam('direction', $animationLoop.checked ? 'alternate' : 'normal')
 })
 
 const [animation] = $previewTargetBox.getAnimations()
@@ -401,32 +423,24 @@ function updateProgress() {
   if (main.length < 2)
     throw Error('At least two main control points are required for animation progress calculation')
 
-  // Find segment for target X (assumes increasing x across main cps)
-  const targetX = progress
-  let segIndex = -1
-  for (let i = 0; i < main.length - 1; i++) {
-    const cubic = getCubicForSegment(main, i)
-    const minX = Math.min(cubic.p0.x, cubic.p3.x)
-    const maxX = Math.max(cubic.p0.x, cubic.p3.x)
-    if (targetX >= minX && targetX <= maxX) {
-      segIndex = i
+  // Interpolate along the approximated spline instead of the exact Bezier
+  const approxPoints = getApproxPoints(main, $funcPrecision.value, $decimalPoint.value)
+  let R = approxPoints[0] ?? { x: progress, y: 0 }
+
+  for (let i = 0; i < approxPoints.length - 1; i++) {
+    const p0 = approxPoints[i]
+    const p1 = approxPoints[i + 1]
+    const minX = Math.min(p0.x, p1.x)
+    const maxX = Math.max(p0.x, p1.x)
+    if (progress >= minX && progress <= maxX) {
+      const dx = p1.x - p0.x
+      const t = Math.abs(dx) < 1e-8 ? 0 : (progress - p0.x) / dx
+      R = {
+        x: progress,
+        y: p0.y + (p1.y - p0.y) * t,
+      }
       break
     }
-  }
-  if (segIndex === -1) segIndex = 0
-
-  const cubic = getCubicForSegment(main, segIndex)
-
-  // Binary search for t where R.x ~= targetX
-  let lo = 0
-  let hi = 1
-  let R = cubic.p0
-  for (let iter = 0; iter < 25; iter++) {
-    const mid = (lo + hi) / 2
-    const res = cubicPointAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, mid)
-    R = res.R
-    if (R.x < targetX) lo = mid
-    else hi = mid
   }
 
   // Position the progress marker on the spline (normalized coords)

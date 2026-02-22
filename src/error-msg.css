@@ -1,0 +1,62 @@
+/* HTML: <div class="tooltip">This is a Speech Bubble with a solid coloration and with border radius </div> */
+.error-msg {
+  color: #fff;
+  /* font-size: 18px; */
+  max-width: 24ch;
+  width: max-content;
+  position: absolute;
+  right: calc(100% + var(--tooltip-x));
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  padding: 0.5em;
+}
+
+.error-msg {
+  /* triangle dimension */
+  --b: 1em; /* base */
+  --h: 0.5em; /* height */
+
+  --p: 50%; /* triangle position (0%:top 100%:bottom) */
+  --r: 0.5em; /* the radius */
+  --c: #ff2137;
+
+  border-radius: var(--r) / var(--r) min(var(--r), var(--p) - var(--b) / 2)
+    min(var(--r), 100% - var(--p) - var(--b) / 2) var(--r);
+  clip-path: polygon(
+    100% 100%,
+    0 100%,
+    0 0,
+    100% 0,
+    100% max(0%, var(--p) - var(--b) / 2),
+    calc(100% + var(--h)) var(--p),
+    100% min(100%, var(--p) + var(--b) / 2)
+  );
+  background: var(--c);
+  border-image: conic-gradient(var(--c) 0 0) fill 0 / calc(var(--p) - var(--b) / 2) 0
+    calc(100% - var(--p) - var(--b) / 2) var(--r) / 0 var(--h) 0 0;
+
+  transition:
+    --tooltip-x ease,
+    opacity,
+    display allow-discrete;
+  transition-duration: 0.2s;
+  opacity: 0;
+
+  @starting-style {
+    --tooltip-x: initial;
+    opacity: 0;
+  }
+}
+
+[aria-invalid='true'] ~ .error-msg {
+  display: block;
+  opacity: 1;
+  --tooltip-x: 10px;
+}
+
+@property --tooltip-x {
+  syntax: '<length>';
+  initial-value: 5px;
+  inherits: true;
+}

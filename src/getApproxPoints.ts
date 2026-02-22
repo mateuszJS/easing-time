@@ -1,8 +1,15 @@
+import { NORM_MIN_DECIMAL_POINT } from './consts'
 import { cubicPointAt, getCubicForSegment } from './cubicBezierCurve'
 import type { ControlPoint, Point } from './types'
 
-export function getApproxPoints(mainCps: ControlPoint[], tolerance: number): Point[] {
+export function getApproxPoints(
+  mainCps: ControlPoint[],
+  tolerance: number,
+  decimal: number
+): Point[] {
   if (mainCps.length === 0) return []
+
+  const toDecimalFloat = (num: number) => +num.toFixed(decimal + NORM_MIN_DECIMAL_POINT)
 
   const points: Point[] = []
 
@@ -35,10 +42,12 @@ export function getApproxPoints(mainCps: ControlPoint[], tolerance: number): Poi
 
     const segPoints = approximateCubic(cubic.p0, cubic.p1, cubic.p2, cubic.p3)
     if (i === 0) {
-      points.push(...segPoints)
+      points.push(...segPoints.map((p) => ({ x: toDecimalFloat(p.x), y: toDecimalFloat(p.y) })))
     } else {
       // Avoid duplicating the first point (which equals previous segment end)
-      points.push(...segPoints.slice(1))
+      points.push(
+        ...segPoints.slice(1).map((p) => ({ x: toDecimalFloat(p.x), y: toDecimalFloat(p.y) }))
+      )
     }
   }
 
