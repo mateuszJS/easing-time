@@ -9,7 +9,8 @@ function drawLine($parent: SVGElement, p1: Point, p2: Point, isAccent: boolean) 
   line.setAttribute('x2', p2.x.toString())
   line.setAttribute('y2', p2.y.toString())
   line.setAttribute('stroke', isAccent ? 'magenta' : 'grey')
-  line.setAttribute('stroke-width', '0.0035') // Scaled to viewBox 0-1
+  line.setAttribute('vector-effect', 'non-scaling-stroke')
+  line.setAttribute('stroke-width', '2') // Scaled to viewBox 0-1
   $parent.appendChild(line)
 }
 

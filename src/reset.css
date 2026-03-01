@@ -12,7 +12,9 @@ body {
 }
 
 button {
-  all: unset;
+  appearance: none;
+  background: none;
+  border: none;
   cursor: pointer;
   user-select: none;
 }

@@ -37,36 +37,52 @@ main {
   align-content: center;
 }
 
+.checkbox {
+  display: flex;
+  gap: 3px;
+  font-size: 0.9rem;
+  user-select: none;
+
+  input[type='checkbox'] {
+    margin: 0;
+  }
+}
+
 .editor-container {
   width: 100%;
   height: 100%;
-  padding: 80px 20px 20px;
+  padding: 80px 30px 20px;
+  overflow-x: hidden;
   display: grid;
   grid-template:
-    'ruler-y-label  ruler-y   graph' 1fr
-    '.              .         ruler-x' 50px
-    '.              timeline-action   timeline' auto
-    / auto 50px 1fr;
+    'ruler-y   graph' 1fr
+    '.         ruler-x' 50px
+    'timeline-action   timeline' auto
+    / 100px 1fr;
 }
 
-.graph {
+.graph-wrapper {
   position: relative;
   grid-area: graph;
   min-height: 0;
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
+}
+
+.graph {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  align-self: stretch;
 }
 
 .ruler {
-  font-family: 'Times New Roman', Times, serif;
-  /* position: absolute; */
-  /* left: 0; */
-
   container-type: size;
 
   display: flex;
   padding: 0;
   margin: 0;
-  pointer-events: none;
 
   --line-width: 1px;
   --line-length: 8px;
@@ -83,18 +99,31 @@ main {
     display: block flow;
     flex: 1;
 
+    &:last-child {
+      flex: 0;
+      --line-color: transparent;
+    }
+
+    input {
+      text-align: right;
+      &::-webkit-textfield-decoration-container {
+        flex-direction: row-reverse;
+      }
+    }
+
+    .input-unit:has([data-name='start-value']) {
+      margin-bottom: -10px;
+    }
+
+    .input-unit:has([data-name='end-value']) {
+      margin-top: -9px;
+    }
+
     &::after {
       content: attr(data-stop);
       display: inline flow-root;
       font-size: 14px;
-    }
-
-    &:last-child {
-      flex: 0;
-      --line-color: transparent;
-      &::after {
-        content: '1.0';
-      }
+      font-family: 'Times New Roman', Times, serif;
     }
 
     @container ((aspect-ratio > 1) and (width < 300px))
@@ -117,14 +146,16 @@ main {
 
 .ruler-y {
   grid-area: ruler-y;
-  /* top: 0;
-  bottom: 0; */
-  /* contain-intrinsic-width: var(--strong-line-length); */
   flex-direction: column-reverse;
-  /* translate: calc(-100% + 1px) 0; */
-  /* there is like a strange 1px gap on the right side */
 
   li {
+    text-align: right;
+
+    number-input {
+      text-align: initial;
+    }
+
+    padding-right: 20px;
     --x-offset: 10px;
     /* --x-offset: calc(var(--strong-line-length) * -1 - 5px); */
     height: 0;
@@ -136,20 +167,25 @@ main {
         calc(-1 * var(--line-width)) / var(--line-length) var(--single-line-gap) repeat-y;
 
     &:last-child {
-      height: calc(2 * var(--line-width));
+      height: var(--line-width);
       &::after {
-        translate: var(--x-offset) -50%;
+        translate: var(--x-offset) 0;
       }
     }
 
     &::after {
-      translate: var(--x-offset) 50%;
+      translate: 0 0.5lh;
+      /* translate: var(--x-offset) 0; */
+    }
+
+    &:first-child:after {
+      content: none;
     }
   }
 }
 
 .label-ruler-y {
-  grid-area: ruler-y-label;
+  grid-area: ruler-y;
   text-align: center;
   writing-mode: sideways-lr;
 }
@@ -177,13 +213,14 @@ main {
 }
 
 [data-type^='cp'] {
+  --size: 20px;
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: var(--size);
+  height: var(--size);
   border-radius: 50%;
-  transform: translate(-50%, -50%);
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
   cursor: grab;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  outline: 1px solid rgba(0, 0, 0, 0.2);
   padding: 0;
 
   &:active {
@@ -191,8 +228,7 @@ main {
   }
 
   &.cp-selected {
-    border: 5px solid cyan;
-    anchor-name: --cp-selected;
+    outline: 5px solid cyan;
   }
 }
 
@@ -201,25 +237,29 @@ main {
   position: absolute;
   position-anchor: --cp-selected;
   inset: 0;
-  background: #0005;
+  background: linear-gradient(
+      var(--angle),
+      var(--neutral-300),
+      var(--neutral-300) 12px,
+      transparent 7px
+    )
+    0 0 / 19px 19px repeat;
   margin: auto;
   pointer-events: none;
 }
 
 .active-line-x {
+  --angle: 90deg;
   top: anchor(center);
   bottom: anchor(center);
   height: var(--size);
 }
 
 .active-line-y {
+  --angle: 0deg;
   left: anchor(center);
   right: anchor(center);
   width: var(--size);
-}
-
-.graph:not(:has(.cp-selected)) [class^='active-line-'] {
-  display: none;
 }
 
 [data-type='cp-main'] {
@@ -229,8 +269,7 @@ main {
 [data-type='cp-before'],
 [data-type='cp-after'] {
   background-color: red;
-  width: 15px;
-  height: 15px;
+  --size: 15px;
   z-index: 1;
 }
 
@@ -245,71 +284,14 @@ button[aria-label] {
   position: relative;
 }
 
-button[aria-label]::after {
-  /* SOURCE: https://css-generators.com/tooltip-speech-bubble/ */
-  /* triangle dimension */
-  --b: 1em; /* base */
-  --h: 0.5em; /* height */
-
-  --p: 50%; /* triangle position (0%:left 100%:right) */
-  --r: 0.5em; /* the radius */
-  --c: var(--primary);
-
-  border-radius: min(var(--r), var(--p) - var(--b) / 2)
-    min(var(--r), 100% - var(--p) - var(--b) / 2) var(--r) var(--r) / var(--r);
-  clip-path: polygon(
-    0 0,
-    0 100%,
-    100% 100%,
-    100% 0,
-    min(100%, var(--p) + var(--b) / 2) 0,
-    var(--p) calc(-1 * var(--h)),
-    max(0%, var(--p) - var(--b) / 2) 0
-  );
-  background: var(--c);
-  border-image: conic-gradient(var(--c) 0 0) fill 0/ 0 calc(100% - var(--p) - var(--b) / 2) var(--r)
-    calc(var(--p) - var(--b) / 2) / var(--h) 0 0 0;
-}
-
-@property --tooltip-y {
-  syntax: '<length>';
-  initial-value: 5px;
-  inherits: true;
-}
-
 button[aria-label]:not([disabled]) {
-  &::after {
-    position: absolute;
-    display: none;
-    content: attr(aria-label);
-    color: var(--bg);
-    font-size: 14px;
-    padding: 0.5em;
-    width: max-content;
-    max-width: 25ch;
-    top: calc(100% + var(--tooltip-y));
-    left: 50%;
-    translate: -50% 0;
-    transition:
-      --tooltip-y ease,
-      opacity,
-      display allow-discrete;
-    transition-duration: 0.2s;
-    opacity: 0;
-
-    @starting-style {
-      --tooltip-y: initial;
-      opacity: 0;
-    }
-  }
-
-  &:where(:hover, :focus-visible) {
+  /* &:where(:hover, :focus-visible) {
     --tooltip-y: 10px;
     &::after {
       display: block;
       opacity: 1;
     }
-  }
+  } */
 }
 
 #toolbar {
@@ -412,7 +394,7 @@ aside {
 
   &.reverse {
     top: 100%; /* for negative values */
-    align-content: end;
+    align-items: end;
     background: linear-gradient(
       lime calc(100% - var(--anim-preview-arrow-tip-height)),
       transparent calc(100% - var(--anim-preview-arrow-tip-height))
@@ -438,6 +420,7 @@ aside {
 .timeline-action {
   grid-area: timeline-action;
   margin-right: 5px;
+  justify-self: end;
 }
 
 #code-snippet {
@@ -512,56 +495,43 @@ aside {
   }
 }
 
-number-input {
-  --label-font-size: 12px;
-  --label-x: 14px;
-
-  position: relative;
-  margin-top: var(--label-font-size);
-
-  label {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: translate(var(--label-x), -9px);
-  }
-
-  label,
-  legend {
-    font-size: var(--label-font-size);
-  }
-
-  input {
-    border: none;
-    padding: 6px 8px;
-    width: 100%;
-    height: 100%;
-    outline: none;
-  }
-
-  fieldset {
-    position: absolute;
-    inset: 0;
-    top: -8px;
-    pointer-events: none;
-    padding-left: calc(var(--label-x) - 5px);
-    border-radius: 4px;
-  }
-
-  legend {
-    visibility: hidden;
-    padding-right: 4px;
-  }
-}
-
 #cp-preview {
   display: none;
   opacity: 0.5;
   pointer-events: none;
 }
 
-.graph:has(.show-cp-preview) #cp-preview {
+#cp-coords {
+  position: absolute;
+  position-anchor: --cp-selected;
+  bottom: anchor(0%);
+  left: anchor(100%);
+  padding: 4px 6px;
+  background: #000c;
+  font-size: 0.8rem;
+  color: white;
+  border-radius: 3px;
+  white-space: pre;
+  z-index: 1;
+}
+
+.graph-wrapper:not(:has(:where(.cp-selected:hover, .show-cp-preview))) {
+  [class^='active-line-'] {
+    display: none;
+  }
+
+  #cp-coords {
+    display: none;
+  }
+}
+
+.graph-wrapper:has(.show-cp-preview) #cp-preview {
   display: block;
+  anchor-name: --cp-selected;
+}
+
+.graph-wrapper:not(:has(.show-cp-preview)) .cp-selected:hover {
+  anchor-name: --cp-selected;
 }
 
 .show-cp-preview {
@@ -572,4 +542,52 @@ number-input {
   color: var(--secondary);
   font-size: 0.8rem;
   margin-left: auto;
+}
+
+.input-unit {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+#graph-space-end {
+  --source: calc((var(--end-value) - 100));
+  align-items: end;
+}
+
+#graph-space-start {
+  --source: calc((var(--start-value) * -1));
+  align-items: start;
+}
+
+#graph-space-end,
+#graph-space-start {
+  display: flex;
+  --range: calc(var(--end-value) - var(--start-value));
+  height: calc((var(--source) / var(--range)) * 100%);
+  width: 100%;
+  color: var(--neutral-300);
+  font-size: 0.8em;
+  transition:
+    opacity ease 0.3s,
+    height ease 0.3s;
+
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+    flex-grow: 1;
+    border-top: 1px solid;
+  }
+
+  span {
+    display: flex;
+    align-items: center;
+    height: 1px;
+    margin-inline: 5px;
+  }
+
+  &.hidden {
+    opacity: 0;
+  }
 }

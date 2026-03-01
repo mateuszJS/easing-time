@@ -10,6 +10,14 @@ export const $splinePreview = document.querySelector<SVGSVGElement>('.spline-pre
 export const $cps = document.querySelector<HTMLElement>('.cps')!
 export const $panZoomArea = document.querySelector<HTMLElement>('#pan-zoom-area')!
 export const $cpPreview = document.querySelector<HTMLElement>('#cp-preview')!
+export const $startValue = document.querySelector<NumberInput>('[data-name="start-value"]')!
+export const $endValue = document.querySelector<NumberInput>('[data-name="end-value"]')!
+export const $rulerY = document.querySelector<HTMLElement>('.ruler-y')!
+export const $cpCoords = document.querySelector<HTMLElement>('#cp-coords')!
+export const $graphSpaceStart = document.querySelector<HTMLElement>('#graph-space-start')!
+export const $graphSpaceEnd = document.querySelector<HTMLElement>('#graph-space-end')!
+export const $timeBlockerBack = document.querySelector<HTMLElement>('#time-blocker-back')!
+export const $timeBlockerForward = document.querySelector<HTMLElement>('#time-blocker-forward')!
 
 export const $codeSnippet = document.querySelector<HTMLTextAreaElement>('#code-snippet')!
 export const $animationLoop = document.querySelector<HTMLInputElement>('#animation-loop')!

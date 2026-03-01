@@ -1,0 +1,98 @@
+@property --tooltip-offset {
+  syntax: '<length>';
+  initial-value: 5px;
+  inherits: true;
+}
+
+.tooltip-container {
+  display: contents;
+  anchor-scope: --tooltip;
+}
+
+[aria-describedby^='tooltip'],
+number-input input {
+  anchor-name: --tooltip;
+}
+
+[role='tooltip'] {
+  --bg-color: var(--primary);
+  position: absolute;
+  position-anchor: --tooltip;
+  display: none;
+  top: calc(anchor(100%) + var(--tooltip-offset));
+  left: anchor(50%);
+  translate: -50% 0;
+  background: var(--bg-color);
+  color: var(--bg);
+  font-size: 14px;
+  padding: 0.5em;
+  width: max-content;
+  max-width: 25ch;
+  border-radius: 4px;
+  transition:
+    --tooltip-offset ease,
+    opacity,
+    display allow-discrete;
+  transition-duration: 0.2s;
+  opacity: 0;
+
+  &[id^='error'] {
+    --bg-color: #ff2137;
+  }
+
+  &:hover,
+  [aria-describedby^='tooltip']:not([disabled]):where(:hover, :focus-visible) ~ &,
+  [aria-invalid='true'] ~ & {
+    display: block;
+    opacity: 1;
+    --tooltip-offset: 10px;
+
+    @starting-style {
+      --tooltip-offset: initial;
+      opacity: 0;
+    }
+  }
+
+  [aria-describedby^='tooltip']:not([disabled]):where(:hover, :focus-visible) ~ & {
+    transition-delay: 0.4s; /* a bit of delay for hovering */
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    translate: -50% -100%;
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent var(--bg-color) transparent;
+  }
+
+  &[data-side='right'] {
+    left: calc(anchor(100%) + var(--tooltip-offset));
+    top: anchor(50%);
+    translate: 0 -50%;
+
+    &::after {
+      top: 50%;
+      left: 0;
+      translate: -100% -50%;
+      border-color: transparent var(--bg-color) transparent transparent;
+    }
+  }
+
+  &[data-side='left'] {
+    left: initial;
+    right: calc(anchor(0%) + var(--tooltip-offset));
+    top: anchor(50%);
+    translate: 0 -50%;
+
+    &::after {
+      top: 50%;
+      left: initial;
+      right: 0;
+      translate: +100% -50%;
+      border-color: transparent transparent transparent var(--bg-color);
+    }
+  }
+}

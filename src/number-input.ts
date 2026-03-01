@@ -15,19 +15,14 @@ export class NumberInput extends HTMLElement {
   constructor() {
     super()
 
-    const { label, min, max, name, defaultValue, step } = this.dataset
+    const { label, min, max, name, defaultValue, step, side } = this.dataset
 
-    if (!label) throw new Error('Label is required')
     if (!min) throw new Error('Min is required')
     if (!max) throw new Error('Max is required')
     if (!name) throw new Error('Name is required')
     if (!defaultValue) throw new Error('Default value is required')
 
     this.#name = name
-
-    const $label = document.createElement('label')
-    $label.textContent = label
-    $label.htmlFor = name
 
     this.#$input = document.createElement('input')
     this.#$input.type = 'number'
@@ -40,16 +35,24 @@ export class NumberInput extends HTMLElement {
     const fieldset = document.createElement('fieldset')
     fieldset.setAttribute('aria-hidden', 'true')
 
-    const $legend = document.createElement('legend')
-    $legend.textContent = label
+    if (label) {
+      const $label = document.createElement('label')
+      $label.textContent = label
+      $label.htmlFor = name
+      this.appendChild($label)
 
-    fieldset.appendChild($legend)
+      const $legend = document.createElement('legend')
+      $legend.textContent = label
+      fieldset.appendChild($legend)
+    }
 
     this.#$errorMsg = document.createElement('span')
-    this.#$errorMsg.classList.add('error-msg')
-    this.#$errorMsg.id = `${name}-error`
+    this.#$errorMsg.role = 'tooltip'
+    if (side) {
+      this.#$errorMsg.setAttribute('data-side', side)
+    }
+    this.#$errorMsg.id = `error-${name}`
 
-    this.appendChild($label)
     this.appendChild(this.#$input)
     this.appendChild(fieldset)
     this.appendChild(this.#$errorMsg)
@@ -65,9 +68,9 @@ export class NumberInput extends HTMLElement {
 
     this.#$input.addEventListener('input', () => {
       const err = this.#isError(this.#$input.value)
+
       if (err) {
         this.#setErrorMsg(err)
-        return
       } else {
         this.#setErrorMsg(null)
       }

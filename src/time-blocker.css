@@ -1,0 +1,41 @@
+[id^='time-blocker'] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+  padding: 20px 10px;
+  z-index: 1;
+  opacity: 0;
+  transition:
+    display 0.1s allow-discrete,
+    opacity 0.1s;
+
+  --color-a: #ddda;
+  --color-b: #eeea;
+
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color-a),
+    var(--color-a) 10px,
+    var(--color-b) 10px,
+    var(--color-b) 20px
+  );
+}
+
+#time-blocker-back {
+  right: calc((1 - var(--offset)) * 100%);
+  text-align: right;
+}
+
+#time-blocker-forward {
+  left: calc(var(--offset) * 100%);
+}
+
+.graph-wrapper:has(.cp-selected:active) [id^='time-blocker'][data-active] {
+  display: block;
+  opacity: 1;
+
+  @starting-style {
+    opacity: 0;
+  }
+}

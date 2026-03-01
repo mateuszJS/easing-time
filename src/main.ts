@@ -3,23 +3,30 @@ import { attachHistoryEvents } from './attachHistoryEvents'
 import { cubicPointAt, findClosestOnPathPx, getCubicForSegment } from './cubicBezierCurve'
 import {
   $animationLoop,
+  $animationTime,
   $animStatePause,
   $animStatePlay,
   $breakHandles,
   $codeSnippet,
   $copyCode,
+  $cpCoords,
   $cpPreview,
   $cps,
   $decimalPoint,
   $deletePoint,
   $funcPrecision,
+  $endValue,
+  $startValue,
   $mirrorHandles,
   $previewTargetBox,
   $redo,
+  $rulerY,
   $splineAnimProgress,
   $splinePreview,
   $timeline,
   $undo,
+  $graphSpaceStart,
+  $graphSpaceEnd,
 } from './elements'
 import { HistoryManager } from './historyManager'
 import type { ControlPoint, CpType, Point, SerializedControlPoint } from './types'
@@ -77,6 +84,37 @@ $decimalPoint.onChange = () => {
   )
 }
 
+function updateRulerY() {
+  const min = $startValue.value
+  const max = $endValue.value
+
+  Array.from($rulerY.children as HTMLCollectionOf<HTMLElement>).forEach((li, i) => {
+    if (i === 0 || i === $rulerY.children.length - 1) return // inputs
+
+    const range = max - min
+    const value = min + range * (i / ($rulerY.children.length - 1))
+    li.dataset.stop = Math.round(value).toString() + '%'
+  })
+
+  if (min > -5) {
+    // 2 is just more less enough to have enoug hspace to display label 0%
+    $graphSpaceStart.classList.add('hidden')
+  } else {
+    $graphSpaceStart.classList.remove('hidden')
+  }
+
+  if (max < 105) {
+    // 98 is just more less enough to have enoug hspace to display label 100%
+    $graphSpaceEnd.classList.add('hidden')
+  } else {
+    $graphSpaceEnd.classList.remove('hidden')
+  }
+}
+
+updateRulerY()
+$startValue.onChange = updateRulerY
+$endValue.onChange = updateRulerY
+
 const history = new HistoryManager({
   getState: () => serialize(getCps()),
   applyState: applySerialized,
@@ -131,7 +169,11 @@ function selectControlPoint(cp: ControlPoint) {
   document.querySelectorAll('button').forEach((b) => b.classList.remove('cp-selected'))
   cp.classList.add('cp-selected')
 
-  const isFirstOrLast = cp.nextElementSibling === null || cp.previousElementSibling === null
+  const isFirstOrLast =
+    cp.nextElementSibling === null ||
+    cp.nextElementSibling.nextElementSibling === null ||
+    cp.previousElementSibling === null ||
+    cp.previousElementSibling.previousElementSibling === null
 
   $breakHandles.disabled = isFirstOrLast
   $mirrorHandles.disabled = isFirstOrLast
@@ -177,7 +219,7 @@ document.body.addEventListener('pointermove', (e) => {
   const normPos = getNormPos(e, dragProps.cursorOffset)
 
   updateControlPointPos(dragProps.cp, normPos, dragProps.mirroredHandleDistance)
-
+  updateCoordsInfo(normPos.x, normPos.y)
   updateSvg(
     getCps(),
     getApproxPoints(getMainCps(), $funcPrecision.value, $decimalPoint.value),
@@ -197,6 +239,9 @@ function onPointerUp() {
     onActionComplete()
   }
   dragProps = DRAG_INITIAL
+
+  // delete $timeBlockerBack.dataset.active
+  // delete $timeBlockerForward.dataset.active
 }
 
 document.body.addEventListener('pointerleave', onPointerUp)
@@ -255,6 +300,13 @@ function getClosest(e: PointerEvent) {
   return closest
 }
 
+function updateCoordsInfo(x: number, y: number) {
+  // const rangeY = $endValue.value - $startValue.value
+  const absoluteY = (1 - y) * 100
+  const absoluteX = x * $animationTime.value
+  $cpCoords.textContent = `progress: ${absoluteY.toFixed(2)}%\ntime: ${Math.round(absoluteX)}ms`
+}
+
 $splinePreview.addEventListener('pointermove', (e) => {
   if (dragProps.cp) {
     return // Don't show preview while dragging a point
@@ -265,6 +317,7 @@ $splinePreview.addEventListener('pointermove', (e) => {
   if (closest) {
     updateHtmlPos($cpPreview, closest.R.x, closest.R.y)
     $splinePreview.classList.add('show-cp-preview')
+    updateCoordsInfo(closest.R.x, closest.R.y)
   } else {
     $splinePreview.classList.remove('show-cp-preview')
   }
@@ -340,7 +393,6 @@ $mirrorHandles.addEventListener('click', () => {
     const x = existingHandle.dataset.type === 'cp-before' ? cpMainPos.x + 0.1 : cpMainPos.x - 0.1
     const cp = createControlPoint(type, x, cpMainPos.y)
     $cps.insertBefore(cp, cp.dataset.type === 'cp-before' ? mainCp : mainCp.nextElementSibling)
-    return cp
   }
 
   const cpHandlePos = getPos(existingHandle)

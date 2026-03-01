@@ -1,3 +1,5 @@
+import { EPSILON } from './consts'
+import { $timeBlockerBack, $timeBlockerForward } from './elements'
 import { getBounds } from './getBounds'
 import type { ControlPoint, Point } from './types'
 import { getMainCp, getMirrorCp, getPos, updateHtmlPos } from './utils'
@@ -72,5 +74,21 @@ export function updateControlPointPos(
       const nextPos = getPos(next)
       updateHtmlPos(next, nextPos.x + dx, nextPos.y + dy)
     }
+  }
+
+  const isLeftBoundHit = Math.abs(x - blockers.left) < EPSILON
+  const isRightBoundHit = Math.abs(x - blockers.right) < EPSILON
+
+  if (isLeftBoundHit) {
+    $timeBlockerBack.style.setProperty('--offset', blockers.left.toString())
+    $timeBlockerBack.dataset.active = 'true'
+  } else {
+    delete $timeBlockerBack.dataset.active
+  }
+  if (isRightBoundHit) {
+    $timeBlockerForward.style.setProperty('--offset', blockers.right.toString())
+    $timeBlockerForward.dataset.active = 'true'
+  } else {
+    delete $timeBlockerForward.dataset.active
   }
 }

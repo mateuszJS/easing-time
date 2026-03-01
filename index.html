@@ -9,37 +9,55 @@
   <link rel="stylesheet" href="/src/common.css" />
   <link rel="stylesheet" href="/src/style.css" />
   <link rel="stylesheet" href="/src/slider.css" />
-  <link rel="stylesheet" href="/src/error-msg.css" />
+  <link rel="stylesheet" href="/src/number-input.css" />
+  <link rel="stylesheet" href="/src/tooltip.css" />
+  <link rel="stylesheet" href="/src/time-blocker.css" />
 </head>
 
 <body>
   <main>
     <div tabindex="0" id="toolbar">
-      <button id="undo" class="btn" aria-label="Undo" disabled>
-        <svg>
-          <use href="#icon-return"></use>
-        </svg>
-      </button>
-      <button id="redo" class="btn" aria-label="Redo" disabled>
-        <svg>
-          <use href="#icon-return" transform="scale(-1, 1)" transform-origin="50% 50%"></use>
-        </svg>
-      </button>
-      <button id="break-handles" class="btn" aria-label="Stop mirroring control points handles" disabled>
-        <svg>
-          <use href="#icon-break-handles"></use>
-        </svg>
-      </button>
-      <button id="mirror-handles" class="btn" aria-label="Mirror control points handles" disabled>
-        <svg>
-          <use href="#icon-mirror-handles"></use>
-        </svg>
-      </button>
-      <button id="delete-point" class="btn" aria-label="Delete selected point" disabled>
-        <svg>
-          <use href="#icon-trash-bin"></use>
-        </svg>
-      </button>
+      <div class="tooltip-container">
+        <button id="undo" class="btn" disabled aria-describedby="tooltip-undo-btn">
+          <svg>
+            <use href="#icon-return"></use>
+          </svg>
+        </button>
+        <div role="tooltip" id="tooltip-undo-btn">Undo</div>
+      </div>
+      <div class="tooltip-container">
+        <button id="redo" class="btn" disabled aria-describedby="tooltip-redo-btn">
+          <svg>
+            <use href="#icon-return" transform="scale(-1, 1)" transform-origin="50% 50%"></use>
+          </svg>
+        </button>
+        <div role="tooltip" id="tooltip-redo-btn">Redo</div>
+      </div>
+      <div class="tooltip-container">
+        <button id="break-handles" class="btn" disabled aria-describedby="tooltip-break-handles-btn">
+          <svg>
+            <use href="#icon-break-handles"></use>
+          </svg>
+        </button>
+        <div role="tooltip" id="tooltip-break-handles-btn">Stop mirroring control points handles</div>
+      </div>
+      <div class="tooltip-container">
+        <button id="mirror-handles" class="btn" disabled aria-describedby="tooltip-mirror-handles-btn">
+          <svg>
+            <use href="#icon-mirror-handles"></use>
+          </svg>
+        </button>
+        <div role="tooltip" id="tooltip-mirror-handles-btn">Mirror control points handles</div>
+      </div>
+      <div class="tooltip-container">
+        <button id="delete-point" class="btn" aria-label="Delete selected point" disabled
+          aria-describedby="tooltip-delete-point-btn">
+          <svg>
+            <use href="#icon-trash-bin"></use>
+          </svg>
+        </button>
+        <div role="tooltip" id="tooltip-delete-point-btn">Delete selected point</div>
+      </div>
     </div>
     <div id="pan-zoom-area">
       <div class="editor-container">
@@ -48,46 +66,71 @@
         <p class="label-ruler-y">Progress</p>
 
         <ul class="ruler ruler-y">
-          <li data-stop="0"></li>
-          <li data-stop="0.1"></li>
-          <li data-stop="0.2"></li>
-          <li data-stop="0.3"></li>
-          <li data-stop="0.4"></li>
-          <li data-stop="0.5"></li>
-          <li data-stop="0.6"></li>
-          <li data-stop="0.7"></li>
-          <li data-stop="0.8"></li>
-          <li data-stop="0.9"></li>
-          <li data-stop="1"></li>
+          <li>
+            <div class="input-unit">
+              <number-input data-name="start-value" data-min="-1000" data-max="0" data-default-value="0"
+                data-cssvar="--start-value" data-side="right" data-side="right"></number-input>
+              <span>%</span>
+            </div>
+          </li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li>
+            <div class="input-unit">
+              <number-input data-name="end-value" data-min="100" data-max="1000" data-default-value="100"
+                data-cssvar="--end-value" data-side="right"></number-input>
+              <span>%</span>
+            </div>
+          </li>
         </ul>
 
-        <div class="graph">
-          <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
-            <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="black" stroke-width="2px"
-              fill="none" />
-            <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="red" stroke-width="2px"
-              fill="none" />
-
-          </svg>
-          <div id="spline-anim-progress"></div>
-          <div class="cps"></div>
+        <div class="graph-wrapper">
           <div class="active-line-x"></div>
           <div class="active-line-y"></div>
-          <div id="cp-preview" data-type="cp-main"></div>
+          <div id="graph-space-end"><span>100%</span></div>
+          <div class="graph">
+            <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
+              <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="black" stroke-width="2px"
+                fill="none" />
+              <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="red" stroke-width="2px"
+                fill="none" />
+            </svg>
+            <div id="spline-anim-progress"></div>
+            <div class="cps"></div>
+            <div id="cp-preview" data-type="cp-main"></div>
+            <div id="cp-coords"></div>
+          </div>
+          <div id="time-blocker-back">
+            <h3>Curve can only move forward.</h3>
+            <p>Time traveling is not allowed </p>
+          </div>
+          <div id="time-blocker-forward">
+            <h3>Point can't move past the next point.</h3>
+            <p>It would cause two timestamps being
+              active at once which would result in the singularity. No singularity today please.</p>
+          </div>
+          <div id="graph-space-start"><span>0%</span></div>
         </div>
 
         <ul class="ruler ruler-x">
-          <li data-stop="0"></li>
-          <li data-stop="0.1"></li>
-          <li data-stop="0.2"></li>
-          <li data-stop="0.3"></li>
-          <li data-stop="0.4"></li>
-          <li data-stop="0.5"></li>
-          <li data-stop="0.6"></li>
-          <li data-stop="0.7"></li>
-          <li data-stop="0.8"></li>
-          <li data-stop="0.9"></li>
-          <li data-stop="1"></li>
+          <li data-stop="0%"></li>
+          <li data-stop="10%"></li>
+          <li data-stop="20%"></li>
+          <li data-stop="30%"></li>
+          <li data-stop="40%"></li>
+          <li data-stop="50%"></li>
+          <li data-stop="60%"></li>
+          <li data-stop="70%"></li>
+          <li data-stop="80%"></li>
+          <li data-stop="90%"></li>
+          <li data-stop="100%"></li>
         </ul>
 
 
@@ -119,19 +162,19 @@
         </div>
       </div>
 
-      <label>Loop animation:<input type="checkbox" id="animation-loop" />
+      <label class="checkbox">Loop animation:<input type="checkbox" id="animation-loop" />
 
       </label>
 
       <number-input data-name="animation-time" data-label="Animation time(ms)" data-min="100" data-max="100000"
-        data-step="100" data-default-value="3000" data-cssvar="--anim-time"></number-input>
+        data-step="100" data-default-value="3000" data-cssvar="--anim-time" data-side="left"></number-input>
 
 
       <number-input data-name="func-precision" data-label="Error Threshold" data-min="0.001" data-max="0.2"
-        data-step="0.001" data-default-value="0.02"></number-input>
+        data-step="0.001" data-default-value="0.02" data-side="left"></number-input>
 
       <number-input data-name="decimal-point" data-label="Decimal Point" data-min="0" data-max="8" data-step="1"
-        data-default-value="4"></number-input>
+        data-default-value="4" data-side="left"></number-input>
 
       <section class="css-code-section">
         <header>
