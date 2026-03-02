@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="/src/buttons.css" />
   <link rel="stylesheet" href="/src/code-section.css" />
   <link rel="stylesheet" href="/src/switch.css" />
+  <link rel="stylesheet" href="/src/dialog.css" />
 
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -207,7 +208,8 @@
         <header>
           <h3>CSS Code</h3>
           <span class="css-code-label">~<span id="code-size">0</span> bytes</span>
-          <button id="how-to-use" class="btn-accent">How to use<br>this code?</button>
+          <button id="how-to-use" class="btn-accent" commandfor="video-instruction" command="show-modal">How to
+            use<br>this code?</button>
         </header>
         <button id="copy-code">
           <span>COPY</span>
@@ -217,6 +219,13 @@
 
     </aside>
   </main>
+
+  <dialog id="video-instruction" closedby="any">
+    <header>
+      <h2>How to use CSS output code</h2>
+      <button commandfor="video-instruction" command="close"></button>
+    </header>
+  </dialog>
 
   <svg>
     <symbol viewBox="0 0 417 417" id="icon-return">

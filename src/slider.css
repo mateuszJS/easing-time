@@ -2,7 +2,7 @@
   --thumb-width: 5px;
   --thumb-radius: calc(0.5 * var(--thumb-width));
   --useful-width: calc(100% - var(--thumb-width));
-  --thumb-color: red;
+  --thumb-color: var(--accent-strong);
 
   grid-area: timeline;
 
@@ -16,8 +16,8 @@
   border-radius: 5px;
 
   /* margin: 0 calc(-1 * var(--thumb-radius)); */
-  --slider-bg: #ddd;
-  --slider-accent: #eee;
+  --slider-bg: var(--neutral-200);
+  --slider-accent: var(--neutral-100);
 
   background:
     linear-gradient(45deg, var(--slider-bg) 30%, var(--slider-accent) 0 70%, var(--slider-bg) 0) 0

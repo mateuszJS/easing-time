@@ -10,8 +10,8 @@
     display 0.1s allow-discrete,
     opacity 0.1s;
 
-  --color-a: #ddda;
-  --color-b: #eeea;
+  --color-a: rgba(var(--primary-rgb), 0.1);
+  --color-b: rgba(var(--primary-rgb), 0.2);
 
   background: repeating-linear-gradient(
     45deg,

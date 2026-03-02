@@ -1,21 +1,31 @@
 :root {
   color-scheme: light dark;
+  --primary-rgb: 48, 48, 48;
+  --bg-rgb: 255, 255, 255;
+
+  @media (prefers-color-scheme: dark) {
+    --primary-rgb: 210, 210, 210;
+    --bg-rgb: 18, 18, 18;
+  }
 }
 
 body {
-  --btn-hover-bg: rgba(0, 0, 0, 0.05);
-  --primary: #303030;
-  --secondary: #555;
-  --bg: #fff;
-  --disabled: #999;
-  --neutral-100: #eee;
-  --neutral-200: #ddd;
-  --neutral-300: #ccc;
-  --neutral-500: #aaa;
-  --danger: rgb(255, 106, 108);
-  --accent-light: rgb(209, 229, 254);
-  --accent-strong: rgb(0, 88, 242);
-  --accent-altern: rgb(0, 236, 161);
+  --btn-hover-bg: rgba(var(--primary-rgb), 0.05);
+  --primary: rgb(var(--primary-rgb));
+  --secondary: light-dark(#555, #b5b5b5);
+  --bg: rgb(var(--bg-rgb));
+  --disabled: light-dark(#999, #6b6b6b);
+  --neutral-100: light-dark(#eee, #1a1a1a);
+  --neutral-200: light-dark(#ddd, #222222);
+  --neutral-300: light-dark(#ccc, #4c4c4c);
+  --neutral-400: light-dark(#bbb, #555);
+  --neutral-500: light-dark(#aaa, #666);
+  --neutral-600: light-dark(#888, #888);
+
+  --danger: light-dark(rgb(255, 106, 108), #ff6b6d);
+  --accent-light: light-dark(rgb(209, 229, 254), #1f3a5f);
+  --accent-strong: light-dark(rgb(0, 88, 242), #4c8dff);
+  --accent-altern: light-dark(rgb(0, 236, 161), #20c997);
 
   color: var(--primary);
   font-family: 'Outfit', sans-serif;
@@ -96,12 +106,11 @@ main {
 
   --line-width: 1px;
   --line-length: 8px;
-  --line-color: #bbb;
+  --line-color: var(--neutral-400);
   --max-number-of-lines: 20;
 
   --strong-line-length: 14px;
-  --strong-line-color: #888;
-
+  --strong-line-color: var(--neutral-600);
   --number-of-lines: round(100cqmax / (5px * var(--max-number-of-lines)));
   --single-line-gap: calc(100% / var(--number-of-lines));
 
@@ -300,7 +309,7 @@ main {
 
   display: flex;
   gap: 5px;
-  background: #ffffffaa;
+  background: rgba(var(--bg-rgb), 0.5);
   backdrop-filter: blur(2px);
   z-index: 1;
   padding: 5px 20px;
@@ -353,7 +362,7 @@ aside {
   flex: 2 0 200px;
   max-height: 600px;
   container-type: size;
-  background: #00000011;
+  background: rgba(var(--primary-rgb), 0.08);
   border-radius: 5px;
   padding: 10px;
   align-content: end;
