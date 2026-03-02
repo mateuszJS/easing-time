@@ -12,6 +12,14 @@
   <link rel="stylesheet" href="/src/number-input.css" />
   <link rel="stylesheet" href="/src/tooltip.css" />
   <link rel="stylesheet" href="/src/time-blocker.css" />
+  <link rel="stylesheet" href="/src/buttons.css" />
+  <link rel="stylesheet" href="/src/code-section.css" />
+  <link rel="stylesheet" href="/src/switch.css" />
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -58,6 +66,7 @@
         </button>
         <div role="tooltip" id="tooltip-delete-point-btn">Delete selected point</div>
       </div>
+      <button class="btn-accent">How to use this tool?</button>
     </div>
     <div id="pan-zoom-area">
       <div class="editor-container">
@@ -97,10 +106,25 @@
           <div id="graph-space-end"><span>100%</span></div>
           <div class="graph">
             <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
-              <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="black" stroke-width="2px"
-                fill="none" />
-              <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="red" stroke-width="2px"
-                fill="none" />
+
+              <defs>
+                <linearGradient id="grad-handler-line-before" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:var(--accent-altern)" />
+                  <stop offset="100%" style="stop-color:var(--neutral-500)" />
+                </linearGradient>
+
+                <linearGradient id="grad-handler-line-after" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:var(--neutral-500)" />
+                  <stop offset="100%" style="stop-color:var(--accent-altern)" />
+                </linearGradient>
+              </defs>
+
+
+
+              <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="var(--neutral-500)"
+                stroke-width="2px" fill="none" />
+              <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="var(--accent-strong)"
+                stroke-width="2px" fill="none" />
             </svg>
             <div id="spline-anim-progress"></div>
             <div class="cps"></div>
@@ -163,6 +187,9 @@
       </div>
 
       <label class="checkbox">Loop animation:<input type="checkbox" id="animation-loop" />
+        <div class="switch">
+          <div class="switch-knob"></div>
+        </div>
 
       </label>
 
@@ -171,7 +198,7 @@
 
 
       <number-input data-name="func-precision" data-label="Error Threshold" data-min="0.001" data-max="0.2"
-        data-step="0.001" data-default-value="0.02" data-side="left"></number-input>
+        data-step="0.001" data-default-value="0.015" data-side="left"></number-input>
 
       <number-input data-name="decimal-point" data-label="Decimal Point" data-min="0" data-max="8" data-step="1"
         data-default-value="4" data-side="left"></number-input>
@@ -180,6 +207,7 @@
         <header>
           <h3>CSS Code</h3>
           <span class="css-code-label">~<span id="code-size">0</span> bytes</span>
+          <button id="how-to-use" class="btn-accent">How to use<br>this code?</button>
         </header>
         <button id="copy-code">
           <span>COPY</span>

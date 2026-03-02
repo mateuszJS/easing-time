@@ -1,0 +1,14 @@
+.btn-accent {
+  border-radius: 0.35em;
+  padding: 0.25em 0.5em;
+  background: var(--accent-light);
+  color: var(--accent-strong);
+  transition:
+    color ease 0.3s,
+    background ease 0.3s;
+
+  &:hover {
+    background: var(--accent-strong);
+    color: var(--bg);
+  }
+}

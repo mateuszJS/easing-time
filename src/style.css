@@ -1,14 +1,24 @@
+:root {
+  color-scheme: light dark;
+}
+
 body {
   --btn-hover-bg: rgba(0, 0, 0, 0.05);
   --primary: #303030;
   --secondary: #555;
   --bg: #fff;
   --disabled: #999;
+  --neutral-100: #eee;
   --neutral-200: #ddd;
   --neutral-300: #ccc;
+  --neutral-500: #aaa;
+  --danger: rgb(255, 106, 108);
+  --accent-light: rgb(209, 229, 254);
+  --accent-strong: rgb(0, 88, 242);
+  --accent-altern: rgb(0, 236, 161);
 
   color: var(--primary);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Outfit', sans-serif;
 }
 
 main {
@@ -220,7 +230,7 @@ main {
   border-radius: 50%;
   margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
   cursor: grab;
-  outline: 1px solid rgba(0, 0, 0, 0.2);
+
   padding: 0;
 
   &:active {
@@ -228,7 +238,8 @@ main {
   }
 
   &.cp-selected {
-    outline: 5px solid cyan;
+    outline: 5px dashed var(--accent-strong);
+    outline-offset: 5px;
   }
 }
 
@@ -263,12 +274,14 @@ main {
 }
 
 [data-type='cp-main'] {
-  background-color: blue;
+  background-color: var(--accent-altern);
 }
 
 [data-type='cp-before'],
 [data-type='cp-after'] {
-  background-color: red;
+  /* background-color: red; */
+  border: 4px solid var(--accent-altern);
+  background: var(--bg);
   --size: 15px;
   z-index: 1;
 }
@@ -280,29 +293,23 @@ main {
   height: 100%;
 }
 
-button[aria-label] {
-  position: relative;
-}
-
-button[aria-label]:not([disabled]) {
-  /* &:where(:hover, :focus-visible) {
-    --tooltip-y: 10px;
-    &::after {
-      display: block;
-      opacity: 1;
-    }
-  } */
-}
-
 #toolbar {
   grid-column-start: toolbar-left;
   grid-column-end: toolbar-right;
   grid-row: toolbar-left;
+
+  display: flex;
+  gap: 5px;
   background: #ffffffaa;
   backdrop-filter: blur(2px);
   z-index: 1;
   padding: 5px 20px;
   border-bottom: 1px solid var(--neutral-200);
+
+  .btn-accent {
+    font-size: 1rem;
+    margin: auto 0 auto auto;
+  }
 }
 
 .btn {
@@ -363,7 +370,7 @@ aside {
 #preview-target-box {
   width: 100%;
   height: 100%;
-  background: tomato;
+  background: var(--accent-strong);
   animation: --sample calc(1ms * var(--anim-time)) infinite;
   animation-direction: var(--anim-dir);
   animation-timing-function: var(--easing-func);
@@ -388,7 +395,7 @@ aside {
   margin-left: calc(var(--arrow-tail-width) * -0.5);
   background: linear-gradient(
     transparent var(--anim-preview-arrow-tip-height),
-    lime var(--anim-preview-arrow-tip-height)
+    var(--accent-strong) var(--anim-preview-arrow-tip-height)
   );
   pointer-events: none;
 
@@ -396,7 +403,7 @@ aside {
     top: 100%; /* for negative values */
     align-items: end;
     background: linear-gradient(
-      lime calc(100% - var(--anim-preview-arrow-tip-height)),
+      var(--accent-strong) calc(100% - var(--anim-preview-arrow-tip-height)),
       transparent calc(100% - var(--anim-preview-arrow-tip-height))
     );
 
@@ -411,7 +418,7 @@ aside {
     flex-shrink: 0;
     margin-inline: auto;
     clip-path: polygon(0 100%, 50% 0, 100% 100%);
-    background: lime;
+    background: var(--accent-strong);
     width: 20px;
     height: var(--anim-preview-arrow-tip-height);
   }
@@ -421,78 +428,6 @@ aside {
   grid-area: timeline-action;
   margin-right: 5px;
   justify-self: end;
-}
-
-#code-snippet {
-  anchor-name: --code-snippet;
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-  font-size: 12px;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  max-height: 200px;
-  width: 100%;
-  height: 100%;
-}
-
-#copy-code {
-  position-anchor: --code-snippet;
-  font-size: 14px;
-  padding: 5px 8px;
-  border: 1px solid #ccc;
-  position: absolute;
-  top: calc(anchor(top) + 10px);
-  right: calc(anchor(right) + 10px);
-  background: var(--bg);
-
-  &:active {
-    &::before {
-      @starting-style {
-        display: block;
-        translate: 0 0;
-        opacity: 1;
-      }
-    }
-  }
-
-  &:before {
-    position: absolute;
-    right: 0;
-    content: 'Copied!';
-    opacity: 0;
-    translate: 0 -50px;
-    display: none;
-    background: #0009;
-    border-radius: 4px;
-    padding: 5px 10px;
-    color: white;
-    transition:
-      display 1.5s allow-discrete,
-      translate 1.5s ease-out,
-      opacity 0.75s ease-out 0.75s;
-  }
-}
-
-.css-code-section {
-  display: flex;
-  flex-direction: column;
-  flex: 1 0 auto;
-
-  header {
-    display: flex;
-    align-items: center;
-    padding-bottom: 5px;
-
-    h3 {
-      margin: 0;
-      font-size: 14px;
-      font-weight: 400;
-    }
-
-    input {
-      width: 50px;
-    }
-  }
 }
 
 #cp-preview {
@@ -536,12 +471,6 @@ aside {
 
 .show-cp-preview {
   cursor: copy;
-}
-
-.css-code-label {
-  color: var(--secondary);
-  font-size: 0.8rem;
-  margin-left: auto;
 }
 
 .input-unit {

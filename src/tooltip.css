@@ -35,6 +35,7 @@ number-input input {
     display allow-discrete;
   transition-duration: 0.2s;
   opacity: 0;
+  z-index: 1;
 
   &[id^='error'] {
     --bg-color: #ff2137;

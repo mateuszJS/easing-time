@@ -31,7 +31,7 @@
   left: calc(var(--offset) * 100%);
 }
 
-.graph-wrapper:has(.cp-selected:active) [id^='time-blocker'][data-active] {
+.graph-wrapper:has(.cp-selected) [id^='time-blocker'][data-active] {
   display: block;
   opacity: 1;
 

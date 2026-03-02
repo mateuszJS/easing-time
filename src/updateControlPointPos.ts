@@ -76,6 +76,8 @@ export function updateControlPointPos(
     }
   }
 
+  if (isEdge) return // not need to show blockers for edge points
+
   const isLeftBoundHit = Math.abs(x - blockers.left) < EPSILON
   const isRightBoundHit = Math.abs(x - blockers.right) < EPSILON
 

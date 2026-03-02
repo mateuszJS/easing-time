@@ -52,4 +52,18 @@ number-input {
     visibility: hidden;
     padding-right: 4px;
   }
+
+  &:focus-within {
+    color: var(--accent-strong);
+    fieldset {
+      border: 2px solid var(--accent-strong);
+    }
+  }
+
+  &:has([aria-invalid='true']) {
+    color: var(--danger);
+    fieldset {
+      border: 2px solid var(--danger);
+    }
+  }
 }

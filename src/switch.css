@@ -1,0 +1,41 @@
+label:has(input[type='checkbox']) {
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+input[type='checkbox'] {
+  appearance: none;
+  width: 0;
+  height: 0;
+  position: absolute;
+  left: -9999px;
+}
+
+.switch {
+  margin-left: auto;
+  height: 1.2rem;
+  width: 2.3rem;
+  border-radius: 100vw;
+  padding: 0.25rem;
+  background: var(--accent-light);
+  transition: background ease 0.3s;
+
+  .switch-knob {
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 100vw;
+    background: var(--accent-strong);
+    transition:
+      background ease 0.3s,
+      translate ease 0.3s;
+  }
+}
+
+input:checked ~ .switch {
+  background: var(--accent-strong);
+
+  .switch-knob {
+    translate: 1.15rem;
+    background: var(--bg);
+  }
+}

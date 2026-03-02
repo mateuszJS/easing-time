@@ -1,16 +1,22 @@
 import type { ControlPoint, Point } from './types'
 import { getIsMirrored, getPos } from './utils'
 
-function drawLine($parent: SVGElement, p1: Point, p2: Point, isAccent: boolean) {
+function drawLine(
+  $parent: SVGElement,
+  p1: Point,
+  p2: Point,
+  isAccent: boolean,
+  type: 'before' | 'after'
+) {
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
   line.classList.add('handle-line')
   line.setAttribute('x1', p1.x.toString())
   line.setAttribute('y1', p1.y.toString())
   line.setAttribute('x2', p2.x.toString())
   line.setAttribute('y2', p2.y.toString())
-  line.setAttribute('stroke', isAccent ? 'magenta' : 'grey')
+  line.setAttribute('stroke', isAccent ? 'var(--accent-altern)' : `url(#grad-handler-line-${type})`)
   line.setAttribute('vector-effect', 'non-scaling-stroke')
-  line.setAttribute('stroke-width', '2') // Scaled to viewBox 0-1
+  line.setAttribute('stroke-width', '3') // Scaled to viewBox 0-1
   $parent.appendChild(line)
 }
 
@@ -27,13 +33,13 @@ export default function updateConnectionLines($parent: SVGElement, points: Contr
       if (prev && prev.dataset.type === 'cp-before') {
         const p1 = getPos(prev)
         const p2 = getPos(pt)
-        drawLine($parent, p1, p2, isMirrored)
+        drawLine($parent, p1, p2, isMirrored, 'before')
       }
 
       if (next && next.dataset.type === 'cp-after') {
         const p1 = getPos(pt)
         const p2 = getPos(next)
-        drawLine($parent, p1, p2, isMirrored)
+        drawLine($parent, p1, p2, isMirrored, 'after')
       }
     }
   })

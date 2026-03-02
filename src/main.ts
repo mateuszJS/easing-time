@@ -27,6 +27,8 @@ import {
   $undo,
   $graphSpaceStart,
   $graphSpaceEnd,
+  $timeBlockerBack,
+  $timeBlockerForward,
 } from './elements'
 import { HistoryManager } from './historyManager'
 import type { ControlPoint, CpType, Point, SerializedControlPoint } from './types'
@@ -240,8 +242,8 @@ function onPointerUp() {
   }
   dragProps = DRAG_INITIAL
 
-  // delete $timeBlockerBack.dataset.active
-  // delete $timeBlockerForward.dataset.active
+  delete $timeBlockerBack.dataset.active
+  delete $timeBlockerForward.dataset.active
 }
 
 document.body.addEventListener('pointerleave', onPointerUp)
