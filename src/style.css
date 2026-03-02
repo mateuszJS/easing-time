@@ -15,12 +15,13 @@ body {
   --secondary: light-dark(#555, #b5b5b5);
   --bg: rgb(var(--bg-rgb));
   --disabled: light-dark(#999, #6b6b6b);
-  --neutral-100: light-dark(#eee, #1a1a1a);
-  --neutral-200: light-dark(#ddd, #222222);
+  --neutral-100: light-dark(#eee, #1c1c1c);
+  --neutral-200: light-dark(#ddd, #2a2a2a);
   --neutral-300: light-dark(#ccc, #4c4c4c);
   --neutral-400: light-dark(#bbb, #555);
   --neutral-500: light-dark(#aaa, #666);
   --neutral-600: light-dark(#888, #888);
+  --neutral-900: light-dark(#333, #ccc);
 
   --danger: light-dark(rgb(255, 106, 108), #ff6b6d);
   --accent-light: light-dark(rgb(209, 229, 254), #1f3a5f);
@@ -327,6 +328,7 @@ main {
   gap: 4px;
   padding: 8px 12px;
   border-radius: 4px;
+  color: var(--neutral-900);
 
   svg {
     width: 24px;

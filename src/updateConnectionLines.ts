@@ -8,20 +8,44 @@ function drawLine(
   isAccent: boolean,
   type: 'before' | 'after'
 ) {
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-  line.classList.add('handle-line')
-  line.setAttribute('x1', p1.x.toString())
-  line.setAttribute('y1', p1.y.toString())
-  line.setAttribute('x2', p2.x.toString())
-  line.setAttribute('y2', p2.y.toString())
-  line.setAttribute('stroke', isAccent ? 'var(--accent-altern)' : `url(#grad-handler-line-${type})`)
-  line.setAttribute('vector-effect', 'non-scaling-stroke')
-  line.setAttribute('stroke-width', '3') // Scaled to viewBox 0-1
-  $parent.appendChild(line)
+  // do NOT use lines, gradient doesn't work on them when line is vertical
+  const rect = $parent.getBoundingClientRect()
+  if (rect.width === 0 || rect.height === 0) return
+
+  const thicknessPx = 3
+
+  const s1x = p1.x * rect.width
+  const s1y = p1.y * rect.height
+  const s2x = p2.x * rect.width
+  const s2y = p2.y * rect.height
+  const dx = s2x - s1x
+  const dy = s2y - s1y
+  const len = Math.hypot(dx, dy)
+  if (len < 0.001) return
+
+  const nx = -dy / len
+  const ny = dx / len
+  const ox = (nx * thicknessPx) / 2
+  const oy = (ny * thicknessPx) / 2
+
+  const ax = (s1x + ox) / rect.width
+  const ay = (s1y + oy) / rect.height
+  const bx = (s2x + ox) / rect.width
+  const by = (s2y + oy) / rect.height
+  const cx = (s2x - ox) / rect.width
+  const cy = (s2y - oy) / rect.height
+  const dx2 = (s1x - ox) / rect.width
+  const dy2 = (s1y - oy) / rect.height
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  path.classList.add('handle-line')
+  path.setAttribute('d', `M ${ax} ${ay} L ${bx} ${by} L ${cx} ${cy} L ${dx2} ${dy2} Z`)
+  path.setAttribute('fill', isAccent ? 'var(--accent-altern)' : `url(#grad-handler-line-${type})`)
+  $parent.appendChild(path)
 }
 
 export default function updateConnectionLines($parent: SVGElement, points: ControlPoint[]) {
-  $parent.querySelectorAll('line.handle-line').forEach((l) => l.remove())
+  $parent.querySelectorAll('.handle-line').forEach((l) => l.remove())
   // Draw handle connection lines: cp-before — cp — cp-after
   points.forEach((pt) => {
     if (pt.dataset.type === 'cp-main') {
