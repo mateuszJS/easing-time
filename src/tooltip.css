@@ -26,7 +26,7 @@ number-input input {
   color: var(--bg);
   font-size: 14px;
   padding: 0.5em;
-  width: max-content;
+  width: fit-content;
   max-width: 25ch;
   border-radius: 4px;
   transition:
@@ -67,6 +67,7 @@ number-input input {
     border-width: 10px;
     border-style: solid;
     border-color: transparent transparent var(--bg-color) transparent;
+    pointer-events: none;
   }
 
   &[data-side='right'] {

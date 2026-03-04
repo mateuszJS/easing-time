@@ -2,10 +2,12 @@
   color-scheme: light dark;
   --primary-rgb: 48, 48, 48;
   --bg-rgb: 255, 255, 255;
+  --accent-strong-rgb: 0, 88, 242;
 
   @media (prefers-color-scheme: dark) {
     --primary-rgb: 210, 210, 210;
     --bg-rgb: 18, 18, 18;
+    --accent-strong-rgb: 76, 141, 255;
   }
 }
 
@@ -14,7 +16,7 @@ body {
   --primary: rgb(var(--primary-rgb));
   --secondary: light-dark(#555, #b5b5b5);
   --bg: rgb(var(--bg-rgb));
-  --disabled: light-dark(#999, #6b6b6b);
+  --disabled: light-dark(#999, #666);
   --neutral-100: light-dark(#eee, #1c1c1c);
   --neutral-200: light-dark(#ddd, #2a2a2a);
   --neutral-300: light-dark(#ccc, #4c4c4c);
@@ -25,7 +27,7 @@ body {
 
   --danger: light-dark(rgb(255, 106, 108), #ff6b6d);
   --accent-light: light-dark(rgb(209, 229, 254), #1f3a5f);
-  --accent-strong: light-dark(rgb(0, 88, 242), #4c8dff);
+  --accent-strong: rgb(var(--accent-strong-rgb));
   --accent-altern: light-dark(rgb(0, 236, 161), #20c997);
 
   color: var(--primary);
@@ -232,27 +234,6 @@ main {
   }
 }
 
-[data-type^='cp'] {
-  --size: 20px;
-  position: absolute;
-  width: var(--size);
-  height: var(--size);
-  border-radius: 50%;
-  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
-  cursor: grab;
-
-  padding: 0;
-
-  &:active {
-    cursor: grabbing;
-  }
-
-  &.cp-selected {
-    outline: 5px dashed var(--accent-strong);
-    outline-offset: 5px;
-  }
-}
-
 [class^='active-line-'] {
   --size: 1px;
   position: absolute;
@@ -281,19 +262,6 @@ main {
   left: anchor(center);
   right: anchor(center);
   width: var(--size);
-}
-
-[data-type='cp-main'] {
-  background-color: var(--accent-altern);
-}
-
-[data-type='cp-before'],
-[data-type='cp-after'] {
-  /* background-color: red; */
-  border: 4px solid var(--accent-altern);
-  background: var(--bg);
-  --size: 15px;
-  z-index: 1;
 }
 
 .spline-preview {
@@ -450,25 +418,25 @@ aside {
 #cp-coords {
   position: absolute;
   position-anchor: --cp-selected;
-  bottom: anchor(0%);
-  left: anchor(100%);
+  bottom: calc(10px + anchor(0%));
+  left: calc(10px + anchor(100%));
   padding: 4px 6px;
-  background: #000c;
+  background: var(--bg);
   font-size: 0.8rem;
-  color: white;
+  color: var(--primary);
   border-radius: 3px;
   white-space: pre;
-  z-index: 1;
+  z-index: 2;
+  pointer-events: none;
 }
 
-.graph-wrapper:not(:has(:where(.cp-selected:hover, .show-cp-preview))) {
+.graph-wrapper:not(:has(:where([data-type^='cp']:hover, .show-cp-preview, .cp-selected)))
   [class^='active-line-'] {
-    display: none;
-  }
+  display: none;
+}
 
-  #cp-coords {
-    display: none;
-  }
+.graph-wrapper:not(:has(:where([data-type^='cp']:hover, .show-cp-preview))) #cp-coords {
+  display: none;
 }
 
 .graph-wrapper:has(.show-cp-preview) #cp-preview {
@@ -476,7 +444,8 @@ aside {
   anchor-name: --cp-selected;
 }
 
-.graph-wrapper:not(:has(.show-cp-preview)) .cp-selected:hover {
+.graph-wrapper:not(:has(.show-cp-preview)) [data-type^='cp']:hover,
+.graph-wrapper:not(:has(.show-cp-preview, [data-type^='cp']:hover)) .cp-selected {
   anchor-name: --cp-selected;
 }
 

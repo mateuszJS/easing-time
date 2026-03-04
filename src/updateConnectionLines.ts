@@ -1,5 +1,5 @@
-import type { ControlPoint, Point } from './types'
-import { getIsMirrored, getPos } from './utils'
+import type { Point } from './types'
+import { getConnectedCpHandle, getIsMirrored, getMainCps, getPos } from './utils'
 
 function drawLine(
   $parent: SVGElement,
@@ -44,27 +44,25 @@ function drawLine(
   $parent.appendChild(path)
 }
 
-export default function updateConnectionLines($parent: SVGElement, points: ControlPoint[]) {
+export default function updateConnectionLines($parent: SVGElement) {
   $parent.querySelectorAll('.handle-line').forEach((l) => l.remove())
   // Draw handle connection lines: cp-before — cp — cp-after
-  points.forEach((pt) => {
-    if (pt.dataset.type === 'cp-main') {
-      const prev = pt.previousElementSibling
-      const next = pt.nextElementSibling
+  getMainCps().forEach((p) => {
+    const prev = getConnectedCpHandle(p, 'cp-before')
+    const next = getConnectedCpHandle(p, 'cp-after')
 
-      const isMirrored = prev && next ? getIsMirrored(prev, pt, next) : false
+    const isMirrored = prev && next ? getIsMirrored(prev, p, next) : false
 
-      if (prev && prev.dataset.type === 'cp-before') {
-        const p1 = getPos(prev)
-        const p2 = getPos(pt)
-        drawLine($parent, p1, p2, isMirrored, 'before')
-      }
+    if (prev) {
+      const p1 = getPos(prev)
+      const p2 = getPos(p)
+      drawLine($parent, p1, p2, isMirrored, 'before')
+    }
 
-      if (next && next.dataset.type === 'cp-after') {
-        const p1 = getPos(pt)
-        const p2 = getPos(next)
-        drawLine($parent, p1, p2, isMirrored, 'after')
-      }
+    if (next) {
+      const p1 = getPos(p)
+      const p2 = getPos(next)
+      drawLine($parent, p1, p2, isMirrored, 'after')
     }
   })
 }

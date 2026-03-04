@@ -18,6 +18,11 @@ number-input {
     }
   }
 
+  input,
+  fieldset {
+    border-radius: 4px;
+  }
+
   label {
     position: absolute;
     top: 0;
@@ -38,6 +43,7 @@ number-input {
     height: 100%;
     outline: none;
     font-size: 14px;
+    background: var(--neutral-200);
   }
 
   fieldset {
@@ -45,7 +51,7 @@ number-input {
     inset: 0;
     pointer-events: none;
     padding-left: calc(var(--label-x) - 5px);
-    border-radius: 4px;
+    border: 2px solid var(--neutral-400);
   }
 
   legend {

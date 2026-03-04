@@ -1,0 +1,61 @@
+select {
+  &,
+  &::picker(select) {
+    appearance: base-select;
+    border-radius: 5px;
+    border: 2px solid var(--neutral-400);
+    background: var(--neutral-200);
+  }
+
+  &::picker(select) {
+    top: 5px;
+    transition: all 0.4s allow-discrete;
+    height: 0;
+    min-height: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  option {
+    gap: 15px;
+    padding: 5px 15px;
+    transition: background 0.2s ease;
+  }
+
+  &::picker-icon {
+    color: currentColor;
+    transition: 0.2s rotate;
+    opacity: 0.9;
+  }
+
+  &:open {
+    border: 2px solid var(--accent-strong);
+
+    &::picker(select) {
+      border: 2px solid var(--accent-strong);
+      height: 94px;
+      opacity: 1;
+
+      @starting-style {
+        height: 0;
+        opacity: 0;
+      }
+    }
+
+    &::picker-icon {
+      rotate: 60deg;
+    }
+  }
+
+  option::checkmark {
+    font-size: 0.6em;
+    content: '';
+    transform: rotate(45deg);
+    transform-origin: 80% 60%;
+    height: 1em;
+    width: 0.5em;
+    border-bottom: 0.3em solid;
+    border-right: 0.3em solid;
+    opacity: 0.9;
+  }
+}

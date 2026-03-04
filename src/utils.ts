@@ -1,3 +1,4 @@
+import { $cps } from './elements'
 import type { ControlPoint, SerializedControlPoint } from './types'
 
 export function getPos(btn: HTMLElement) {
@@ -101,4 +102,12 @@ export function updateQueryParam(key: string, value: string) {
 export function getQueryParam(key: string): string | null {
   const queryPrams = new URLSearchParams(window.location.search)
   return queryPrams.get(key)
+}
+
+export function getCps() {
+  return Array.from($cps.children) as ControlPoint[]
+}
+
+export function getMainCps() {
+  return getCps().filter((p) => p.dataset.type === 'cp-main')
 }

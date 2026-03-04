@@ -37,10 +37,12 @@ import { updateSvg } from './updateSvg'
 import {
   clamp,
   getConnectedCpHandle,
+  getCps,
   getCssVarNumber,
   getCssVarStr,
   getIsMirrored,
   getMainCp,
+  getMainCps,
   getPos,
   serialize,
   setCssVar,
@@ -150,14 +152,6 @@ function createControlPoint(type: CpType, x: number, y: number) {
   return btn
 }
 
-function getCps() {
-  return Array.from($cps.children) as ControlPoint[]
-}
-
-function getMainCps() {
-  return getCps().filter((p) => p.dataset.type === 'cp-main')
-}
-
 const NO_OFFSET = { x: 0, y: 0 }
 function getNormPos(ev: PointerEvent, nOffset = NO_OFFSET): Point {
   const rect = $splinePreview.getBoundingClientRect()
@@ -189,10 +183,18 @@ function attachEvents(cp: ControlPoint) {
     e.stopPropagation() // Prevent creating new point
     selectControlPoint(cp)
 
+    const normPos = getNormPos(e)
+    const cpPos = getPos(cp)
+    updateCoordsInfo(normPos.x, normPos.y)
+
     dragProps = {
-      initialPos: getPos(cp),
+      initialPos: cpPos,
       cp: cp,
       mirroredHandleDistance: null,
+      cursorOffset: {
+        x: cpPos.x - normPos.x,
+        y: cpPos.y - normPos.y,
+      },
     }
 
     const cpBefore = getConnectedCpHandle(cp, 'cp-before')
@@ -212,6 +214,11 @@ function attachEvents(cp: ControlPoint) {
           : Math.hypot(cpMainPos.x - cpBeforePos.x, cpMainPos.y - cpBeforePos.y)
       }
     }
+  })
+
+  cp.addEventListener('pointerenter', () => {
+    const cpPos = getPos(cp)
+    updateCoordsInfo(cpPos.x, cpPos.y)
   })
 }
 
@@ -282,19 +289,7 @@ const ADD_CP_THRESHOLD = 30
 function getClosest(e: PointerEvent) {
   const rect = $splinePreview.getBoundingClientRect()
   const normPos = getNormPos(e)
-
   const mainCps = getMainCps()
-
-  for (const cp of mainCps) {
-    const cpPos = getPos(cp)
-    const dxPx = (normPos.x - cpPos.x) * rect.width
-    const dyPx = (normPos.y - cpPos.y) * rect.height
-    const distPx = Math.hypot(dxPx, dyPx)
-    if (distPx < ADD_CP_THRESHOLD) {
-      return null
-    }
-  }
-
   const closest = findClosestOnPathPx(mainCps, rect, normPos)
 
   if (closest.distPx >= ADD_CP_THRESHOLD) return null

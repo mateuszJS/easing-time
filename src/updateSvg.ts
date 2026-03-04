@@ -23,7 +23,7 @@ export function updateSvg(cps: ControlPoint[], approxPointsList: Point[], decima
   }
   $pathExact.setAttribute('d', d)
 
-  updateConnectionLines($splinePreview, cps)
+  updateConnectionLines($splinePreview)
 
   // Build approximate path as straight line segments (M + L commands)
   if (approxPointsList.length > 0) {
@@ -50,12 +50,14 @@ export function updateSvg(cps: ControlPoint[], approxPointsList: Point[], decima
     parts.push(String(toDecimalFloat(endY)))
 
     const animCode = `linear(${parts.join(', ')})`
-    $codeSnippet.value = `${animCode}\n/* ${window.location.href} */`
+    $codeSnippet.value = `animation-timing-function: ${animCode};\n/* ${window.location.href} */`
     $codeSize.textContent = animCode.length.toString()
+    console.log(animCode)
     setCssVar('--easing-func', animCode)
   } else {
     $pathApprox.setAttribute('d', '')
     $codeSnippet.value = 'linear(0, 1)'
-    $codeSize.textContent = $codeSnippet.value.length.toString()
+    $codeSize.textContent = `animation-timing-function: ${$codeSnippet.value.length.toString()};`
+    setCssVar('--easing-func', $codeSnippet.value)
   }
 }
