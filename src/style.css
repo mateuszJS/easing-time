@@ -26,7 +26,7 @@ body {
   --neutral-900: light-dark(#333, #ccc);
 
   --danger: light-dark(rgb(255, 106, 108), #ff6b6d);
-  --accent-light: light-dark(rgb(209, 229, 254), #1f3a5f);
+  --accent-light: light-dark(rgb(209, 229, 254), #162944);
   --accent-strong: rgb(var(--accent-strong-rgb));
   --accent-altern: light-dark(rgb(0, 236, 161), #20c997);
 
@@ -339,18 +339,27 @@ aside {
 }
 
 .preview-target-wrapper {
-  width: 100px;
-  height: 100px;
-  outline: 3px dashed var(--neutral-300);
+  --size: 100px;
+  position: relative;
+  width: var(--size);
+  height: var(--size);
   border-radius: inherit;
   margin-inline: auto;
+
+  &:after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    outline: 5px dashed var(--neutral-300);
+  }
 }
 
 #preview-target-box {
   width: 100%;
   height: 100%;
   background: var(--accent-strong);
-  animation: --sample calc(1ms * var(--anim-time)) infinite;
+  animation: var(--anim-type) calc(1ms * var(--anim-time)) infinite;
   animation-direction: var(--anim-dir);
   animation-timing-function: var(--easing-func);
   animation-play-state: var(--anim-state);
@@ -358,10 +367,28 @@ aside {
   border-radius: inherit;
 }
 
-@keyframes --sample {
+@keyframes --translate-keyframes {
   to {
-    transform: translateY(calc(100% - 100cqh));
+    translate: 0 calc(var(--size) - 100cqh);
   }
+}
+@keyframes --rotate-keyframes {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes --scale-keyframes {
+  to {
+    scale: 1 calc(100cqh / var(--size));
+  }
+}
+
+html[style*='--scale-keyframes'] #preview-target-box {
+  transform-origin: 50% 100%;
+}
+
+html[style*='--rotate-keyframes'] .output-preview {
+  align-content: center;
 }
 
 #spline-anim-progress {

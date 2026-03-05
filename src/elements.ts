@@ -26,6 +26,7 @@ export const $funcPrecision = document.querySelector<NumberInput>('[data-name="f
 export const $decimalPoint = document.querySelector<NumberInput>('[data-name="decimal-point"]')!
 export const $copyCode = document.querySelector<HTMLButtonElement>('#copy-code')!
 export const $codeSize = document.querySelector<HTMLSpanElement>('#code-size')!
+export const $animationType = document.querySelector<HTMLSelectElement>('#animation-type')!
 
 export const $previewTargetBox = document.querySelector<HTMLElement>('#preview-target-box')!
 export const $timeline = document.querySelector<HTMLInputElement>('#timeline')!

@@ -53,6 +53,7 @@ import { getApproxPoints } from './getApproxPoints'
 import { DRAG_INITIAL } from './drag'
 import { getBounds } from './getBounds'
 import { getInitialCps, urlCpsStringify } from './initialCps'
+import { initAnimTypeSelect } from './animTypeSelect'
 
 const queryParams = new URLSearchParams(window.location.search)
 const ANIM_PREVIEW_ARROW_TIP_HEIGHT = 20
@@ -445,7 +446,10 @@ $animationLoop.addEventListener('change', () => {
   updateQueryParam('direction', $animationLoop.checked ? 'alternate' : 'normal')
 })
 
-const [animation] = $previewTargetBox.getAnimations()
+let animation: Animation
+initAnimTypeSelect(() => {
+  ;[animation] = $previewTargetBox.getAnimations()
+})
 
 function getprogress() {
   const duration = getCssVarNumber('--anim-time')
