@@ -75,17 +75,24 @@
           <div role="tooltip" id="error-url-shadow-input">Provided url need to have valid "cps" param and needs to come
             from this tool.</div>
         </div>
-        <div class="tooltip-container">
-          <button id="load-url" class="btn" aria-label="Load animation from URL"
-            aria-describedby="tooltip-url-shadow-input-description">
-            <svg>
-              <use href="#icon-return"></use>
-            </svg>
+        <div class="input-suffix">
+          <div class="tooltip-container">
+            <button class="btn" aria-label="Load animation from URL"
+              aria-describedby="tooltip-url-shadow-input-description" id="url-shadow-input-hint">
+              <svg>
+                <use href="#question-mark"></use>
+              </svg>
+            </button>
+            <div role="tooltip" id="tooltip-url-shadow-input-description">If you have already an animation that's
+              related
+              to this
+              one, you can place the URL there.
+              Provided animation will be displayed as readonly curve in the creator to make it easy for you to align new
+              animation.</div>
+          </div>
+          <button class="btn close-icon" aria-label="Remove URL" id="url-shadow-input-erase"
+            aria-describedby="tooltip-url-shadow-input-erase">
           </button>
-          <div role="tooltip" id="tooltip-url-input-description">If you have already an animation that's related to this
-            one, you can place the URL there.
-            Provided animation will be displayed as readonly curve in the creator to make it easy for you to align new
-            animation.</div>
         </div>
       </div>
       <button class="btn-accent">How to use this tool?</button>
@@ -158,7 +165,7 @@
               <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="var(--neutral-900)"
                 stroke-width="2px" fill="none" />
               <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="var(--accent-strong)"
-                stroke-width="2px" fill="none" />
+                stroke-width="3px" fill="none" />
             </svg>
             <div class="shadow-cps"></div>
             <div id="spline-anim-progress"></div>
@@ -262,7 +269,7 @@
   <dialog id="video-instruction" closedby="any">
     <header>
       <h2>How to use CSS output code</h2>
-      <button commandfor="video-instruction" command="close"></button>
+      <button class="close-icon" commandfor="video-instruction" command="close"></button>
     </header>
   </dialog>
 
@@ -317,6 +324,10 @@
           <rect width="98" height="96" fill="white" />
         </clipPath>
       </defs>
+    </symbol>
+    <symbol id="question-mark" viewBox="-1.7 0 20.4 20.4">
+      <path fill="currentColor"
+        d="M16.476 10.283A7.917 7.917 0 1 1 8.56 2.366a7.916 7.916 0 0 1 7.916 7.917zm-5.034-2.687a2.845 2.845 0 0 0-.223-1.13A2.877 2.877 0 0 0 9.692 4.92a2.747 2.747 0 0 0-1.116-.227 2.79 2.79 0 0 0-1.129.227 2.903 2.903 0 0 0-1.543 1.546 2.803 2.803 0 0 0-.227 1.128v.02a.792.792 0 0 0 1.583 0v-.02a1.23 1.23 0 0 1 .099-.503 1.32 1.32 0 0 1 .715-.717 1.223 1.223 0 0 1 .502-.098 1.18 1.18 0 0 1 .485.096 1.294 1.294 0 0 1 .418.283 1.307 1.307 0 0 1 .281.427 1.273 1.273 0 0 1 .099.513 1.706 1.706 0 0 1-.05.45 1.546 1.546 0 0 1-.132.335 2.11 2.11 0 0 1-.219.318c-.126.15-.25.293-.365.424-.135.142-.26.28-.374.412a4.113 4.113 0 0 0-.451.639 3.525 3.525 0 0 0-.342.842 3.904 3.904 0 0 0-.12.995v.035a.792.792 0 0 0 1.583 0v-.035a2.324 2.324 0 0 1 .068-.59 1.944 1.944 0 0 1 .187-.463 2.49 2.49 0 0 1 .276-.39c.098-.115.209-.237.329-.363l.018-.02c.129-.144.264-.301.403-.466a3.712 3.712 0 0 0 .384-.556 3.083 3.083 0 0 0 .28-.692 3.275 3.275 0 0 0 .108-.875zM9.58 14.895a.982.982 0 0 0-.294-.707 1.059 1.059 0 0 0-.32-.212l-.004-.001a.968.968 0 0 0-.382-.079 1.017 1.017 0 0 0-.397.08 1.053 1.053 0 0 0-.326.212 1.002 1.002 0 0 0-.215 1.098 1.028 1.028 0 0 0 .216.32 1.027 1.027 0 0 0 .722.295.968.968 0 0 0 .382-.078l.005-.002a1.01 1.01 0 0 0 .534-.534.98.98 0 0 0 .08-.392z" />
     </symbol>
   </svg>
 

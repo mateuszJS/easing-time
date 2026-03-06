@@ -6,6 +6,7 @@ export const $breakHandles = document.querySelector<HTMLButtonElement>('#break-h
 export const $mirrorHandles = document.querySelector<HTMLButtonElement>('#mirror-handles')!
 export const $deletePoint = document.querySelector<HTMLButtonElement>('#delete-point')!
 export const $urlShadow = document.querySelector<HTMLInputElement>('#url-shadow-input')!
+export const $urlShadowErase = document.querySelector<HTMLButtonElement>('#url-shadow-input-erase')!
 
 export const $splinePreview = document.querySelector<SVGSVGElement>('.spline-preview')!
 export const $cps = document.querySelector<HTMLElement>('.cps')!

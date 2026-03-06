@@ -180,6 +180,11 @@ function selectControlPoint(cp: ControlPoint) {
 
 let dragProps = DRAG_INITIAL
 
+function getHandleDistancePx(p1: Point, p2: Point) {
+  const { width, height } = $splinePreview.getBoundingClientRect()
+  return Math.hypot((p1.x - p2.x) * width, (p1.y - p2.y) * height)
+}
+
 function attachEvents(cp: ControlPoint) {
   cp.addEventListener('pointerdown', (e) => {
     e.stopPropagation() // Prevent creating new point
@@ -212,8 +217,8 @@ function attachEvents(cp: ControlPoint) {
 
         dragProps.mirroredHandleDistance =
           cp === cpBefore ?
-            Math.hypot(cpMainPos.x - cpAfterPos.x, cpMainPos.y - cpAfterPos.y)
-          : Math.hypot(cpMainPos.x - cpBeforePos.x, cpMainPos.y - cpBeforePos.y)
+            getHandleDistancePx(cpMainPos, cpAfterPos)
+          : getHandleDistancePx(cpMainPos, cpBeforePos)
       }
     }
   })
@@ -395,10 +400,7 @@ $mirrorHandles.addEventListener('click', () => {
   }
 
   const cpHandlePos = getPos(existingHandle)
-  const mirroredHandleDistance = Math.hypot(
-    cpMainPos.x - cpHandlePos.x,
-    cpMainPos.y - cpHandlePos.y
-  )
+  const mirroredHandleDistance = getHandleDistancePx(cpMainPos, cpHandlePos)
   updateControlPointPos(existingHandle, cpHandlePos, mirroredHandleDistance)
 
   onActionComplete()

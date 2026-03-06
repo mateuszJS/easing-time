@@ -1,5 +1,11 @@
 import { drawSmoothPathShadow } from './drawSmoothPath'
-import { $shadowCps, $urlShadow } from './elements'
+import {
+  $pathShadow,
+  $shadowConnectionLines,
+  $shadowCps,
+  $urlShadow,
+  $urlShadowErase,
+} from './elements'
 import { extractCps } from './initialCps'
 import { setItemLocalStorage } from './utils'
 
@@ -13,8 +19,20 @@ if (initialShadowCps) {
   $urlShadow.value = storageShadowCps
 }
 
+function clearUrl() {
+  $urlShadow.value = ''
+  $urlShadow.removeAttribute('aria-errormessage')
+  $urlShadow.removeAttribute('aria-invalid')
+  $shadowCps.innerHTML = ''
+  $shadowConnectionLines.innerHTML = ''
+  $pathShadow.setAttribute('d', '')
+  setItemLocalStorage(localStorageKey, '')
+}
+
 $urlShadow.addEventListener('input', () => {
   $shadowCps.innerHTML = ''
+  $shadowConnectionLines.innerHTML = ''
+  $pathShadow.setAttribute('d', '')
 
   if (!$urlShadow.value.trim()) {
     $urlShadow.removeAttribute('aria-errormessage')
@@ -38,10 +56,10 @@ $urlShadow.addEventListener('input', () => {
 
 $urlShadow.addEventListener('blur', () => {
   if ($urlShadow.hasAttribute('aria-invalid')) {
-    $urlShadow.value = ''
-    $urlShadow.removeAttribute('aria-errormessage')
-    $urlShadow.removeAttribute('aria-invalid')
-    $shadowCps.innerHTML = ''
-    setItemLocalStorage(localStorageKey, '')
+    clearUrl()
   }
+})
+
+$urlShadowErase.addEventListener('click', () => {
+  clearUrl()
 })

@@ -1,5 +1,5 @@
 import { EPSILON } from './consts'
-import { $timeBlockerBack, $timeBlockerForward } from './elements'
+import { $splinePreview, $timeBlockerBack, $timeBlockerForward } from './elements'
 import { getBounds } from './getBounds'
 import type { ControlPoint, Point } from './types'
 import { getMainCp, getMirrorCp, getPos, updateHtmlPos } from './utils'
@@ -36,29 +36,41 @@ export function updateControlPointPos(
 
       const mainCp = getMainCp(cp)
       const mainCpPos = getPos(mainCp)
-      const angle = Math.atan2((y - mainCpPos.y) * -1, x - mainCpPos.x)
+      const { width, height } = $splinePreview.getBoundingClientRect()
+      const draggedVectorX = (x - mainCpPos.x) * width
+      const draggedVectorY = (y - mainCpPos.y) * height
+      const draggedDistance = Math.hypot(draggedVectorX, draggedVectorY)
 
-      const pxDesiredOffset = Math.cos(angle + Math.PI) * mirroredHandleDistance
-      let px = pxDesiredOffset + mainCpPos.x
-      let py = -Math.sin(angle + Math.PI) * mirroredHandleDistance + mainCpPos.y
+      let px = mainCpPos.x
+      let py = mainCpPos.y
 
-      // if we block px, then we have to scale py also to keep aspect ratio
-      // we check type of cp, because of the edge case when cp-after in on same x ad cpMain, so diff in X is 0, so py = 0
-      if (mirrorCp.dataset.type === 'cp-after' && px > mirrorCpBounds.right) {
-        const differenceScale = (mirrorCpBounds.right - mainCpPos.x) / pxDesiredOffset
-        px = mirrorCpBounds.right
-        py = mainCpPos.y - Math.sin(angle + Math.PI) * mirroredHandleDistance * differenceScale
-      }
+      if (draggedDistance > EPSILON) {
+        const unitX = -draggedVectorX / draggedDistance
+        const unitY = -draggedVectorY / draggedDistance
 
-      if (mirrorCp.dataset.type === 'cp-before' && px < mirrorCpBounds.left) {
-        const differenceScale = (mirrorCpBounds.left - mainCpPos.x) / pxDesiredOffset
-        px = mirrorCpBounds.left
-        py = mainCpPos.y - Math.sin(angle + Math.PI) * mirroredHandleDistance * differenceScale
+        let allowedDistance = mirroredHandleDistance
+
+        if (mirrorCp.dataset.type === 'cp-after' && unitX > EPSILON) {
+          allowedDistance = Math.min(
+            allowedDistance,
+            ((mirrorCpBounds.right - mainCpPos.x) * width) / unitX
+          )
+        }
+
+        if (mirrorCp.dataset.type === 'cp-before' && unitX < -EPSILON) {
+          allowedDistance = Math.min(
+            allowedDistance,
+            ((mirrorCpBounds.left - mainCpPos.x) * width) / unitX
+          )
+        }
+
+        px = mainCpPos.x + (unitX * allowedDistance) / width
+        py = mainCpPos.y + (unitY * allowedDistance) / height
       }
 
       updateHtmlPos(mirrorCp, px, py)
     }
-  } else if (type === 'cp-main') {
+  } else {
     const oldPos = getPos(cp)
     const dx = x - oldPos.x
     const dy = y - oldPos.y

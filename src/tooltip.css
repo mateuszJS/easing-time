@@ -16,7 +16,7 @@ number-input input {
 
 [role='tooltip'] {
   --bg-color: var(--primary);
-  position: absolute;
+  position: fixed;
   position-anchor: --tooltip;
   display: none;
   top: calc(anchor(100%) + var(--tooltip-offset));
