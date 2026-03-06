@@ -62,3 +62,17 @@
     rotate: 360deg;
   }
 }
+
+.shadow-cps {
+  pointer-events: none;
+
+  [data-type^='shadow-cp-'] {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    translate: -50% -50%;
+    background: var(--neutral-400);
+    z-index: -1;
+  }
+}

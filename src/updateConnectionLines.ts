@@ -1,23 +1,22 @@
+import { $splinePreview } from './elements'
 import type { Point } from './types'
 import { getConnectedCpHandle, getIsMirrored, getMainCps, getPos } from './utils'
 
-function drawLine(
+export function drawLine(
+  width: number,
+  height: number,
   $parent: SVGElement,
   p1: Point,
   p2: Point,
-  isAccent: boolean,
+  stroke: 'broken' | 'mirrored' | 'shadow',
   type: 'before' | 'after'
 ) {
-  // do NOT use lines, gradient doesn't work on them when line is vertical
-  const rect = $parent.getBoundingClientRect()
-  if (rect.width === 0 || rect.height === 0) return
-
   const thicknessPx = 3
 
-  const s1x = p1.x * rect.width
-  const s1y = p1.y * rect.height
-  const s2x = p2.x * rect.width
-  const s2y = p2.y * rect.height
+  const s1x = p1.x * width
+  const s1y = p1.y * height
+  const s2x = p2.x * width
+  const s2y = p2.y * height
   const dx = s2x - s1x
   const dy = s2y - s1y
   const len = Math.hypot(dx, dy)
@@ -28,24 +27,35 @@ function drawLine(
   const ox = (nx * thicknessPx) / 2
   const oy = (ny * thicknessPx) / 2
 
-  const ax = (s1x + ox) / rect.width
-  const ay = (s1y + oy) / rect.height
-  const bx = (s2x + ox) / rect.width
-  const by = (s2y + oy) / rect.height
-  const cx = (s2x - ox) / rect.width
-  const cy = (s2y - oy) / rect.height
-  const dx2 = (s1x - ox) / rect.width
-  const dy2 = (s1y - oy) / rect.height
+  const ax = (s1x + ox) / width
+  const ay = (s1y + oy) / height
+  const bx = (s2x + ox) / width
+  const by = (s2y + oy) / height
+  const cx = (s2x - ox) / width
+  const cy = (s2y - oy) / height
+  const dx2 = (s1x - ox) / width
+  const dy2 = (s1y - oy) / height
 
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-  path.classList.add('handle-line')
+  path.classList.add(stroke === 'shadow' ? 'shadow-handle-line' : 'handle-line')
   path.setAttribute('d', `M ${ax} ${ay} L ${bx} ${by} L ${cx} ${cy} L ${dx2} ${dy2} Z`)
-  path.setAttribute('fill', isAccent ? 'var(--accent-altern)' : `url(#grad-handler-line-${type})`)
+
+  const mapStroke = {
+    broken: `url(#grad-handler-line-${type})`,
+    mirrored: 'var(--accent-altern)',
+    shadow: 'var(--neutral-300)',
+  }
+
+  path.setAttribute('fill', mapStroke[stroke])
   $parent.appendChild(path)
 }
 
 export default function updateConnectionLines($parent: SVGElement) {
   $parent.querySelectorAll('.handle-line').forEach((l) => l.remove())
+
+  const { width, height } = $splinePreview.getBoundingClientRect()
+  if (width === 0 || height === 0) return
+
   // Draw handle connection lines: cp-before — cp — cp-after
   getMainCps().forEach((p) => {
     const prev = getConnectedCpHandle(p, 'cp-before')
@@ -56,13 +66,13 @@ export default function updateConnectionLines($parent: SVGElement) {
     if (prev) {
       const p1 = getPos(prev)
       const p2 = getPos(p)
-      drawLine($parent, p1, p2, isMirrored, 'before')
+      drawLine(width, height, $parent, p1, p2, isMirrored ? 'mirrored' : 'broken', 'before')
     }
 
     if (next) {
       const p1 = getPos(p)
       const p2 = getPos(next)
-      drawLine($parent, p1, p2, isMirrored, 'after')
+      drawLine(width, height, $parent, p1, p2, isMirrored ? 'mirrored' : 'broken', 'after')
     }
   })
 }

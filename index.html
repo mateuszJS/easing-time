@@ -69,6 +69,25 @@
         </button>
         <div role="tooltip" id="tooltip-delete-point-btn">Delete selected point</div>
       </div>
+      <div class="url-shadow-input-wrapper">
+        <div class="tooltip-container">
+          <input type="text" id="url-shadow-input" placeholder="Shadow URL" />
+          <div role="tooltip" id="error-url-shadow-input">Provided url need to have valid "cps" param and needs to come
+            from this tool.</div>
+        </div>
+        <div class="tooltip-container">
+          <button id="load-url" class="btn" aria-label="Load animation from URL"
+            aria-describedby="tooltip-url-shadow-input-description">
+            <svg>
+              <use href="#icon-return"></use>
+            </svg>
+          </button>
+          <div role="tooltip" id="tooltip-url-input-description">If you have already an animation that's related to this
+            one, you can place the URL there.
+            Provided animation will be displayed as readonly curve in the creator to make it easy for you to align new
+            animation.</div>
+        </div>
+      </div>
       <button class="btn-accent">How to use this tool?</button>
       <div class="tooltip-container">
         <a class="btn" href="https://github.com/mateuszJS/easing-creator" target="_blank"
@@ -132,12 +151,16 @@
               </defs>
 
 
-
-              <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="var(--neutral-500)"
+              <g id="shadow-connection-lines"></g>
+              <g id="connection-lines"></g>
+              <path id="path-shadow" d="" vector-effect="non-scaling-stroke" stroke="var(--neutral-600)"
+                stroke-width="2px" fill="none" />
+              <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="var(--neutral-900)"
                 stroke-width="2px" fill="none" />
               <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="var(--accent-strong)"
                 stroke-width="2px" fill="none" />
             </svg>
+            <div class="shadow-cps"></div>
             <div id="spline-anim-progress"></div>
             <div class="cps"></div>
             <div id="cp-preview" data-type="cp-main"></div>
@@ -149,8 +172,8 @@
           </div>
           <div id="time-blocker-forward">
             <h3>Point can't move past the next point.</h3>
-            <p>It would cause two timestamps being
-              active at once which would result in the singularity. No singularity today please.</p>
+            <p>It would cause two timestamps to be
+              active at once, which would result in a singularity. No singularity today, please.</p>
           </div>
           <div id="graph-space-start"><span>0%</span></div>
         </div>

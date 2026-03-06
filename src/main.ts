@@ -52,8 +52,9 @@ import {
 import { getApproxPoints } from './getApproxPoints'
 import { DRAG_INITIAL } from './drag'
 import { getBounds } from './getBounds'
-import { getInitialCps, urlCpsStringify } from './initialCps'
+import { DEFAULT_CPS, extractCps, urlCpsStringify } from './initialCps'
 import { initAnimTypeSelect } from './animTypeSelect'
+import './urlShadowInput'
 
 const queryParams = new URLSearchParams(window.location.search)
 const ANIM_PREVIEW_ARROW_TIP_HEIGHT = 20
@@ -132,7 +133,7 @@ const history = new HistoryManager({
   },
 })
 
-applySerialized(getInitialCps())
+applySerialized(extractCps(window.location.search) || DEFAULT_CPS)
 onActionComplete()
 
 function onActionComplete() {

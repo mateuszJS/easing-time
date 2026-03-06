@@ -111,3 +111,18 @@ export function getCps() {
 export function getMainCps() {
   return getCps().filter((p) => p.dataset.type === 'cp-main')
 }
+
+export function getItemLocalStorage(key: string): string | null {
+  const item = localStorage.getItem(key)
+  if (!item) return null
+  try {
+    return item
+  } catch (e) {
+    console.error('Error parsing localStorage item', e)
+    return null
+  }
+}
+
+export function setItemLocalStorage(key: string, value: string) {
+  localStorage.setItem(key, value)
+}

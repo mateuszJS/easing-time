@@ -5,6 +5,7 @@ export const $redo = document.querySelector<HTMLButtonElement>('#redo')!
 export const $breakHandles = document.querySelector<HTMLButtonElement>('#break-handles')!
 export const $mirrorHandles = document.querySelector<HTMLButtonElement>('#mirror-handles')!
 export const $deletePoint = document.querySelector<HTMLButtonElement>('#delete-point')!
+export const $urlShadow = document.querySelector<HTMLInputElement>('#url-shadow-input')!
 
 export const $splinePreview = document.querySelector<SVGSVGElement>('.spline-preview')!
 export const $cps = document.querySelector<HTMLElement>('.cps')!
@@ -18,6 +19,11 @@ export const $graphSpaceStart = document.querySelector<HTMLElement>('#graph-spac
 export const $graphSpaceEnd = document.querySelector<HTMLElement>('#graph-space-end')!
 export const $timeBlockerBack = document.querySelector<HTMLElement>('#time-blocker-back')!
 export const $timeBlockerForward = document.querySelector<HTMLElement>('#time-blocker-forward')!
+export const $shadowCps = document.querySelector<HTMLElement>('.shadow-cps')!
+export const $connectionLines = document.querySelector<SVGGElement>('#connection-lines')!
+export const $shadowConnectionLines = document.querySelector<SVGGElement>(
+  '#shadow-connection-lines'
+)!
 
 export const $codeSnippet = document.querySelector<HTMLTextAreaElement>('#code-snippet')!
 export const $animationLoop = document.querySelector<HTMLInputElement>('#animation-loop')!
@@ -33,3 +39,7 @@ export const $timeline = document.querySelector<HTMLInputElement>('#timeline')!
 export const $splineAnimProgress = document.querySelector<HTMLDivElement>('#spline-anim-progress')!
 export const $animStatePlay = document.querySelector<HTMLButtonElement>('#anim-state-play')!
 export const $animStatePause = document.querySelector<HTMLButtonElement>('#anim-state-pause')!
+
+export const $pathExact = $splinePreview.querySelector<SVGPathElement>('#path-exact')!
+export const $pathApprox = $splinePreview.querySelector<SVGPathElement>('#path-approx')!
+export const $pathShadow = $splinePreview.querySelector<SVGPathElement>('#path-shadow')!

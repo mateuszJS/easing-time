@@ -2,7 +2,7 @@ import { EPSILON } from './consts'
 import type { SerializedControlPoint } from './types'
 
 // Initialize with some default points if empty
-const defaultCps: SerializedControlPoint[] = [
+export const DEFAULT_CPS: SerializedControlPoint[] = [
   { type: 'cp-main', x: 0, y: 1 },
   { type: 'cp-after', x: 0.5, y: 1 },
   { type: 'cp-before', x: 0.5, y: 0 },
@@ -28,7 +28,11 @@ export function urlCpsStringify(cps: SerializedControlPoint[]): string {
 function urlCpsParse(str: string): SerializedControlPoint[] {
   let lastMainX = -EPSILON
   let lastHandleX = -EPSILON
-  return str.split('p').map((part) => {
+  const segments = str.split('p')
+
+  if (segments.length < 2) throw Error('At least two control points are required')
+
+  return segments.map((part) => {
     const [typeChar, xStr, yStr] = part.split('_')
 
     const type = typeMap[typeChar as keyof typeof typeMap]
@@ -55,8 +59,8 @@ function urlCpsParse(str: string): SerializedControlPoint[] {
   })
 }
 
-export function getInitialCps(): SerializedControlPoint[] {
-  const stringifiedCps = new URLSearchParams(window.location.search).get('cps')
+export function extractCps(search: string): SerializedControlPoint[] | null {
+  const stringifiedCps = new URLSearchParams(search).get('cps')
   if (stringifiedCps) {
     try {
       return urlCpsParse(stringifiedCps)
@@ -64,5 +68,5 @@ export function getInitialCps(): SerializedControlPoint[] {
       console.error(err)
     }
   }
-  return defaultCps
+  return null
 }
