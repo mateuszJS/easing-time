@@ -12,13 +12,12 @@
 }
 
 body {
-  --btn-hover-bg: rgba(var(--primary-rgb), 0.05);
   --primary: rgb(var(--primary-rgb));
   --secondary: light-dark(#555, #b5b5b5);
   --bg: rgb(var(--bg-rgb));
   --disabled: light-dark(#999, #666);
   --neutral-100: light-dark(#eee, #1c1c1c);
-  --neutral-200: light-dark(#ddd, #2a2a2a);
+  --neutral-200: light-dark(#ddd, #2f2f2f);
   --neutral-300: light-dark(#ccc, #4c4c4c);
   --neutral-400: light-dark(#bbb, #555);
   --neutral-500: light-dark(#aaa, #666);
@@ -267,40 +266,13 @@ main {
   grid-row: toolbar-left;
 
   display: flex;
+  align-items: center;
   gap: 5px;
   background: rgba(var(--bg-rgb), 0.5);
   backdrop-filter: blur(2px);
   z-index: 1;
-  padding: 5px 20px;
+  padding: 8px 20px;
   border-bottom: 1px solid var(--neutral-200);
-
-  .btn-accent {
-    font-size: 1rem;
-    margin: auto 0 auto auto;
-  }
-}
-
-.btn {
-  display: inline flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  border-radius: 4px;
-  color: var(--neutral-900);
-
-  svg {
-    width: 24px;
-    max-height: 24px;
-  }
-
-  &:not([disabled]):hover {
-    background: var(--btn-hover-bg);
-  }
-
-  &[disabled] {
-    cursor: not-allowed;
-    color: var(--disabled);
-  }
 }
 
 aside {
@@ -445,6 +417,11 @@ html[style*='--rotate-keyframes'] .output-preview {
   white-space: pre;
   z-index: 2;
   pointer-events: none;
+
+  &[data-side='left'] {
+    left: auto;
+    right: calc(anchor(100%) - 10px);
+  }
 }
 
 .graph-wrapper:not(:has(:where([data-type^='cp']:hover, .show-cp-preview, .cp-selected)))
@@ -524,14 +501,14 @@ html[style*='--rotate-keyframes'] .output-preview {
   gap: 5px;
   flex-grow: 1;
   max-width: 50vw;
-  margin: 3px auto;
+  margin-inline: auto;
   border: 2px solid var(--neutral-500);
   border-radius: 5px;
   overflow: hidden;
 
   input {
     flex: 1;
-    padding: 4px 12px;
+    padding: 8px 12px;
     border: none;
     &::placeholder {
       font-size: 0.91rem;

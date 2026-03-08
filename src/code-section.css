@@ -19,6 +19,8 @@
       grid-column: 2;
       grid-row: 1 / 3;
       text-align: right;
+      font-size: 0.9rem;
+      padding: 3px 7px;
       justify-self: end;
     }
 

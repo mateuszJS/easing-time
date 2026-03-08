@@ -278,6 +278,12 @@ function updateCoordsInfo(x: number, y: number) {
   const absoluteY = (1 - y) * 100
   const absoluteX = x * $animationTime.value
   $cpCoords.textContent = `progress: ${absoluteY.toFixed(2)}%\ntime: ${Math.round(absoluteX)}ms`
+
+  if (x > 0.9) {
+    $cpCoords.dataset.side = 'left'
+  } else {
+    $cpCoords.dataset.side = 'right'
+  }
 }
 
 $splinePreview.addEventListener('pointermove', (e) => {

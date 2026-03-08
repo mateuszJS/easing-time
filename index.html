@@ -4,7 +4,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vite + TS</title>
+  <title>Easing Time</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+
   <link rel="stylesheet" href="/src/reset.css" />
   <link rel="stylesheet" href="/src/common.css" />
   <link rel="stylesheet" href="/src/style.css" />
@@ -93,7 +98,9 @@
           </div>
         </div>
       </div>
-      <button class="btn-accent" commandfor="video-instruction-full" command="show-modal">How to use this tool?</button>
+      <a class="btn btn-outline" href="/" target="_blank">Create new</a>
+      <button class="btn btn-accent" commandfor="video-instruction-full" command="show-modal">How to use this
+        tool?</button>
       <div class="tooltip-container">
         <a class="btn" href="https://github.com/mateuszJS/easing-creator" target="_blank"
           aria-describedby="tooltip-github-link">
@@ -227,16 +234,17 @@
 
 
       <number-input data-name="func-precision" data-label="Error Threshold" data-min="0.001" data-max="0.2"
-        data-step="0.001" data-default-value="0.015" data-side="left"></number-input>
+        data-step="0.001" data-default-value="0.008" data-side="left"></number-input>
 
       <number-input data-name="decimal-point" data-label="Decimal Point" data-min="0" data-max="8" data-step="1"
-        data-default-value="4" data-side="left"></number-input>
+        data-default-value="2" data-side="left"></number-input>
 
       <section class="css-code-section">
         <header>
           <h3>CSS Code</h3>
           <span class="css-code-label">~<span id="code-size">0</span> bytes</span>
-          <button id="how-to-use" class="btn-accent" commandfor="video-instruction-output" command="show-modal">How to
+          <button id="how-to-use" class="btn btn-accent" commandfor="video-instruction-output" command="show-modal">How
+            to
             use<br>this code?</button>
         </header>
         <button id="copy-code">

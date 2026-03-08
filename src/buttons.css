@@ -1,6 +1,33 @@
-.btn-accent {
-  border-radius: 0.35em;
-  padding: 0.25em 0.5em;
+.btn {
+  display: inline flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  color: var(--neutral-900);
+  text-decoration: none;
+  font-size: 1rem;
+
+  svg {
+    width: 24px;
+    max-height: 24px;
+  }
+
+  &:not([disabled]):hover {
+    background: var(--neutral-200);
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    color: var(--disabled);
+  }
+
+  &.btn-outline {
+    border: 1px solid var(--neutral-400);
+  }
+}
+
+.btn-accent.btn-accent {
   background: var(--accent-light);
   color: var(--accent-strong);
   transition:
