@@ -16,8 +16,8 @@
   border-radius: 5px;
 
   /* margin: 0 calc(-1 * var(--thumb-radius)); */
-  --slider-bg: var(--neutral-200);
-  --slider-accent: var(--neutral-100);
+  --slider-bg: var(--neutral-300);
+  --slider-accent: var(--neutral-200);
 
   background:
     linear-gradient(45deg, var(--slider-bg) 30%, var(--slider-accent) 0 70%, var(--slider-bg) 0) 0
@@ -50,7 +50,7 @@
 
 .slider {
   background: none; /* get rid of white Chrome background */
-  color: color-mix(in srgb, var(--secondary) 40%, var(--background) 60%);
+  color: color-mix(in srgb, var(--secondary) 40%, var(--bg) 60%);
   font: inherit; /* fix too small font-size in both Chrome & Firefox */
   margin: 0;
   display: block;

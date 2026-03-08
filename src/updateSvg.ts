@@ -1,4 +1,4 @@
-import { $splinePreview, $codeSnippet, $codeSize, $pathApprox } from './elements'
+import { $codeSnippet, $codeSize, $pathApprox } from './elements'
 import type { ControlPoint, Point } from './types'
 import updateConnectionLines from './updateConnectionLines'
 import { setCssVar } from './utils'
@@ -8,7 +8,7 @@ import { drawSmoothPath } from './drawSmoothPath'
 export function updateSvg(cps: ControlPoint[], approxPointsList: Point[], decimal: number) {
   const toDecimalFloat = (num: number) => +num.toFixed(decimal + NORM_MIN_DECIMAL_POINT)
   drawSmoothPath(cps)
-  updateConnectionLines($splinePreview)
+  updateConnectionLines()
 
   // Build approximate path as straight line segments (M + L commands)
   if (approxPointsList.length > 0) {

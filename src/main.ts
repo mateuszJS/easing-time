@@ -90,37 +90,6 @@ $decimalPoint.onChange = () => {
   )
 }
 
-function updateRulerY() {
-  const min = $startValue.value
-  const max = $endValue.value
-
-  Array.from($rulerY.children as HTMLCollectionOf<HTMLElement>).forEach((li, i) => {
-    if (i === 0 || i === $rulerY.children.length - 1) return // inputs
-
-    const range = max - min
-    const value = min + range * (i / ($rulerY.children.length - 1))
-    li.dataset.stop = Math.round(value).toString() + '%'
-  })
-
-  if (min > -5) {
-    // 2 is just more less enough to have enoug hspace to display label 0%
-    $graphSpaceStart.classList.add('hidden')
-  } else {
-    $graphSpaceStart.classList.remove('hidden')
-  }
-
-  if (max < 105) {
-    // 98 is just more less enough to have enoug hspace to display label 100%
-    $graphSpaceEnd.classList.add('hidden')
-  } else {
-    $graphSpaceEnd.classList.remove('hidden')
-  }
-}
-
-updateRulerY()
-$startValue.onChange = updateRulerY
-$endValue.onChange = updateRulerY
-
 const history = new HistoryManager({
   getState: () => serialize(getCps()),
   applyState: applySerialized,
@@ -558,3 +527,34 @@ $copyCode.addEventListener('click', () => {
   if (!code) return
   navigator.clipboard.writeText(code)
 })
+
+function updateRulerY() {
+  const min = $startValue.value
+  const max = $endValue.value
+
+  Array.from($rulerY.children as HTMLCollectionOf<HTMLElement>).forEach((li, i) => {
+    if (i === 0 || i === $rulerY.children.length - 1) return // inputs
+
+    const range = max - min
+    const value = min + range * (i / ($rulerY.children.length - 1))
+    li.dataset.stop = Math.round(value).toString() + '%'
+  })
+
+  if (min > -5) {
+    // 2 is just more less enough to have enoug hspace to display label 0%
+    $graphSpaceStart.classList.add('hidden')
+  } else {
+    $graphSpaceStart.classList.remove('hidden')
+  }
+
+  if (max < 105) {
+    // 98 is just more less enough to have enoug hspace to display label 100%
+    $graphSpaceEnd.classList.add('hidden')
+  } else {
+    $graphSpaceEnd.classList.remove('hidden')
+  }
+}
+
+updateRulerY()
+$startValue.onChange = updateRulerY
+$endValue.onChange = updateRulerY

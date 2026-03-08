@@ -71,31 +71,29 @@
       </div>
       <div class="url-shadow-input-wrapper">
         <div class="tooltip-container">
-          <input type="text" id="url-shadow-input" placeholder="Shadow URL" />
+          <input type="text" id="url-shadow-input" placeholder="Paste the URL of another animation to align them" />
           <div role="tooltip" id="error-url-shadow-input">Provided url need to have valid "cps" param and needs to come
             from this tool.</div>
-        </div>
-        <div class="input-suffix">
-          <div class="tooltip-container">
-            <button class="btn" aria-label="Load animation from URL"
-              aria-describedby="tooltip-url-shadow-input-description" id="url-shadow-input-hint">
-              <svg>
-                <use href="#question-mark"></use>
-              </svg>
+          <div class="input-suffix">
+            <div class="tooltip-container">
+              <button class="btn" aria-label="Load animation from URL"
+                aria-describedby="tooltip-url-shadow-input-description" id="url-shadow-input-hint">
+                <svg>
+                  <use href="#question-mark"></use>
+                </svg>
+              </button>
+              <div role="tooltip" class="tooltip-instant" id="tooltip-url-shadow-input-description">
+                If you already have built an animation and you would like to align two curves together,
+                paste the URL of already existing animation here.
+              </div>
+            </div>
+            <button class="btn close-icon" aria-label="Remove URL" id="url-shadow-input-erase"
+              aria-describedby="tooltip-url-shadow-input-erase">
             </button>
-            <div role="tooltip" id="tooltip-url-shadow-input-description">If you have already an animation that's
-              related
-              to this
-              one, you can place the URL there.
-              Provided animation will be displayed as readonly curve in the creator to make it easy for you to align new
-              animation.</div>
           </div>
-          <button class="btn close-icon" aria-label="Remove URL" id="url-shadow-input-erase"
-            aria-describedby="tooltip-url-shadow-input-erase">
-          </button>
         </div>
       </div>
-      <button class="btn-accent">How to use this tool?</button>
+      <button class="btn-accent" commandfor="video-instruction-full" command="show-modal">How to use this tool?</button>
       <div class="tooltip-container">
         <a class="btn" href="https://github.com/mateuszJS/easing-creator" target="_blank"
           aria-describedby="tooltip-github-link">
@@ -106,119 +104,103 @@
         <div role="tooltip" id="tooltip-github-link">Github</div>
       </div>
     </div>
-    <div id="pan-zoom-area">
-      <div class="editor-container">
+    <div class="editor-container">
 
 
-        <p class="label-ruler-y">Progress</p>
+      <p class="label-ruler-y">Progress</p>
 
-        <ul class="ruler ruler-y">
-          <li>
-            <div class="input-unit">
-              <number-input data-name="start-value" data-min="-1000" data-max="0" data-default-value="0"
-                data-cssvar="--start-value" data-side="right" data-side="right"></number-input>
-              <span>%</span>
-            </div>
-          </li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li>
-            <div class="input-unit">
-              <number-input data-name="end-value" data-min="100" data-max="1000" data-default-value="100"
-                data-cssvar="--end-value" data-side="right"></number-input>
-              <span>%</span>
-            </div>
-          </li>
-        </ul>
-
-        <div class="graph-wrapper">
-          <div class="active-line-x"></div>
-          <div class="active-line-y"></div>
-          <div id="graph-space-end"><span>100%</span></div>
-          <div class="graph">
-            <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
-
-              <defs>
-                <linearGradient id="grad-handler-line-before" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style="stop-color:var(--accent-altern)" />
-                  <stop offset="100%" style="stop-color:var(--neutral-300)" />
-                </linearGradient>
-
-                <linearGradient id="grad-handler-line-after" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style="stop-color:var(--neutral-300)" />
-                  <stop offset="100%" style="stop-color:var(--accent-altern)" />
-                </linearGradient>
-              </defs>
-
-
-              <g id="shadow-connection-lines"></g>
-              <g id="connection-lines"></g>
-              <path id="path-shadow" d="" vector-effect="non-scaling-stroke" stroke="var(--neutral-600)"
-                stroke-width="2px" fill="none" />
-              <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="var(--neutral-900)"
-                stroke-width="2px" fill="none" />
-              <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="var(--accent-strong)"
-                stroke-width="3px" fill="none" />
-            </svg>
-            <div class="shadow-cps"></div>
-            <div id="spline-anim-progress"></div>
-            <div class="cps"></div>
-            <div id="cp-preview" data-type="cp-main"></div>
-            <div id="cp-coords"></div>
+      <ul class="ruler ruler-y">
+        <li>
+          <div class="input-unit">
+            <number-input data-name="start-value" data-min="-1000" data-max="0" data-default-value="0"
+              data-cssvar="--start-value" data-side="right" data-side="right"></number-input>
+            <span>%</span>
           </div>
-          <div id="time-blocker-back">
-            <h3>Curve can only move forward.</h3>
-            <p>Time traveling is not allowed </p>
+        </li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li>
+          <div class="input-unit">
+            <number-input data-name="end-value" data-min="100" data-max="1000" data-default-value="100"
+              data-cssvar="--end-value" data-side="right"></number-input>
+            <span>%</span>
           </div>
-          <div id="time-blocker-forward">
-            <h3>Point can't move past the next point.</h3>
-            <p>It would cause two timestamps to be
-              active at once, which would result in a singularity. No singularity today, please.</p>
-          </div>
-          <div id="graph-space-start"><span>0%</span></div>
-        </div>
+        </li>
+      </ul>
 
-        <ul class="ruler ruler-x">
-          <li data-stop="0%"></li>
-          <li data-stop="10%"></li>
-          <li data-stop="20%"></li>
-          <li data-stop="30%"></li>
-          <li data-stop="40%"></li>
-          <li data-stop="50%"></li>
-          <li data-stop="60%"></li>
-          <li data-stop="70%"></li>
-          <li data-stop="80%"></li>
-          <li data-stop="90%"></li>
-          <li data-stop="100%"></li>
-        </ul>
-
-
-        <button id="anim-state-play" class="btn timeline-action">
-          <svg>
-            <use href="#icon-play"></use>
+      <div class="graph-wrapper">
+        <div class="active-line-x"></div>
+        <div class="active-line-y"></div>
+        <div id="graph-space-end"><span>100%</span></div>
+        <div class="graph">
+          <svg class="spline-preview" viewBox="0 0 1 1" preserveAspectRatio="none">
+            <g id="shadow-connection-lines"></g>
+            <g id="connection-lines"></g>
+            <path id="path-shadow" d="" vector-effect="non-scaling-stroke" stroke="var(--neutral-600)"
+              stroke-width="2px" fill="none" />
+            <path id="path-exact" d="" vector-effect="non-scaling-stroke" stroke="var(--neutral-900)" stroke-width="2px"
+              fill="none" />
+            <path id="path-approx" d="" vector-effect="non-scaling-stroke" stroke="var(--accent-strong)"
+              stroke-width="3px" fill="none" />
           </svg>
-        </button>
-        <button id="anim-state-pause" class="btn timeline-action">
-          <svg>
-            <use href="#icon-pause"></use>
-          </svg>
-        </button>
-
-        <div class="timeline-slider">
-          <label class="srOnly" for="timeline">
-            Timeline slider
-          </label>
-          <input id="timeline" type="range" min="0" max="1" step="0.00001" class="slider" />
+          <div class="shadow-cps"></div>
+          <div id="spline-anim-progress"></div>
+          <div class="cps"></div>
+          <div id="cp-preview" data-type="cp-main"></div>
+          <div id="cp-coords"></div>
         </div>
-
+        <div id="time-blocker-back">
+          <h3>Curve can only move forward.</h3>
+          <p>Time traveling is not allowed </p>
+        </div>
+        <div id="time-blocker-forward">
+          <h3>Point can't move past the next point.</h3>
+          <p>It would cause two timestamps to be
+            active at once, which would result in a singularity. No singularity today, please.</p>
+        </div>
+        <div id="graph-space-start"><span>0%</span></div>
       </div>
+
+      <ul class="ruler ruler-x">
+        <li data-stop="0%"></li>
+        <li data-stop="10%"></li>
+        <li data-stop="20%"></li>
+        <li data-stop="30%"></li>
+        <li data-stop="40%"></li>
+        <li data-stop="50%"></li>
+        <li data-stop="60%"></li>
+        <li data-stop="70%"></li>
+        <li data-stop="80%"></li>
+        <li data-stop="90%"></li>
+        <li data-stop="100%"></li>
+      </ul>
+
+
+      <button id="anim-state-play" class="btn timeline-action">
+        <svg>
+          <use href="#icon-play"></use>
+        </svg>
+      </button>
+      <button id="anim-state-pause" class="btn timeline-action">
+        <svg>
+          <use href="#icon-pause"></use>
+        </svg>
+      </button>
+
+      <div class="timeline-slider">
+        <label class="srOnly" for="timeline">
+          Timeline slider
+        </label>
+        <input id="timeline" type="range" min="0" max="1" step="0.00001" class="slider" />
+      </div>
+
     </div>
     <aside>
       <h2>Easing CSS Output</h2>
@@ -233,7 +215,7 @@
         </div>
       </div>
 
-      <label class="checkbox">Loop animation:<input type="checkbox" id="animation-loop" />
+      <label class="checkbox">Alternate direction:<input type="checkbox" id="animation-loop" />
         <div class="switch">
           <div class="switch-knob"></div>
         </div>
@@ -254,7 +236,7 @@
         <header>
           <h3>CSS Code</h3>
           <span class="css-code-label">~<span id="code-size">0</span> bytes</span>
-          <button id="how-to-use" class="btn-accent" commandfor="video-instruction" command="show-modal">How to
+          <button id="how-to-use" class="btn-accent" commandfor="video-instruction-output" command="show-modal">How to
             use<br>this code?</button>
         </header>
         <button id="copy-code">
@@ -266,10 +248,17 @@
     </aside>
   </main>
 
-  <dialog id="video-instruction" closedby="any">
+  <dialog id="video-instruction-full" closedby="any">
+    <header>
+      <h2>How to use Easing Time</h2>
+      <button class="close-icon" commandfor="video-instruction-full" command="close"></button>
+    </header>
+  </dialog>
+
+  <dialog id="video-instruction-output" closedby="any">
     <header>
       <h2>How to use CSS output code</h2>
-      <button class="close-icon" commandfor="video-instruction" command="close"></button>
+      <button class="close-icon" commandfor="video-instruction-output" command="close"></button>
     </header>
   </dialog>
 

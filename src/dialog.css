@@ -8,10 +8,9 @@ dialog {
   border-radius: 20px;
   min-width: min(500px, 90vw);
   --duration: 0.34s;
-  transition:
-    opacity var(--duration) ease,
-    overlay var(--duration) ease,
-    display var(--duration) ease allow-discrete;
+  transition-property: opacity, overlay, display;
+  transition-duration: var(--duration);
+  transition-behavior: allow-discrete;
 
   h2 {
     margin: 0;
@@ -27,17 +26,16 @@ dialog {
   &::backdrop {
     background-color: rgba(var(--primary-rgb), 0.2);
     opacity: 0;
-    /* backdrop-filter: blur(5px); */
+    backdrop-filter: blur(5px);
   }
 
   &[open] {
     opacity: 1;
-
     @starting-style {
       opacity: 0;
     }
 
-    &:backdrop {
+    &::backdrop {
       opacity: 1;
       @starting-style {
         opacity: 0;

@@ -9,7 +9,7 @@
   anchor-scope: --tooltip;
 }
 
-.tooltip-container :is(input, button),
+.tooltip-container :is(input, [aria-describedby^='tooltip']),
 number-input input {
   anchor-name: --tooltip;
 }
@@ -54,7 +54,8 @@ number-input input {
     }
   }
 
-  [aria-describedby^='tooltip']:not([disabled]):where(:hover, :focus-visible) ~ & {
+  [aria-describedby^='tooltip']:not([disabled]):where(:hover, :focus-visible)
+    ~ &:not(.tooltip-instant) {
     transition-delay: 0.4s; /* a bit of delay for hovering */
   }
 

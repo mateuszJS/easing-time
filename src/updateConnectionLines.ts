@@ -1,60 +1,78 @@
-import { $splinePreview } from './elements'
+import { $connectionLines } from './elements'
 import type { Point } from './types'
 import { getConnectedCpHandle, getIsMirrored, getMainCps, getPos } from './utils'
 
+const SVG_NS = 'http://www.w3.org/2000/svg'
+let gradientCounter = 0
+
+function clearLines($parent: SVGElement) {
+  $parent
+    .querySelectorAll('.handle-line, .shadow-handle-line, .handle-line-gradient')
+    .forEach((node) => {
+      node.remove()
+    })
+}
+
+function createBrokenGradient($parent: SVGElement, p1: Point, p2: Point, type: 'before' | 'after') {
+  const gradient = document.createElementNS(SVG_NS, 'linearGradient')
+  const gradientId = `grad-handler-line-${type}-${gradientCounter++}`
+  const stopColors =
+    type === 'before' ?
+      ['var(--accent-altern)', 'var(--neutral-300)']
+    : ['var(--neutral-300)', 'var(--accent-altern)']
+
+  gradient.classList.add('handle-line-gradient')
+  gradient.id = gradientId
+  gradient.setAttribute('gradientUnits', 'userSpaceOnUse')
+  gradient.setAttribute('x1', `${p1.x}`)
+  gradient.setAttribute('y1', `${p1.y}`)
+  gradient.setAttribute('x2', `${p2.x}`)
+  gradient.setAttribute('y2', `${p2.y}`)
+
+  stopColors.forEach((color, index) => {
+    const stop = document.createElementNS(SVG_NS, 'stop')
+    stop.setAttribute('offset', `${index * 100}%`)
+    stop.setAttribute('stop-color', color)
+    gradient.appendChild(stop)
+  })
+
+  $parent.appendChild(gradient)
+  return `url(#${gradientId})`
+}
+
 export function drawLine(
-  width: number,
-  height: number,
   $parent: SVGElement,
   p1: Point,
   p2: Point,
   stroke: 'broken' | 'mirrored' | 'shadow',
   type: 'before' | 'after'
 ) {
-  const thicknessPx = 3
-
-  const s1x = p1.x * width
-  const s1y = p1.y * height
-  const s2x = p2.x * width
-  const s2y = p2.y * height
-  const dx = s2x - s1x
-  const dy = s2y - s1y
+  const dx = p2.x - p1.x
+  const dy = p2.y - p1.y
   const len = Math.hypot(dx, dy)
   if (len < 0.001) return
 
-  const nx = -dy / len
-  const ny = dx / len
-  const ox = (nx * thicknessPx) / 2
-  const oy = (ny * thicknessPx) / 2
-
-  const ax = (s1x + ox) / width
-  const ay = (s1y + oy) / height
-  const bx = (s2x + ox) / width
-  const by = (s2y + oy) / height
-  const cx = (s2x - ox) / width
-  const cy = (s2y - oy) / height
-  const dx2 = (s1x - ox) / width
-  const dy2 = (s1y - oy) / height
-
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-  path.classList.add(stroke === 'shadow' ? 'shadow-handle-line' : 'handle-line')
-  path.setAttribute('d', `M ${ax} ${ay} L ${bx} ${by} L ${cx} ${cy} L ${dx2} ${dy2} Z`)
+  const line = document.createElementNS(SVG_NS, 'line')
+  line.classList.add(stroke === 'shadow' ? 'shadow-handle-line' : 'handle-line')
+  line.setAttribute('x1', `${p1.x}`)
+  line.setAttribute('y1', `${p1.y}`)
+  line.setAttribute('x2', `${p2.x}`)
+  line.setAttribute('y2', `${p2.y}`)
+  line.setAttribute('vector-effect', 'non-scaling-stroke')
+  line.setAttribute('stroke-width', '3px')
 
   const mapStroke = {
-    broken: `url(#grad-handler-line-${type})`,
+    broken: createBrokenGradient($parent, p1, p2, type),
     mirrored: 'var(--accent-altern)',
     shadow: 'var(--neutral-300)',
   }
 
-  path.setAttribute('fill', mapStroke[stroke])
-  $parent.appendChild(path)
+  line.setAttribute('stroke', mapStroke[stroke])
+  $parent.appendChild(line)
 }
 
-export default function updateConnectionLines($parent: SVGElement) {
-  $parent.querySelectorAll('.handle-line').forEach((l) => l.remove())
-
-  const { width, height } = $splinePreview.getBoundingClientRect()
-  if (width === 0 || height === 0) return
+export default function updateConnectionLines() {
+  clearLines($connectionLines)
 
   // Draw handle connection lines: cp-before — cp — cp-after
   getMainCps().forEach((p) => {
@@ -66,13 +84,13 @@ export default function updateConnectionLines($parent: SVGElement) {
     if (prev) {
       const p1 = getPos(prev)
       const p2 = getPos(p)
-      drawLine(width, height, $parent, p1, p2, isMirrored ? 'mirrored' : 'broken', 'before')
+      drawLine($connectionLines, p1, p2, isMirrored ? 'mirrored' : 'broken', 'before')
     }
 
     if (next) {
       const p1 = getPos(p)
       const p2 = getPos(next)
-      drawLine(width, height, $parent, p1, p2, isMirrored ? 'mirrored' : 'broken', 'after')
+      drawLine($connectionLines, p1, p2, isMirrored ? 'mirrored' : 'broken', 'after')
     }
   })
 }

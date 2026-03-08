@@ -33,7 +33,9 @@ function addShadowCp(x: number, y: number, type: 'cp-main' | 'cp-before' | 'cp-a
 }
 
 export function drawSmoothPathShadow(cps: SerializedControlPoint[]) {
-  // $shadowConnectionLines.innerHTML = ''
+  $shadowConnectionLines
+    .querySelectorAll('.shadow-handle-line, .handle-line-gradient')
+    .forEach((node) => node.remove())
   $splinePreview.querySelectorAll('[data-type^="shadow-cp-"]').forEach((l) => l.remove())
 
   const mainCps = cps.filter((cp) => cp.type === 'cp-main')
@@ -41,9 +43,6 @@ export function drawSmoothPathShadow(cps: SerializedControlPoint[]) {
   let d = `M ${mainCps[0].x} ${mainCps[0].y}`
 
   addShadowCp(mainCps[0].x, mainCps[0].y, 'cp-main')
-
-  const { width, height } = $splinePreview.getBoundingClientRect()
-  if (width === 0 || height === 0) return
 
   for (let i = 0; i < mainCps.length - 1; i++) {
     const p0 = mainCps[i]
@@ -61,11 +60,11 @@ export function drawSmoothPathShadow(cps: SerializedControlPoint[]) {
 
     if (cpAfter) {
       addShadowCp(cpAfter.x, cpAfter.y, 'cp-after')
-      drawLine(width, height, $shadowConnectionLines, cpAfter, p0, 'shadow', 'after')
+      drawLine($shadowConnectionLines, cpAfter, p0, 'shadow', 'after')
     }
     if (cpBefore) {
       addShadowCp(cpBefore.x, cpBefore.y, 'cp-before')
-      drawLine(width, height, $shadowConnectionLines, cpBefore, p3, 'shadow', 'before')
+      drawLine($shadowConnectionLines, cpBefore, p3, 'shadow', 'before')
     }
     addShadowCp(p3.x, p3.y, 'cp-main')
   }

@@ -10,7 +10,6 @@ export const $urlShadowErase = document.querySelector<HTMLButtonElement>('#url-s
 
 export const $splinePreview = document.querySelector<SVGSVGElement>('.spline-preview')!
 export const $cps = document.querySelector<HTMLElement>('.cps')!
-export const $panZoomArea = document.querySelector<HTMLElement>('#pan-zoom-area')!
 export const $cpPreview = document.querySelector<HTMLElement>('#cp-preview')!
 export const $startValue = document.querySelector<NumberInput>('[data-name="start-value"]')!
 export const $endValue = document.querySelector<NumberInput>('[data-name="end-value"]')!
