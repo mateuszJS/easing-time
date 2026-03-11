@@ -1,0 +1,30 @@
+#mobile-view {
+  display: none;
+  position: fixed;
+  inset: 0;
+  padding: 25px;
+  align-content: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  color: #fff;
+  background:
+    url('/public/mobile-view-header-decor.svg') no-repeat center 10% / 85%,
+    url('/public/mobile-view-footer-decor.svg') no-repeat 0 90%,
+    radial-gradient(#000777 0%, #000);
+
+  h2 {
+    margin: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  #toolbar,
+  .editor-container,
+  aside {
+    visibility: hidden;
+  }
+
+  #mobile-view {
+    display: grid;
+  }
+}

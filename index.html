@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="/src/select.css" />
   <link rel="stylesheet" href="/src/control-point.css" />
   <link rel="stylesheet" href="/src/url-shadow.css" />
+  <link rel="stylesheet" href="/src/mobile-view.css" />
 
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,9 +100,18 @@
           </div>
         </div>
       </div>
+
       <a class="btn btn-outline" href="/" target="_blank">Create new</a>
-      <button class="btn btn-accent" commandfor="video-instruction-full" command="show-modal">How to use this
-        tool?</button>
+
+      <div class="tooltip-container">
+        <button class="btn btn-accent" commandfor="video-instruction" command="show-modal">
+          How to use this tool?
+        </button>
+        <div id="popover-first-timer" popover="manual">
+          <button class="close-icon" commandfor="popover-first-timer" command="hide-popover"></button>
+          First time here? Check out the video tutorial
+        </div>
+      </div>
       <div class="tooltip-container">
         <a class="btn" href="https://github.com/mateuszJS/easing-creator" target="_blank"
           aria-describedby="tooltip-github-link">
@@ -244,7 +254,7 @@
         <header>
           <h3>CSS Code</h3>
           <span class="css-code-label">~<span id="code-size">0</span> bytes</span>
-          <button id="how-to-use" class="btn btn-accent" commandfor="video-instruction-output" command="show-modal">How
+          <button id="how-to-use" class="btn btn-accent" commandfor="video-instruction" command="show-modal">How
             to
             use<br>this code?</button>
         </header>
@@ -257,19 +267,20 @@
     </aside>
   </main>
 
-  <dialog id="video-instruction-full" closedby="any">
+  <dialog id="video-instruction" closedby="any">
     <header>
       <h2>How to use Easing Time</h2>
-      <button class="close-icon" commandfor="video-instruction-full" command="close"></button>
+      <button class="close-icon" commandfor="video-instruction" command="close"></button>
     </header>
+    <lite-youtube js-api videoid="OvJUwW7ASdI" playlabel="Play: Tutorial how to use Easing Time"></lite-youtube>
   </dialog>
 
-  <dialog id="video-instruction-output" closedby="any">
-    <header>
-      <h2>How to use CSS output code</h2>
-      <button class="close-icon" commandfor="video-instruction-output" command="close"></button>
-    </header>
-  </dialog>
+
+  <div id="mobile-view">
+    <h2>How to use Easing Time</h2>
+    <lite-youtube js-api videoid="OvJUwW7ASdI" playlabel="Play: Tutorial how to use Easing Time"></lite-youtube>
+    <p>Due to the complexity, the tool is only designed for desktop usage.</p>
+  </div>
 
   <svg>
     <symbol viewBox="0 0 417 417" id="icon-return">
@@ -331,6 +342,7 @@
 
 
   <script type="module" src="/src/main.ts"></script>
+  <script defer type="module" src="/src/youtube.ts"></script>
 </body>
 
 </html>

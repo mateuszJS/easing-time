@@ -29,6 +29,7 @@ import {
   $graphSpaceEnd,
   $timeBlockerBack,
   $timeBlockerForward,
+  $firstTimer,
 } from './elements'
 import { HistoryManager } from './historyManager'
 import type { ControlPoint, CpType, Point, SerializedControlPoint } from './types'
@@ -41,11 +42,13 @@ import {
   getCssVarNumber,
   getCssVarStr,
   getIsMirrored,
+  getItemLocalStorage,
   getMainCp,
   getMainCps,
   getPos,
   serialize,
   setCssVar,
+  setItemLocalStorage,
   updateHtmlPos,
   updateQueryParam,
 } from './utils'
@@ -564,3 +567,18 @@ function updateRulerY() {
 updateRulerY()
 $startValue.onChange = updateRulerY
 $endValue.onChange = updateRulerY
+
+const firstTimmer = !getItemLocalStorage('firstTimerShown')
+if (firstTimmer) {
+  setTimeout(() => {
+    $firstTimer.showPopover()
+    setItemLocalStorage('firstTimerShown', 'true')
+  }, 1200)
+}
+
+const $howToUseCodeBtns = document.querySelectorAll('[commandfor="video-instruction"]')!
+$howToUseCodeBtns.forEach(($btn) => {
+  $btn.addEventListener('click', () => {
+    $firstTimer.hidePopover()
+  })
+})

@@ -7,6 +7,7 @@
   color: var(--neutral-900);
   text-decoration: none;
   font-size: 1rem;
+  white-space: nowrap;
 
   svg {
     width: 24px;

@@ -9,12 +9,13 @@
   anchor-scope: --tooltip;
 }
 
-.tooltip-container :is(input, [aria-describedby^='tooltip']),
+.tooltip-container > :is(a, input, button),
 number-input input {
   anchor-name: --tooltip;
 }
 
-[role='tooltip'] {
+[role='tooltip'],
+[popover] {
   --bg-color: var(--primary);
   position: fixed;
   position-anchor: --tooltip;
@@ -37,26 +38,13 @@ number-input input {
   opacity: 0;
   z-index: 1;
 
+  /* reset default popover styles */
+  margin: initial;
+  border: none;
+  overflow: visible;
+
   &[id^='error'] {
     --bg-color: #ff2137;
-  }
-
-  &:hover,
-  [aria-describedby^='tooltip']:not([disabled]):where(:hover, :focus-visible) ~ &,
-  [aria-invalid='true'] ~ & {
-    display: block;
-    opacity: 1;
-    --tooltip-offset: 10px;
-
-    @starting-style {
-      --tooltip-offset: initial;
-      opacity: 0;
-    }
-  }
-
-  [aria-describedby^='tooltip']:not([disabled]):where(:hover, :focus-visible)
-    ~ &:not(.tooltip-instant) {
-    transition-delay: 0.4s; /* a bit of delay for hovering */
   }
 
   &::after {
@@ -97,5 +85,69 @@ number-input input {
       translate: +100% -50%;
       border-color: transparent transparent transparent var(--bg-color);
     }
+  }
+}
+
+/* &:hover,
+  [aria-describedby^='tooltip']:not([disabled]):where(:hover, :focus-visible) ~ &,
+  [aria-invalid='true'] ~ & {
+ */
+
+[role='tooltip']:hover,
+.tooltip-container
+  > :is(a, input, button):not([disabled]):where(:hover, :focus-visible)
+  ~ [role='tooltip']:not([id^='error-']),
+[aria-invalid='true'] ~ [role='tooltip'],
+[popover]:popover-open {
+  display: block;
+  opacity: 1;
+  --tooltip-offset: 10px;
+
+  @starting-style {
+    --tooltip-offset: initial;
+    opacity: 0;
+  }
+
+  &:not(.tooltip-instant) {
+    transition-delay: 0.2s; /* a bit of delay for hovering */
+  }
+}
+
+/* .tooltip-container
+    > :is(a, input, button):not([disabled]):where(:hover, :focus-visible)
+    ~ &:not(.tooltip-instant) {
+    transition-delay: 0.4s; 
+  } */
+
+[popover] {
+  font-size: 1.1rem;
+  color: #fff;
+  background: radial-gradient(
+    at 0 100%,
+    rgba(0, 221, 255, 1) 0%,
+    rgba(0, 55, 255, 1) 49%,
+    rgba(219, 83, 237, 1) 100%
+  );
+  isolation: isolate;
+  padding: 12px 45px 15px 15px;
+  width: 24ch;
+
+  &:before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    background: #0004;
+    z-index: -1;
+  }
+
+  &:after {
+    border-bottom-color: rgb(112, 63, 244);
+  }
+
+  .close-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1;
   }
 }
