@@ -5,7 +5,7 @@
 }
 
 .tooltip-container {
-  display: contents;
+  /* display: contents; - safari doesn't supprot anchor-scope on display:contnets  */
   anchor-scope: --tooltip;
 }
 
