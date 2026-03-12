@@ -72,3 +72,9 @@ dialog {
     rotate: -45deg;
   }
 }
+
+.examples-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
