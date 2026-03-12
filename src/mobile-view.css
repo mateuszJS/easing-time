@@ -4,6 +4,7 @@
   inset: 0;
   padding: 25px;
   align-content: center;
+  justify-content: center;
   gap: 10px;
   font-size: 1.2rem;
   color: #fff;
@@ -21,7 +22,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 820px) {
   #toolbar,
   .editor-container,
   aside {

@@ -35,6 +35,7 @@ body {
 
 main {
   height: 100%;
+  overflow-y: auto;
   display: grid;
   grid-template:
     'toolbar-left toolbar-right' auto
