@@ -500,10 +500,15 @@ dialog[id='video-instruction'] {
   --dialog-padding: 20px;
   --dialog-gap: 20px;
   --dialog-header-height: clamp(3.5rem, 10vh, 4.5rem);
+  --examples-list-height: 40px;
   --video-max-width: min(
     calc(90vw - 2 * var(--dialog-padding)),
     calc(
-      (90dvh - 2 * var(--dialog-padding) - var(--dialog-gap) - var(--dialog-header-height)) * 16 / 9
+      (
+          90dvh - 2 * var(--dialog-padding) - var(--dialog-gap) - var(--dialog-header-height) -
+            var(--examples-list-height)
+        ) *
+        16 / 9
     )
   );
 
@@ -511,7 +516,7 @@ dialog[id='video-instruction'] {
   max-width: 90vw;
   max-height: 90dvh;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
   gap: var(--dialog-gap);
 
   header {
